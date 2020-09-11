@@ -9,6 +9,5 @@ from libc.stdlib cimport malloc, free
 
 # Wrappers
 
-def comaprePairsAccodringToTheSecondCoord( const std::pair< size_t , double >& f , const std::pair< size_t , double >& s ):
-	return cPersistenceClassifier.comaprePairsAccodringToTheSecondCoord (size_t, f, size_t, s)
-	
+def comaprePairsAccodringToTheSecondCoord( const std::pair< size_t , double >& f ,const std::pair< size_t , double >& s ):
+	return cPersistenceClassifier.comaprePairsAccodringToTheSecondCoord(size_t, f, size_t, s)

@@ -1,5 +1,6 @@
 # work.pyx 
 # Import the low-level C declarations 
+
 		
 cimport cPersistenceBarcode 
 # Importing functionalities from Python 

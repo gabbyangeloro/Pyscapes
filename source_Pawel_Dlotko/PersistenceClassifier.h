@@ -1,4 +1,4 @@
-//    Copyright 2013-2014 University of Pennsylvania
+3//    Copyright 2013-2014 University of Pennsylvania
 //    Created by Pawel Dlotko
 //
 //    This file is part of Persistence Landscape Toolbox (PLT).
