@@ -1,10 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Persistence Landscape Algorithm 
+
+Storing Persistence Landscapes with dictionary 
+"""
 import numpy as np
 
 A = np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ]) 
 #def PersistenceLanscape2(A):
-L = np.array([])
 k = 0
 size_landscapes= np.array([])
+L_dict = {}
 
 
 # Sort A: read from right to left inside ()
@@ -12,6 +19,9 @@ ind =  np.lexsort((-A[:,1], A[:,0]))
 A = A[ind]
 
 while len(A) != 0:
+    
+    L = np.array([])
+    
     # add a 0 element to begin count of lamda_k
     size_landscapes = np.append(size_landscapes, [0])
     L_dict_var = np.array([])
@@ -96,31 +106,10 @@ while len(A) != 0:
             L = np.insert(L, len(L), np.array([(b_prime + d_prime)/2, (d_prime-b_prime)/2] ), axis = 0 ) 
             size_landscapes[k] += 1
 
-            b,d = b_prime, d_prime # Set (b',d')= (b, d)     
+            b,d = b_prime, d_prime # Set (b',d')= (b, d) 
+    
+    # add L_k to dict
+    # reshpae to pairs and leave off infinity terms 
+    L_dict[f'L{k+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
     k += 1
-
-
-# Transform L 
-
-
-# size1 = 2 * int(size_landscapes[0])
-# size2 = 2 * int(size_landscapes[1])
-# size3 = 2 * int(size_landscapes[2])
-
-# L[0: 2* size1]
-
-# L1 = L[0:size1].reshape( ( int(len(L[0:size1])/2)) , 2 )[1:-1]
-# L2 = L[size1 : size1+size2].reshape( ( int(len(L[size1 : size1+size2])/2)) , 2 )[1:-1]
-# L3 = L[size1+size2:size1+size2+size3 ].reshape( ( int(len(L[size1+size2:size1+size2+size3 ])/2)) , 2 )[1:-1]
-
-#return(L1, L2, L3)
-#return(L)
-
-
-
-# A = np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ]) 
-
-
-# L =PersistenceLanscape2(A)
-# L1 = L[0:18].reshape( ( int(len(L[0:18])/2)) , 2 )[1:-1]
 
