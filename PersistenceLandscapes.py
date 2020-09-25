@@ -4,7 +4,7 @@ Define Persistence Landscapes function as a class
 import numpy as np
 
 
-class PersistenceLandscape:
+class PersistenceLandscapes:
     ''' Creates persistence landscapes associated with persistence diagram.
 
     Parameters
@@ -13,6 +13,8 @@ class PersistenceLandscape:
     data : list of arrays of arrays like [array( array([,]), array([,]) ),..., array()]
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
+        Expecting output from ripser: ripser(data_user)['dgms']
+        
     homology_degree : int
         represents the homology degree of the persistence diagram.
 
@@ -27,15 +29,20 @@ class PersistenceLandscape:
 
     example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
 
-    def __init__(self, data, homology_degree):
+    def __init__(self, data: list, homology_degree: int):
+        if isinstance(homology_degree, list) == False:
+            raise ValueError(str)
+            
+        if homology_degree < 0:
+            raise ValueError("homology_degree must be positive")
         self.data = data
         self.homology_degree = homology_degree
-        self.cache = []
+        self.cache = {}
         
         
 
     # code here
-    def landscape(self, verbose = False):
+    def construct_landscapes_exact(self, verbose: bool = False) -> dict:
         '''
         Parameters
         -----------
@@ -52,10 +59,10 @@ class PersistenceLandscape:
         # check if landscapes were already computed
         verboseprint = print if verbose else lambda *a, **k: None
 
-        if len(self.cache) != 0:
+        if self.cache:
 
             verboseprint('cache was full and stored value was returned')
-            return self.cache[0]
+            return self.cache
 
         A = self.data[self.homology_degree]
         k = 0
@@ -164,7 +171,7 @@ class PersistenceLandscape:
             L_dict[f'L{k+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
             k += 1
 
-        self.cache.append(L_dict)
+        self.cache = L_dict
         verboseprint('cache was empty and algorthim was executed')
         return L_dict
 
@@ -181,7 +188,7 @@ class PersistenceLandscape:
     '''
 
     def __repr__(self):
-        return f'Compute the persistence landscapes of data for the {self.homology_degree}th homology'
+        return f'The persistence landscapes of data for the {self.homology_degree}th homology'
 
     # pick out kth persistence landscape
     def get_kth_landscape(self, k):
