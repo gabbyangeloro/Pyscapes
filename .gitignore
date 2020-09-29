@@ -1,2 +1,6 @@
 Ignore/
 *.pdf
+*.pylint*
+*.ini
+*.bak
+*.ini
