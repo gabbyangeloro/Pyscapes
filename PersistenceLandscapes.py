@@ -4,26 +4,31 @@ Define Persistence Landscapes function as a class
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
+### TransformerMixin gives fit_transform for free
+### BaseEstimator gives get_params and set_params methods.
+### We might not need BaseEstimator...It's useful when the transformer
+### has hyperparameters to tune, for gridsearchCV etc.
 class PersistenceLandscapes(BaseEstimator, TransformerMixin):
-    ''' Persistence Landscape class. 
+    ''' Persistence Landscape class.
 
     Parameters
-    -----------
-
+    ----------
     diagrams : A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
         Each entry in the list corresponds to a single homological degree
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
         Expecting output from ripser: ripser(data_user)['dgms']
-        
+
     homological_degree : int
         represents the homology degree of the persistence diagram.
 
     Methods
-    ------
+    -------
     landscape : returns persistence landscape associated to persistence diagram
         for given homology degree
-    graph : graphs persistence landscapes
+
+    transform : graphs persistence landscapes
+
     get_kth_landscape : returns the kth landscape for a given homology degree
 
     '''
@@ -32,7 +37,7 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
 
     def __init__(self, diagrams: list, homological_degree: int = -1):
         if isinstance(homological_degree, int) == False:
-            raise TypeError(f'homological_degree must be an integer')
+            raise TypeError('homological_degree must be an integer')
         # if homological_degree < 0:
             # raise ValueError('homological_degree must be positive')
         if isinstance(diagrams,list) == False:
@@ -42,29 +47,31 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
         self.diagrams = diagrams
         self.homological_degree = homological_degree
         self.cache = {}
-        
+
     def __repr__(self):
-        return (f'The persistence landscapes of diagrams in homological '
-        'degree {self.homological_degree}')
-        
+        return ('The persistence landscapes of diagrams in homological '
+        f'degree {self.homological_degree}')
+
     def fit(self):
         return self
 
-    def transform(self, verbose:bool = False) -> dict:
-        '''
+    def transform(self, verbose:bool = False, idx:int = 0)-> dict:
+        ''' Compute the persistence landscapes of self.diagrams.
+
         Parameters
-        -----------
+        ----------
         verbose: bool
-            If true, updates during computation are printed.
+            If true, progress messages are printed during computation.
 
         Returns
-        --------
+        -------
         L_dict : dict
-            The keys of L_dict are L1, ..., Lk and the corresponding value is each corresponds to critical values are respective function in
+            The keys of L_dict are L1, ..., Lk and the corresponding value is 
+            each corresponds to critical values are respective function in
             persistence landscape represented as arrays.
 
         '''
-        
+
         verboseprint = print if verbose else lambda *a, **k: None
 
         # check if landscapes were already computed
@@ -194,9 +201,30 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
             return graph(landscapes)
     '''
 
+    ### If we want landscape by index, then we probably need to
+    ### refactor the above code. This could get complicated so maybe
+    ### we don't worry about it now. In a perfect world, we'd have the
+    ### following setup: the PersistenceLandscapes class itself would
+    ### have a boolean flag that tracks whether the landscape computation
+    ### has finished yet, since we can't check by the length of a list
+    ### or anything. We then factor out one iteration of the transform
+    ### code, and all other methods would call a while loop on it. Once
+    ### we've computed out to the landscape we need, we return it. Any
+    ### other method would first check if the cache has that appropriate
+    ### entry, then either return or resume the computation.
+    def get_landscape_by_index(self, idx: int) -> list:
+        """ Returns the landscape function specified by idx.
 
+        Parameters
+        ----------
+        idx: int
+            The index of the desired landscape function.
 
-    # pick out kth persistence landscape
-    def get_kth_landscape(self, k):
-        pass
-        #return self[k]
+        Returns
+        --------
+        The landscape function of index idx.
+        """
+        if self.cache:
+            return self.cache[f'L{idx}']
+        else:
+            return self.transform()[f'L{idx}']
