@@ -2,20 +2,21 @@
 Define Persistence Landscapes function as a class
 """
 import numpy as np
+from sklearn.base import BaseEstimator, TransformerMixin
 
-
-class PersistenceLandscapes:
-    ''' Creates persistence landscapes associated with persistence diagram.
+class PersistenceLandscapes(BaseEstimator, TransformerMixin):
+    ''' Persistence Landscape class. 
 
     Parameters
     -----------
 
-    data : list of arrays of arrays like [array( array([,]), array([,]) ),..., array()]
+    diagrams : A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
+        Each entry in the list corresponds to a single homological degree
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
         Expecting output from ripser: ripser(data_user)['dgms']
         
-    homology_degree : int
+    homological_degree : int
         represents the homology degree of the persistence diagram.
 
     Methods
@@ -27,21 +28,29 @@ class PersistenceLandscapes:
 
     '''
 
-    example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
+    # example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
 
-    def __init__(self, data: list, homology_degree: int):
-        if isinstance(homology_degree, list) == False:
-            raise ValueError(str)
-            
-        if homology_degree < 0:
-            raise ValueError("homology_degree must be positive")
-        self.data = data
-        self.homology_degree = homology_degree
+    def __init__(self, diagrams: list, homological_degree: int = -1):
+        if isinstance(homological_degree, int) == False:
+            raise TypeError(f'homological_degree must be an integer, not '
+                    '{type(homological_degree)}.')
+        # if homological_degree < 0:
+            # raise ValueError('homological_degree must be positive')
+        if isinstance(diagrams,list) == False:
+            raise TypeError('diagrams must be a list')
+        self.diagrams = diagrams
+        self.homological_degree = homological_degree
         self.cache = {}
         
         
+    def fit(self):
+        return self
 
-    # code here
+    def transform(self)
+        pass
+
+
+    ### Turn this into the transform class
     def construct_landscapes_exact(self, verbose: bool = False) -> dict:
         '''
         Parameters
