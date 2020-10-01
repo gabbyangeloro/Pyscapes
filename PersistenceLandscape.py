@@ -1,5 +1,5 @@
 """
-Define Persistence Landscapes function as a class
+Define Persistence Landscape class.
 """
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -8,7 +8,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 ### BaseEstimator gives get_params and set_params methods.
 ### We might not need BaseEstimator...It's useful when the transformer
 ### has hyperparameters to tune, for gridsearchCV etc.
-class PersistenceLandscapes(BaseEstimator, TransformerMixin):
+class PersistenceLandscape(BaseEstimator, TransformerMixin):
     ''' Persistence Landscape class.
 
     Parameters
@@ -35,7 +35,7 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
 
     example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
 
-    def __init__(self, diagrams: list, homological_degree: int = -1):
+    def __init__(self, diagrams: list, homological_degree: int = 0):
         if isinstance(homological_degree, int) == False:
             raise TypeError('homological_degree must be an integer')
         # if homological_degree < 0:
@@ -52,10 +52,10 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
         return ('The persistence landscapes of diagrams in homological '
         f'degree {self.homological_degree}')
 
-    def fit(self):
+    def fit(self, X, y=None):
         return self
 
-    def transform(self, verbose:bool = False, idx:int = 0)-> dict:
+    def transform(self, X, verbose:bool = False, idx:int = 0)-> dict:
         ''' Compute the persistence landscapes of self.diagrams.
 
         Parameters
@@ -200,6 +200,15 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
             landscapes = self.landscapes()
             return graph(landscapes)
     '''
+    def compute_landscape(self):
+        """ Method for computing persistence landscape function.
+
+        Returns
+        -------
+        None.
+
+        """
+        return self.transform()
 
     ### If we want landscape by index, then we probably need to
     ### refactor the above code. This could get complicated so maybe
@@ -212,7 +221,7 @@ class PersistenceLandscapes(BaseEstimator, TransformerMixin):
     ### we've computed out to the landscape we need, we return it. Any
     ### other method would first check if the cache has that appropriate
     ### entry, then either return or resume the computation.
-    def get_landscape_by_index(self, idx: int) -> list:
+    def compute_landscape_by_index(self, idx: int) -> list:
         """ Returns the landscape function specified by idx.
 
         Parameters
