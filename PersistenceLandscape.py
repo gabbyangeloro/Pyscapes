@@ -2,13 +2,8 @@
 Define Persistence Landscape class.
 """
 import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
 
-### TransformerMixin gives fit_transform for free
-### BaseEstimator gives get_params and set_params methods.
-### We might not need BaseEstimator...It's useful when the transformer
-### has hyperparameters to tune, for gridsearchCV etc.
-class PersistenceLandscape(BaseEstimator, TransformerMixin):
+class PersistenceLandscape():
     ''' Persistence Landscape class.
 
     Parameters
@@ -52,10 +47,28 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
         return ('The persistence landscapes of diagrams in homological '
         f'degree {self.homological_degree}')
 
-    def fit(self, X, y=None):
-        return self
+    # Arithmetic, real vector space structure
+    def __add__(self,other):
+        # Add checks to so we only add a landscape to another landscape.
+        pass
+    
+    def __sub__(self,other):
+        pass
+    
+    def __mul__(self,other):
+        # Allow multiplication between scalars and landscapes.
+        # Do not allow multiplication of landscapes
+        pass
+    
+    def __div__(self,other):
+        # Maybe be clever with __mul__?
+        pass
+    
+    # Indexing, slicing
+    def __getitem__(self,key):
+        pass
 
-    def transform(self, X, verbose:bool = False, idx:int = 0)-> dict:
+    def compute_landscape(self, verbose:bool = False) -> dict:
         ''' Compute the persistence landscapes of self.diagrams.
 
         Parameters
@@ -200,15 +213,14 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
             landscapes = self.landscapes()
             return graph(landscapes)
     '''
-    def compute_landscape(self):
-        """ Method for computing persistence landscape function.
+    
+    """ Method for computing persistence landscape function.
 
         Returns
         -------
         None.
 
         """
-        return self.transform()
 
     ### If we want landscape by index, then we probably need to
     ### refactor the above code. This could get complicated so maybe
