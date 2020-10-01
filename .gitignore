@@ -3,3 +3,6 @@ Ignore/
 *.pdf
 *.ini
 *.aux
+*.pylint*
+*.ini
+*.bak

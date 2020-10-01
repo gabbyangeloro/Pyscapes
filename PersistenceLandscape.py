@@ -1,81 +1,95 @@
 """
-Define Persistence Landscapes function as a class
+Define Persistence Landscape class.
 """
 import numpy as np
+from sklearn.base import BaseEstimator, TransformerMixin
 
-
-class PersistenceLandscapes:
-    ''' Creates persistence landscapes associated with persistence diagram.
+### TransformerMixin gives fit_transform for free
+### BaseEstimator gives get_params and set_params methods.
+### We might not need BaseEstimator...It's useful when the transformer
+### has hyperparameters to tune, for gridsearchCV etc.
+class PersistenceLandscape(BaseEstimator, TransformerMixin):
+    ''' Persistence Landscape class.
 
     Parameters
-    -----------
-
-    data : list of arrays of arrays like [array( array([,]), array([,]) ),..., array()]
+    ----------
+    diagrams : A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
+        Each entry in the list corresponds to a single homological degree
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
         Expecting output from ripser: ripser(data_user)['dgms']
-        
-    homology_degree : int
+
+    homological_degree : int
         represents the homology degree of the persistence diagram.
 
     Methods
-    ------
+    -------
     landscape : returns persistence landscape associated to persistence diagram
         for given homology degree
-    graph : graphs persistence landscapes
+
+    transform : graphs persistence landscapes
+
     get_kth_landscape : returns the kth landscape for a given homology degree
 
     '''
 
     example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
 
-    def __init__(self, data: list, homology_degree: int):
-        if isinstance(homology_degree, list) == False:
-            raise ValueError(str)
-            
-        if homology_degree < 0:
-            raise ValueError("homology_degree must be positive")
-        self.data = data
-        self.homology_degree = homology_degree
+    def __init__(self, diagrams: list, homological_degree: int = 0):
+        if isinstance(homological_degree, int) == False:
+            raise TypeError('homological_degree must be an integer')
+        # if homological_degree < 0:
+            # raise ValueError('homological_degree must be positive')
+        if isinstance(diagrams,list) == False:
+            raise TypeError('diagrams must be a list')
+        ### Do we need to put additional checks here? Make sure its a list of numpy
+        ### arrays? etc?
+        self.diagrams = diagrams
+        self.homological_degree = homological_degree
         self.cache = {}
-        
-        
 
-    # code here
-    def construct_landscapes_exact(self, verbose: bool = False) -> dict:
-        '''
+    def __repr__(self):
+        return ('The persistence landscapes of diagrams in homological '
+        f'degree {self.homological_degree}')
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, verbose:bool = False, idx:int = 0)-> dict:
+        ''' Compute the persistence landscapes of self.diagrams.
+
         Parameters
-        -----------
+        ----------
         verbose: bool
-            prints what landscape is being computed
+            If true, progress messages are printed during computation.
 
         Returns
-        --------
+        -------
         L_dict : dict
-            Keys are L1,..., Lk and values are respective function in
+            The keys of L_dict are L1, ..., Lk and the corresponding value is 
+            each corresponds to critical values are respective function in
             persistence landscape represented as arrays.
 
         '''
-        # check if landscapes were already computed
+
         verboseprint = print if verbose else lambda *a, **k: None
 
+        # check if landscapes were already computed
         if self.cache:
-
-            verboseprint('cache was full and stored value was returned')
+            verboseprint('cache was not empty and stored value was returned')
             return self.cache
 
-        A = self.data[self.homology_degree]
-        k = 0
+        A = self.diagrams[self.homological_degree]
+        landscape_idx = 0
         size_landscapes= np.array([])
         L_dict = {}
-
 
         # Sort A: read from right to left inside ()
         ind =  np.lexsort((-A[:,1], A[:,0]))
         A = A[ind]
 
         while len(A) != 0:
-            verboseprint(f'computing landscape {k+1}...')
+            verboseprint(f'computing landscape index {landscape_idx+1}...')
 
             L = np.array([])
 
@@ -92,7 +106,7 @@ class PersistenceLandscapes:
             L = np.insert(L, len(L), np.array([(b+d)/2, (d-b)/2]) , axis = 0)
 
             # increase size of landscape k by 3
-            size_landscapes[k] += 3
+            size_landscapes[landscape_idx] += 3
 
             while (L[-1] != [np.inf, 0]).all():
 
@@ -103,7 +117,7 @@ class PersistenceLandscapes:
                     # add to end of L_k
                     L = np.insert(L, len(L), np.array( [d,0] ), axis = 0)
                     L = np.insert(L, len(L), np.array( [np.inf, 0] ), axis = 0)
-                    size_landscapes[k] += 2
+                    size_landscapes[landscape_idx] += 2
 
 
                 else:
@@ -112,7 +126,7 @@ class PersistenceLandscapes:
                         if A[i][1] > d:
                             # pop (b', d')
 
-                            ind1 = [k for k in range(len(A) ) if k != i]
+                            ind1 = [_ for _ in range(len(A) ) if _ != i]
 
                             bd_prime, A = A[i], A[ind1]
 
@@ -123,13 +137,13 @@ class PersistenceLandscapes:
                     # Case I
                     if b_prime > d:
                         L = np.insert(L, len(L), np.array([d, 0] ), axis = 0)
-                        size_landscapes[k] += 1
+                        size_landscapes[landscape_idx] += 1
 
 
                     # Case II
                     if b_prime >= d:
                         L = np.insert(L, len(L), np.array( [b_prime, 0] ), axis = 0)
-                        size_landscapes[k] += 1
+                        size_landscapes[landscape_idx] += 1
 
 
                     # Case III
@@ -137,7 +151,7 @@ class PersistenceLandscapes:
                         L = np.insert(
                             L, len(L), np.array([(b_prime + d)/2,
                                                  (d-b_prime)/2]), axis = 0 )
-                        size_landscapes[k] += 1
+                        size_landscapes[landscape_idx] += 1
 
 
                         # Push (b', d) into A in order
@@ -162,14 +176,14 @@ class PersistenceLandscapes:
 
                     L = np.insert(L, len(L), np.array([(b_prime + d_prime)/2,
                                                        (d_prime-b_prime)/2] ), axis = 0 )
-                    size_landscapes[k] += 1
+                    size_landscapes[landscape_idx] += 1
 
                     b,d = b_prime, d_prime # Set (b',d')= (b, d)
 
             # add L_k to dict
             # reshpae to pairs and leave off infinity terms
-            L_dict[f'L{k+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
-            k += 1
+            L_dict[f'L{landscape_idx+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
+            landscape_idx += 1
 
         self.cache = L_dict
         verboseprint('cache was empty and algorthim was executed')
@@ -186,11 +200,40 @@ class PersistenceLandscapes:
             landscapes = self.landscapes()
             return graph(landscapes)
     '''
+    def compute_landscape(self):
+        """ Method for computing persistence landscape function.
 
-    def __repr__(self):
-        return f'The persistence landscapes of data for the {self.homology_degree}th homology'
+        Returns
+        -------
+        None.
 
-    # pick out kth persistence landscape
-    def get_kth_landscape(self, k):
-        pass
-        #return self[k]
+        """
+        return self.transform()
+
+    ### If we want landscape by index, then we probably need to
+    ### refactor the above code. This could get complicated so maybe
+    ### we don't worry about it now. In a perfect world, we'd have the
+    ### following setup: the PersistenceLandscapes class itself would
+    ### have a boolean flag that tracks whether the landscape computation
+    ### has finished yet, since we can't check by the length of a list
+    ### or anything. We then factor out one iteration of the transform
+    ### code, and all other methods would call a while loop on it. Once
+    ### we've computed out to the landscape we need, we return it. Any
+    ### other method would first check if the cache has that appropriate
+    ### entry, then either return or resume the computation.
+    def compute_landscape_by_index(self, idx: int) -> list:
+        """ Returns the landscape function specified by idx.
+
+        Parameters
+        ----------
+        idx: int
+            The index of the desired landscape function.
+
+        Returns
+        --------
+        The landscape function of index idx.
+        """
+        if self.cache:
+            return self.cache[f'L{idx}']
+        else:
+            return self.transform()[f'L{idx}']
