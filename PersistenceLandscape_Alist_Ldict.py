@@ -8,7 +8,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 ### BaseEstimator gives get_params and set_params methods.
 ### We might not need BaseEstimator...It's useful when the transformer
 ### has hyperparameters to tune, for gridsearchCV etc.
-class PersistenceLandscape(BaseEstimator, TransformerMixin):
+class PersistenceLandscape_Alist_Larray(BaseEstimator, TransformerMixin):
     ''' Persistence Landscape class.
 
     Parameters
@@ -56,7 +56,7 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, verbose:bool = False, idx:int = 0)-> dict:
-        ''' Compute the persistence landscapes of self.diagrams.
+        ''' Compute the persistence landscape of self.diagrams.
 
         Parameters
         ----------
@@ -80,13 +80,18 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
             return self.cache
 
         A = self.diagrams[self.homological_degree]
+        # change A into a list
+        A = list(A)
+        # change inner nparrays into lists
+        for i in range(len(A)):
+            A[i] = list(A[i])
+        
         landscape_idx = 0
         size_landscapes= np.array([])
         L_dict = {}
 
         # Sort A: read from right to left inside ()
-        ind =  np.lexsort((-A[:,1], A[:,0]))
-        A = A[ind]
+        A = sorted(A, key = lambda x: [x[0], -x[1]])
 
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
@@ -97,8 +102,7 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
             size_landscapes = np.append(size_landscapes, [0])
 
             # pop first term
-            bd, A = A[0], A[1:len(A)]
-            b, d = bd
+            b, d = A.pop(0)
 
             # outer brackets for start of L_k
             L = np.insert(L, len(L), np.array([-np.inf, 0]) , axis = 0)
@@ -112,7 +116,9 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
 
 
                 # Check if d is greater than all remaining pairs
-                if (d  > A[:,1]).all(): # check dont need vector
+                # prints list [False, True, ....]
+                # if false notin list is true than d > all 2nd coordinates of A
+                if False not in [d> item[1] for item in A]:
 
                     # add to end of L_k
                     L = np.insert(L, len(L), np.array( [d,0] ), axis = 0)
@@ -122,15 +128,9 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
 
                 else:
                     # set (b', d')  to be the first term so that d' > d
-                    for i in range(len(A)):
-                        if A[i][1] > d:
-                            # pop (b', d')
-
-                            ind1 = [_ for _ in range(len(A) ) if _ != i]
-
-                            bd_prime, A = A[i], A[ind1]
-
-                            b_prime, d_prime = bd_prime
+                    for i, item in enumerate(A):
+                        if item[1] > d:
+                            b_prime, d_prime = A.pop(i)
                             break
 
 
@@ -158,20 +158,20 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
                         # find the first b_i in A so that b'<= b_i
                         for i in range(len(A)):
                             if b_prime <= A[i][0]:
-                                ind2 = i # index to push (b', d) if b' != b_i
+                                ind = i # index to push (b', d) if b' != b_i
                                 break
 
                         # if b' = b_i
-                        # move index to the right one for every d_i so that d < d_i
-                        if b_prime == A[ind2][0]:
-                            A_i = A[ A[:,0] == b_prime]
+                        # move index to the right one for every d_i such that d < d_i
+                        if b_prime == A[ind][0]:
+                            A_i = [item for item in A if item[0] == b_prime ]
 
                             for j in range(len(A_i)):
                                 if d < A_i[j][1]:
-                                    ind2 = ind2 + 1
+                                    ind = ind + 1
 
 
-                        A = np.insert(A, ind2 ,np.array([b_prime, d]), axis = 0)
+                        A.insert(ind ,[b_prime, d])
 
 
                     L = np.insert(L, len(L), np.array([(b_prime + d_prime)/2,
