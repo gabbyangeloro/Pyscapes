@@ -3,8 +3,9 @@ Define Persistence Landscape class.
 """
 import numpy as np
 
-class PersistenceLandscape():
-    ''' Persistence Landscape class.
+
+class PersistenceLandscape:
+    """Persistence Landscape class.
 
     Parameters
     ----------
@@ -12,10 +13,16 @@ class PersistenceLandscape():
         Each entry in the list corresponds to a single homological degree
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
-        Expecting output from ripser: ripser(data_user)['dgms']
+        Expecting output from ripser: ripser(data_user)['dgms']. Only
+        one of diagrams or critical pairs should be specified.
 
     homological_degree : int
-        represents the homology degree of the persistence diagram.
+        Represents the homology degree of the persistence diagram.
+
+    critical_pairs: list, optional
+        A list of critical pairs (points, values) for specifying a persistence
+       landscape. These do not necessarily have to arise from a persistence
+       diagram. Only one of diagrams or critical pairs should be specified.
 
     Methods
     -------
@@ -26,50 +33,64 @@ class PersistenceLandscape():
 
     get_kth_landscape : returns the kth landscape for a given homology degree
 
-    '''
+    """
 
-    example = [np.array([ [1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0] ])]
+    example = [np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0]])]
 
-    def __init__(self, diagrams: list, homological_degree: int = 0):
+    def __init__(
+        self, diagrams: list, homological_degree: int = 0, critical_pairs: list = []
+    ):
         if isinstance(homological_degree, int) == False:
-            raise TypeError('homological_degree must be an integer')
+            raise TypeError("homological_degree must be an integer")
         # if homological_degree < 0:
-            # raise ValueError('homological_degree must be positive')
-        if isinstance(diagrams,list) == False:
-            raise TypeError('diagrams must be a list')
+        # raise ValueError('homological_degree must be positive')
+        if isinstance(diagrams, list) == False:
+            raise TypeError("diagrams must be a list")
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
-        self.diagrams = diagrams
         self.homological_degree = homological_degree
-        self.cache = {}
+        if critical_pairs:
+            self.cache = critical_pairs
+            self.diagrams = []
+        else:
+            self.cache = []
+            self.diagrams = diagrams
 
     def __repr__(self):
-        return ('The persistence landscapes of diagrams in homological '
-        f'degree {self.homological_degree}')
+        return (
+            "The persistence landscapes of diagrams in homological "
+            f"degree {self.homological_degree}"
+        )
 
     # Arithmetic, real vector space structure
-    def __add__(self,other):
+    def __add__(self, other):
         # Add checks to so we only add a landscape to another landscape.
-        pass
-    
-    def __sub__(self,other):
-        pass
-    
-    def __mul__(self,other):
-        # Allow multiplication between scalars and landscapes.
-        # Do not allow multiplication of landscapes
-        pass
-    
-    def __div__(self,other):
-        # Maybe be clever with __mul__?
-        pass
-    
-    # Indexing, slicing
-    def __getitem__(self,key):
+        # maybe not. duck typing?
         pass
 
-    def compute_landscape(self, verbose:bool = False) -> dict:
-        ''' Compute the persistence landscapes of self.diagrams.
+    def __sub__(self, other):
+        pass
+
+    def __mul__(self, other: int):
+        # Allow multiplication between scalars and landscapes.
+        # Do not allow multiplication of landscapes.
+        # According to Duck Typing philosophy, we should just multiply them.
+        try:
+            if self.cache:
+                pass
+        except:
+            pass
+
+    def __div__(self, other):
+        # Maybe be clever with __mul__?
+        pass
+
+    # Indexing, slicing
+    def __getitem__(self, key):
+        pass
+
+    def compute_landscape(self, verbose: bool = False) -> dict:
+        """Compute the persistence landscapes of self.diagrams.
 
         Parameters
         ----------
@@ -79,30 +100,29 @@ class PersistenceLandscape():
         Returns
         -------
         L_dict : dict
-            The keys of L_dict are L1, ..., Lk and the corresponding value is 
+            The keys of L_dict are L1, ..., Lk and the corresponding value is
             each corresponds to critical values are respective function in
             persistence landscape represented as arrays.
 
-        '''
+        """
 
         verboseprint = print if verbose else lambda *a, **k: None
 
         # check if landscapes were already computed
         if self.cache:
-            verboseprint('cache was not empty and stored value was returned')
+            verboseprint("cache was not empty and stored value was returned")
             return self.cache
-
         A = self.diagrams[self.homological_degree]
         landscape_idx = 0
-        size_landscapes= np.array([])
+        size_landscapes = np.array([])
         L_dict = {}
 
         # Sort A: read from right to left inside ()
-        ind =  np.lexsort((-A[:,1], A[:,0]))
+        ind = np.lexsort((-A[:, 1], A[:, 0]))
         A = A[ind]
 
         while len(A) != 0:
-            verboseprint(f'computing landscape index {landscape_idx+1}...')
+            verboseprint(f"computing landscape index {landscape_idx+1}...")
 
             L = np.array([])
 
@@ -110,99 +130,89 @@ class PersistenceLandscape():
             size_landscapes = np.append(size_landscapes, [0])
 
             # pop first term
-            bd, A = A[0], A[1:len(A)]
+            bd, A = A[0], A[1 : len(A)]
             b, d = bd
 
             # outer brackets for start of L_k
-            L = np.insert(L, len(L), np.array([-np.inf, 0]) , axis = 0)
-            L = np.insert(L, len(L), np.array([b, 0]) , axis = 0)
-            L = np.insert(L, len(L), np.array([(b+d)/2, (d-b)/2]) , axis = 0)
+            L = np.insert(L, len(L), np.array([-np.inf, 0]), axis=0)
+            L = np.insert(L, len(L), np.array([b, 0]), axis=0)
+            L = np.insert(L, len(L), np.array([(b + d) / 2, (d - b) / 2]), axis=0)
 
             # increase size of landscape k by 3
             size_landscapes[landscape_idx] += 3
 
             while (L[-1] != [np.inf, 0]).all():
 
-
                 # Check if d is greater than all remaining pairs
-                if (d  > A[:,1]).all(): # check dont need vector
+                if (d > A[:, 1]).all():  # check dont need vector
 
                     # add to end of L_k
-                    L = np.insert(L, len(L), np.array( [d,0] ), axis = 0)
-                    L = np.insert(L, len(L), np.array( [np.inf, 0] ), axis = 0)
+                    L = np.insert(L, len(L), np.array([d, 0]), axis=0)
+                    L = np.insert(L, len(L), np.array([np.inf, 0]), axis=0)
                     size_landscapes[landscape_idx] += 2
-
-
                 else:
                     # set (b', d')  to be the first term so that d' > d
                     for i in range(len(A)):
                         if A[i][1] > d:
                             # pop (b', d')
 
-                            ind1 = [_ for _ in range(len(A) ) if _ != i]
+                            ind1 = [_ for _ in range(len(A)) if _ != i]
 
                             bd_prime, A = A[i], A[ind1]
 
                             b_prime, d_prime = bd_prime
                             break
-
-
                     # Case I
                     if b_prime > d:
-                        L = np.insert(L, len(L), np.array([d, 0] ), axis = 0)
+                        L = np.insert(L, len(L), np.array([d, 0]), axis=0)
                         size_landscapes[landscape_idx] += 1
-
-
                     # Case II
                     if b_prime >= d:
-                        L = np.insert(L, len(L), np.array( [b_prime, 0] ), axis = 0)
+                        L = np.insert(L, len(L), np.array([b_prime, 0]), axis=0)
                         size_landscapes[landscape_idx] += 1
-
-
                     # Case III
                     else:
                         L = np.insert(
-                            L, len(L), np.array([(b_prime + d)/2,
-                                                 (d-b_prime)/2]), axis = 0 )
+                            L,
+                            len(L),
+                            np.array([(b_prime + d) / 2, (d - b_prime) / 2]),
+                            axis=0,
+                        )
                         size_landscapes[landscape_idx] += 1
-
 
                         # Push (b', d) into A in order
                         # find the first b_i in A so that b'<= b_i
                         for i in range(len(A)):
                             if b_prime <= A[i][0]:
-                                ind2 = i # index to push (b', d) if b' != b_i
+                                ind2 = i  # index to push (b', d) if b' != b_i
                                 break
-
                         # if b' = b_i
                         # move index to the right one for every d_i so that d < d_i
                         if b_prime == A[ind2][0]:
-                            A_i = A[ A[:,0] == b_prime]
+                            A_i = A[A[:, 0] == b_prime]
 
                             for j in range(len(A_i)):
                                 if d < A_i[j][1]:
                                     ind2 = ind2 + 1
-
-
-                        A = np.insert(A, ind2 ,np.array([b_prime, d]), axis = 0)
-
-
-                    L = np.insert(L, len(L), np.array([(b_prime + d_prime)/2,
-                                                       (d_prime-b_prime)/2] ), axis = 0 )
+                        A = np.insert(A, ind2, np.array([b_prime, d]), axis=0)
+                    L = np.insert(
+                        L,
+                        len(L),
+                        np.array([(b_prime + d_prime) / 2, (d_prime - b_prime) / 2]),
+                        axis=0,
+                    )
                     size_landscapes[landscape_idx] += 1
 
-                    b,d = b_prime, d_prime # Set (b',d')= (b, d)
-
+                    b, d = b_prime, d_prime  # Set (b',d')= (b, d)
             # add L_k to dict
             # reshpae to pairs and leave off infinity terms
-            L_dict[f'L{landscape_idx+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
+            L_dict[f"L{landscape_idx+1}"] = L.reshape((int(len(L) / 2), 2))[1:-1]
             landscape_idx += 1
-
         self.cache = L_dict
-        verboseprint('cache was empty and algorthim was executed')
+        verboseprint("cache was empty and algorthim was executed")
         return L_dict
 
-    '''
+    """
     def plot_diagrams(self):
         # check if landscapes were already computed
         if len(self.cache) != 0:
@@ -212,8 +222,8 @@ class PersistenceLandscape():
         else:
             landscapes = self.landscapes()
             return graph(landscapes)
-    '''
-    
+    """
+
     """ Method for computing persistence landscape function.
 
         Returns
@@ -234,7 +244,7 @@ class PersistenceLandscape():
     ### other method would first check if the cache has that appropriate
     ### entry, then either return or resume the computation.
     def compute_landscape_by_index(self, idx: int) -> list:
-        """ Returns the landscape function specified by idx.
+        """Returns the landscape function specified by idx.
 
         Parameters
         ----------
@@ -246,6 +256,10 @@ class PersistenceLandscape():
         The landscape function of index idx.
         """
         if self.cache:
-            return self.cache[f'L{idx}']
+            return self.cache[f"L{idx}"]
         else:
-            return self.transform()[f'L{idx}']
+            return self.compute_landscape()[f"L{idx}"]
+
+    def norm(self, p: int = 2) -> float:
+        """Returns the L_{`p`} norm of self."""
+        pass
