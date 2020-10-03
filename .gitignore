@@ -6,3 +6,4 @@ Ignore/
 *.pylint*
 *.ini
 *.bak
+__pycache__/
