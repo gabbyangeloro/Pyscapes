@@ -1,5 +1,5 @@
 """
-Define Persistence Landscapes function as a class
+Define Persistence Landscapes with A as a list and L as a list
 """
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin

@@ -6,7 +6,7 @@ stored in PersistenceLandscape.example
 """
 from PersistenceLandscape_Alist_Ldict import *
 
-#from PersistenceLandscapes import *
+from PersistenceLandscapes import *
 
 from PersistenceLandscape_Alist_Llist import *
 
