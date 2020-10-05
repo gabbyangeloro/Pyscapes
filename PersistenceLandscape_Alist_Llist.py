@@ -1,6 +1,7 @@
 """
 Define Persistence Landscapes with A as a list and L as a list
 """
+
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -102,6 +103,7 @@ class PersistenceLandscape_Alist_Llist(BaseEstimator, TransformerMixin):
 
             # pop first term
             b, d = A.pop(0)
+            verboseprint(f'(b,d) is ({b},{d})')
 
             # outer brackets for start of L_k
             L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) # outer brackets for start of L_k
@@ -124,6 +126,7 @@ class PersistenceLandscape_Alist_Llist(BaseEstimator, TransformerMixin):
                     for i, item in enumerate(A):
                         if item[1] > d:
                             b_prime, d_prime = A.pop(i)
+                            verboseprint(f'(bp,dp) is ({b_prime},{d_prime})')
                             break
 
 

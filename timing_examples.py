@@ -178,3 +178,19 @@ rips.plot(diag_torus)
 
 #%% Compute landscapes
 
+from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscape_Alist_Larray import PersistenceLandscape_Alist_Larray
+from PersistenceLandscape_Alist_Llist import PersistenceLandscape_Alist_Llist
+
+#PL_infity1 = PersistenceLandscape(diag_infty, 1)
+#PL_infity1.transform()
+
+PL_infity2 = PersistenceLandscape_Alist_Larray(diag_infty, 1)
+PL_infity2.transform(verbose = True)
+
+PL_infity3 = PersistenceLandscape_Alist_Llist(diag_infty, 1)
+PL_infity3.transform()  
+
+
+
+
