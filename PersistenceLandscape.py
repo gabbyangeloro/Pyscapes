@@ -2,7 +2,7 @@
 Define Persistence Landscape class.
 """
 import numpy as np
-from auxiliary import _pos_to_slope_interp, _slope_to_pos_interp, _sum_slopes
+from auxiliary import pos_to_slope_interp, slope_to_pos_interp, sum_slopes
 
 
 class PersistenceLandscape:
@@ -10,8 +10,9 @@ class PersistenceLandscape:
 
     Parameters
     ----------
-    diagrams : A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
-        Each entry in the list corresponds to a single homological degree
+    diagrams : list of numpy arrays, optional
+        A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
+        Each entry in the list corresponds to a single homological degree.
         Each array represents the birth death pairs for a homology degree.
         Inside each homology degree array are arrays representing birth death pairs.
         Expecting output from ripser: ripser(data_user)['dgms']. Only
@@ -39,7 +40,7 @@ class PersistenceLandscape:
     example = [np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0]])]
 
     def __init__(
-        self, diagrams: list, homological_degree: int = 0, critical_pairs: list = []
+        self, diagrams: list = [], homological_degree: int = 0, critical_pairs: list = []
     ):
         if isinstance(homological_degree, int) == False:
             raise TypeError("homological_degree must be an integer")
@@ -66,37 +67,50 @@ class PersistenceLandscape:
     def __neg__(self):
         self.compute_landscape()
         return PersistenceLandscape(homological_degree=self.homological_degree,
-                                    critical_pairs=[ [a,-b] for a, b in 
+                                    critical_pairs=[ [a,-b] for a, b in
                                                     self.critical_pairs])
+
     def __add__(self, other):
         # This requires a list implementation as written.
         if self.homological_degree != other.homological_degree:
             raise ValueError("homological degrees must match")
         return PersistenceLandscape(
-            critical_pairs=_slope_to_pos_interp(
-                _sum_slopes(
-                    _pos_to_slope_interp(self.compute_landscape()),
-                    _pos_to_slope_interp(other.compute_landscape()),
+            critical_pairs = slope_to_pos_interp(
+                sum_slopes(
+                    pos_to_slope_interp(self.compute_landscape()),
+                    pos_to_slope_interp(other.compute_landscape()),
                 )
             )
         )
-    
+
     def __sub__(self, other):
         return self + -other
 
     def __mul__(self, other: int):
         self.compute_landscape()
         return PersistenceLandscape(
-            critical_pairs = [(a, other*b) for a, b in self.critical_pairs])
+            critical_pairs=[(a, other*b) for a, b in self.critical_pairs])
 
     def __div__(self, other: int):
         return self*(1.0/other)
 
     # Indexing, slicing
-    def __getitem__(self, key):
-        pass
-    
-        # Don't implement setitem.
+    def __getitem__(self, key) -> list:
+        """
+        Returns a lis
+
+        Parameters
+        ----------
+        key : slice object.
+
+        Returns
+        -------
+        list
+            The critical pairs of the landscape function corresponding
+            to depths given by key.
+        """
+        self.compute_landscape()
+        return self.critical_pairs[key]
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
@@ -274,6 +288,6 @@ class PersistenceLandscape:
         if p != 2:
             raise NotImplementedError()
         pass
-    
+
     def infinity_norm(self) -> float:
         return max([critical[1] for critical in self.critical_pairs])
