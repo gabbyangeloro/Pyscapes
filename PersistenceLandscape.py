@@ -51,10 +51,10 @@ class PersistenceLandscape:
         ### arrays? etc?
         self.homological_degree = homological_degree
         if critical_pairs:
-            self.cache = critical_pairs
+            self.critical_pairs = critical_pairs
             self.diagrams = []
         else:
-            self.cache = []
+            self.critical_pairs = []
             self.diagrams = diagrams
 
     def __repr__(self):
@@ -63,7 +63,11 @@ class PersistenceLandscape:
             f"degree {self.homological_degree}"
         )
 
-    # Arithmetic, real vector space structure
+    def __neg__(self):
+        self.compute_landscape()
+        return PersistenceLandscape(homological_degree=self.homological_degree,
+                                    critical_pairs=[ [a,-b] for a, b in 
+                                                    self.critical_pairs])
     def __add__(self, other):
         # This requires a list implementation as written.
         if self.homological_degree != other.homological_degree:
@@ -72,14 +76,13 @@ class PersistenceLandscape:
             critical_pairs=_slope_to_pos_interp(
                 _sum_slopes(
                     _pos_to_slope_interp(self.compute_landscape()),
-                    other.compute_landscape(),
+                    _pos_to_slope_interp(other.compute_landscape()),
                 )
             )
         )
-
-
+    
     def __sub__(self, other):
-        pass
+        return self + -other
 
     def __mul__(self, other: int):
         self.compute_landscape()
@@ -93,7 +96,7 @@ class PersistenceLandscape:
     def __getitem__(self, key):
         pass
     
-    # Don't implement setitem.
+        # Don't implement setitem.
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
@@ -266,6 +269,11 @@ class PersistenceLandscape:
         else:
             return self.compute_landscape()[f"L{idx}"]
 
-    def norm(self, p: int = 2) -> float:
+    def p_norm(self, p: int = 2) -> float:
         """Returns the L_{`p`} norm of self."""
+        if p != 2:
+            raise NotImplementedError()
         pass
+    
+    def infinity_norm(self) -> float:
+        return max([critical[1] for critical in self.critical_pairs])

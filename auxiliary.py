@@ -29,7 +29,12 @@ def linear_combination(landscapes: list, coeffs: list = [1.0/len(list) for _
     """
     pass
 
-def _pos_to_slope_interp(l):
+def _pos_to_slope_interp(l:list) -> list:
+    """
+    Convert positions of critical pairs to (x-value, slope) pairs. Intended
+    for internal use. Inverse function of `_slope_to_pos_interp`.
+    """
+    
     output = []
     for [[x0,y0], [x1,y1]] in zip(l,l[:1]):
         slope = (y1 - y0)/(x1 - x0)
@@ -38,6 +43,10 @@ def _pos_to_slope_interp(l):
     return output
 
 def _slope_to_pos_interp(l):
+    """
+    Convert positions of (x-value, slope) pairs to critical pairs. Intended
+    for internal use. Inverse function of `_pos_to_slope_interp`.
+    """
     output = [[l[0][0],0]]
     for [ [x0, m], [x1,_]] in zip(l,l[:1]):
         y0 = output[-1][1]
