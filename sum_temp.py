@@ -37,7 +37,7 @@ def sum_landscapes(A, B):
             # Sum their y-values, remove duplicate entry, and
             # increment both list counters.
             b_new = b + L[i+1][1]
-            L[i] = [a, b_new, f]
+            L[i] = [a, b_new]
             del L[i+1]
             idA += 1
             idB += 1

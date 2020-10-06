@@ -2,6 +2,7 @@
 Define Persistence Landscape class.
 """
 import numpy as np
+from auxiliary import _pos_to_slope_interp, _slope_to_pos_interp, _sum_slopes
 
 
 class PersistenceLandscape:
@@ -64,30 +65,35 @@ class PersistenceLandscape:
 
     # Arithmetic, real vector space structure
     def __add__(self, other):
-        # Add checks to so we only add a landscape to another landscape.
-        # maybe not. duck typing?
-        pass
+        # This requires a list implementation as written.
+        if self.homological_degree != other.homological_degree:
+            raise ValueError("homological degrees must match")
+        return PersistenceLandscape(
+            critical_pairs=_slope_to_pos_interp(
+                _sum_slopes(
+                    _pos_to_slope_interp(self.compute_landscape()),
+                    other.compute_landscape(),
+                )
+            )
+        )
+
 
     def __sub__(self, other):
         pass
 
     def __mul__(self, other: int):
-        # Allow multiplication between scalars and landscapes.
-        # Do not allow multiplication of landscapes.
-        # According to Duck Typing philosophy, we should just multiply them.
-        try:
-            if self.cache:
-                pass
-        except:
-            pass
+        self.compute_landscape()
+        return PersistenceLandscape(
+            critical_pairs = [(a, other*b) for a, b in self.critical_pairs])
 
-    def __div__(self, other):
-        # Maybe be clever with __mul__?
-        pass
+    def __div__(self, other: int):
+        return self*(1.0/other)
 
     # Indexing, slicing
     def __getitem__(self, key):
         pass
+    
+    # Don't implement setitem.
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
