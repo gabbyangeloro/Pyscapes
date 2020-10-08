@@ -1,7 +1,6 @@
 """
-Define Persistence Landscapes with A as a list and L as a list
+Define Persistence Landscapes function as a class
 """
-
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 
@@ -9,7 +8,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 ### BaseEstimator gives get_params and set_params methods.
 ### We might not need BaseEstimator...It's useful when the transformer
 ### has hyperparameters to tune, for gridsearchCV etc.
-class PersistenceLandscape(BaseEstimator, TransformerMixin):
+class PersistenceLandscape_Alist_Larray(BaseEstimator, TransformerMixin):
     ''' Persistence Landscape class.
 
     Parameters
@@ -81,20 +80,15 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
             return self.cache
 
         A = self.diagrams[self.homological_degree]
-        
         # change A into a list
         A = list(A)
         # change inner nparrays into lists
         for i in range(len(A)):
             A[i] = list(A[i])
-        # store infitiy values 
-        infty_bar = False
-        if A[-1][1] == np.inf:
-            A. pop(-1)
-            infty_bar = True 
         
         landscape_idx = 0
-        L = []
+        size_landscapes= np.array([])
+        L_dict = {}
 
         # Sort A: read from right to left inside ()
         A = sorted(A, key = lambda x: [x[0], -x[1]])
@@ -102,48 +96,62 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
 
+            L = np.array([])
+
             # add a 0 element to begin count of lamda_k
-            #size_landscapes = np.append(size_landscapes, [0])
+            size_landscapes = np.append(size_landscapes, [0])
 
             # pop first term
             b, d = A.pop(0)
-            verboseprint(f'(b,d) is ({b},{d})')
 
             # outer brackets for start of L_k
-            L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) # outer brackets for start of L_k
+            L = np.insert(L, len(L), np.array([-np.inf, 0]) , axis = 0)
+            L = np.insert(L, len(L), np.array([b, 0]) , axis = 0)
+            L = np.insert(L, len(L), np.array([(b+d)/2, (d-b)/2]) , axis = 0)
 
-           
-            while L[landscape_idx][-1] != [np.inf, 0]:
+            # increase size of landscape k by 3
+            size_landscapes[landscape_idx] += 3
+
+            while (L[-1] != [np.inf, 0]).all():
+
+
                 # Check if d is greater than all remaining pairs
                 # prints list [False, True, ....]
                 # if false notin list is true than d > all 2nd coordinates of A
                 if False not in [d> item[1] for item in A]:
 
                     # add to end of L_k
-                    L[landscape_idx].extend([ [d,0], [np.inf, 0] ])
+                    L = np.insert(L, len(L), np.array( [d,0] ), axis = 0)
+                    L = np.insert(L, len(L), np.array( [np.inf, 0] ), axis = 0)
+                    size_landscapes[landscape_idx] += 2
+
 
                 else:
                     # set (b', d')  to be the first term so that d' > d
                     for i, item in enumerate(A):
                         if item[1] > d:
                             b_prime, d_prime = A.pop(i)
-                            verboseprint(f'(bp,dp) is ({b_prime},{d_prime})')
                             break
 
 
                     # Case I
                     if b_prime > d:
-                        L[landscape_idx].extend([ [d, 0] ])
+                        L = np.insert(L, len(L), np.array([d, 0] ), axis = 0)
+                        size_landscapes[landscape_idx] += 1
 
 
                     # Case II
                     if b_prime >= d:
-                        L[landscape_idx].extend([ [b_prime, 0] ])
+                        L = np.insert(L, len(L), np.array( [b_prime, 0] ), axis = 0)
+                        size_landscapes[landscape_idx] += 1
 
 
                     # Case III
                     else:
-                        L[landscape_idx].extend([ [(b_prime + d)/2, (d-b_prime)/2] ])
+                        L = np.insert(
+                            L, len(L), np.array([(b_prime + d)/2,
+                                                 (d-b_prime)/2]), axis = 0 )
+                        size_landscapes[landscape_idx] += 1
 
 
                         # Push (b', d) into A in order
@@ -166,17 +174,20 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
                         A.insert(ind ,[b_prime, d])
 
 
-                    L[landscape_idx].extend([ [(b_prime + d_prime)/2, (d_prime-b_prime)/2] ])
-                    #size_landscapes[landscape_idx] += 1
+                    L = np.insert(L, len(L), np.array([(b_prime + d_prime)/2,
+                                                       (d_prime-b_prime)/2] ), axis = 0 )
+                    size_landscapes[landscape_idx] += 1
 
                     b,d = b_prime, d_prime # Set (b',d')= (b, d)
 
+            # add L_k to dict
+            # reshpae to pairs and leave off infinity terms
+            L_dict[f'L{landscape_idx+1}'] = L.reshape( (int(len(L)/2),2) )[1:-1]
             landscape_idx += 1
-        
-        self.cache = L
+
+        self.cache = L_dict
         verboseprint('cache was empty and algorthim was executed')
-        # gets rid of infitity terms 
-        return [item[1:-1] for item in L]
+        return L_dict
 
     '''
     def plot_diagrams(self):
