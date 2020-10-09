@@ -1,5 +1,6 @@
-*.DS_STORE
 Ignore/
+.vscode/
+*.DS_STORE
 *.pdf
 *.ini
 *.aux

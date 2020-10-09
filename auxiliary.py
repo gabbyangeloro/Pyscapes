@@ -11,8 +11,7 @@ def death_vector(diagram:list, homologica_degree:int = 0):
                                   "homological degrees greater than zero.")
     pass
 
-def linear_combination(landscapes: list, coeffs: list = [1.0/len(list) for _
-                                                         in range(len(list))]):
+def linear_combination(landscapes: list, coeffs: list):
     """ Compute a linear combination of landscapes.
 
 

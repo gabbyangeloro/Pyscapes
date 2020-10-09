@@ -7,6 +7,7 @@ Created on Wed Sep 30 22:10:00 2020
 
 import numpy as np
 from ripser import Rips
+from PersistenceLandscape import PersistenceLandscape
 #from pl_transformer import PL
 
 rips = Rips()

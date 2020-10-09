@@ -23,4 +23,7 @@ class PL_exact(BaseEstimator, TransformerMixin):
         return X[self.homological_degree].compute_landscape()
     
 class PL_grid(BaseEstimator, TransformerMixin):
+    """ A scikit-learn transformer class for approximate persistence
+    landscapes.
+    """
     pass
