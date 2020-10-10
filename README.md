@@ -11,4 +11,5 @@ landscapes as proposed by Peter Bubenik and Pawel Dlotko.
 3a. Debug arithmetic ops.
 4. Implement norms: $L^2$, ~~$L^{\infty}$~~.
 5. Visualization methods.
-6. Implement slicing.
+6. ~~Implement slicing.~~
+6a. Debug slicing.

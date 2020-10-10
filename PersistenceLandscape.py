@@ -76,7 +76,7 @@ class PersistenceLandscape:
         if self.homological_degree != other.homological_degree:
             raise ValueError("homological degrees must match")
         return PersistenceLandscape(
-            critical_pairs = slope_to_pos_interp(
+            critical_pairs=slope_to_pos_interp(
                 sum_slopes(
                     pos_to_slope_interp(self.compute_landscape()),
                     pos_to_slope_interp(other.compute_landscape()),
@@ -138,8 +138,7 @@ class PersistenceLandscape:
             verboseprint('cache was not empty and stored value was returned')
             return self.critical_pairs
 
-        A = self.diagrams[self.homological_degree]
-        
+        A = self.diagrams[self.homological_degree]    
         # change A into a list
         A = list(A)
         # change inner nparrays into lists
@@ -149,8 +148,8 @@ class PersistenceLandscape:
         infty_bar = False
         if A[-1][1] == np.inf:
             A. pop(-1)
-            infty_bar = True 
-        
+            infty_bar = True
+     
         landscape_idx = 0
         L = []
 
@@ -230,10 +229,13 @@ class PersistenceLandscape:
 
             landscape_idx += 1
         
-        self.critical_pairs = L
+        # self.critical_pairs = L
         verboseprint('cache was empty and algorthim was executed')
-        # gets rid of infitity terms 
-        return [item[1:-1] for item in L]
+        # gets rid of infinity terms 
+        # As written, this function shouldn't return anything, but rather 
+        # update self.critical pairs. 
+        self.critical_pairs = [item[1:-1] for item in L]
+        #return [item[1:-1] for item in L]
 
     '''
     def plot_diagrams(self):
