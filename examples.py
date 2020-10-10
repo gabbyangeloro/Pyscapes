@@ -15,7 +15,7 @@ diagrams = ripser(data)['dgms']
 plot_diagrams(diagrams, show=True)
 
 M = PersistenceLandscape(diagrams, homological_degree=1)
-L = list(M.compute_landscape().values())
+L = M.compute_landscape()
 
 # This import registers the 3D projection, but is otherwise unused.
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import

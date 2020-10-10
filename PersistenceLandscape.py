@@ -66,7 +66,7 @@ class PersistenceLandscape:
         )
 
     def __neg__(self):
-        self.compute_landscape()
+        self.compute_landscape( )
         return PersistenceLandscape(homological_degree=self.homological_degree,
                                     critical_pairs=[ [a,-b] for a, b in
                                                     self.critical_pairs])
@@ -134,9 +134,9 @@ class PersistenceLandscape:
         verboseprint = print if verbose else lambda *a, **k: None
 
         # check if landscapes were already computed
-        if self.cache:
+        if self.critical_pairs:
             verboseprint('cache was not empty and stored value was returned')
-            return self.cache
+            return self.critical_pairs
 
         A = self.diagrams[self.homological_degree]
         
@@ -230,7 +230,7 @@ class PersistenceLandscape:
 
             landscape_idx += 1
         
-        self.cache = L
+        self.critical_pairs = L
         verboseprint('cache was empty and algorthim was executed')
         # gets rid of infitity terms 
         return [item[1:-1] for item in L]
@@ -259,7 +259,7 @@ class PersistenceLandscape:
     ### other method would first check if the cache has that appropriate
     ### entry, then either return or resume the computation.
 
-    def compute_landscape_by_index(self, idx: int) -> list:
+    def compute_landscape_by_depth(self, depth: int) -> list:
         """Returns the landscape function specified by idx.
         
         Parameters
@@ -271,10 +271,10 @@ class PersistenceLandscape:
         --------
         The landscape function of index idx.
         """
-        if self.cache:
-            return self.cache[f"L{idx}"]
+        if self.critical_pairs:
+            return self.critical_pairs[depth]
         else:
-            return self.compute_landscape()[f"L{idx}"]
+            return self.compute_landscape()[depth]
 
     def p_norm(self, p: int = 2) -> float:
         """Returns the L_{`p`} norm of self."""
