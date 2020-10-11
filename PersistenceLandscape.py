@@ -92,9 +92,9 @@ class PersistenceLandscape:
             homological_degree=self.homological_degree)
     
     def __rmul__(self,other: int):
-        return self.__mul__(self,other)
+        return self.__mul__(other)
 
-    def __div__(self, other: int):
+    def __truediv__(self, other: int):
         return self*(1.0/other)
 
     # Indexing, slicing

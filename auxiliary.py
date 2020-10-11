@@ -33,6 +33,12 @@ def linear_combination(landscapes: list, coeffs: list):
         result += coeffs[c]*L
     return result
 
+def average_landscape(landscapes: list):
+    """ Compute the average of a list of landscapes
+    """
+    pass
+    
+
 def union_crit_pairs(A, B):
     """ Helper function for summing landscapes. 
 
