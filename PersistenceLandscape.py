@@ -2,7 +2,7 @@
 Define Persistence Landscape class.
 """
 import numpy as np
-from auxiliary import pos_to_slope_interp, slope_to_pos_interp, sum_slopes
+from auxiliary import union_crit_pairs
 
 
 class PersistenceLandscape:
@@ -68,21 +68,18 @@ class PersistenceLandscape:
     def __neg__(self):
         self.compute_landscape( )
         return PersistenceLandscape(homological_degree=self.homological_degree,
-                                    critical_pairs=[ [a,-b] for a, b in
-                                                    self.critical_pairs])
+                                    critical_pairs=[ [[a,-b] for a, b in
+                                                    self.critical_pairs[i]]
+                                                    for i in range(len(self.critical_pairs))])
 
     def __add__(self, other):
         # This requires a list implementation as written.
         if self.homological_degree != other.homological_degree:
             raise ValueError("homological degrees must match")
         return PersistenceLandscape(
-            critical_pairs=slope_to_pos_interp(
-                sum_slopes(
-                    pos_to_slope_interp(self.compute_landscape()),
-                    pos_to_slope_interp(other.compute_landscape()),
-                )
+            critical_pairs=union_crit_pairs(self, other),
+            homological_degree=self.homological_degree
             )
-        )
 
     def __sub__(self, other):
         return self + -other
@@ -90,15 +87,21 @@ class PersistenceLandscape:
     def __mul__(self, other: int):
         self.compute_landscape()
         return PersistenceLandscape(
-            critical_pairs=[(a, other*b) for a, b in self.critical_pairs])
+            critical_pairs=[[(a, other*b) for a, b in self.critical_pairs[i]] 
+                            for i in range(len(self.critical_pairs))],
+            homological_degree=self.homological_degree)
+    
+    def __rmul__(self,other: int):
+        return self.__mul__(self,other)
 
     def __div__(self, other: int):
         return self*(1.0/other)
 
     # Indexing, slicing
-    def __getitem__(self, key) -> list:
+    def __getitem__(self, key: slice) -> list:
         """
-        Returns a lis
+        Returns a list of critical pairs corresponding in range specified by 
+        depth.
 
         Parameters
         ----------
@@ -112,6 +115,14 @@ class PersistenceLandscape:
         """
         self.compute_landscape()
         return self.critical_pairs[key]
+    
+    # TODO: Fix the following.
+    # def depth(self, key: slice) -> list:
+    #     """
+    #    Returns a list of critical pairs of 
+    #    """
+    #    self.compute_landscape()
+    #    return self.critical_pairs[key]
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
@@ -149,6 +160,7 @@ class PersistenceLandscape:
         if A[-1][1] == np.inf:
             A. pop(-1)
             infty_bar = True
+            # TODO: Do we need this infty_bar variable?
      
         landscape_idx = 0
         L = []
@@ -249,17 +261,17 @@ class PersistenceLandscape:
             return graph(landscapes)
     '''
 
-    ### If we want landscape by index, then we probably need to
-    ### refactor the above code. This could get complicated so maybe
-    ### we don't worry about it now. In a perfect world, we'd have the
-    ### following setup: the PersistenceLandscapes class itself would
-    ### have a boolean flag that tracks whether the landscape computation
-    ### has finished yet, since we can't check by the length of a list
-    ### or anything. We then factor out one iteration of the transform
-    ### code, and all other methods would call a while loop on it. Once
-    ### we've computed out to the landscape we need, we return it. Any
-    ### other method would first check if the cache has that appropriate
-    ### entry, then either return or resume the computation.
+    # If we want landscape by index, then we probably need to
+    # refactor the above code. This could get complicated so maybe
+    # we don't worry about it now. In a perfect world, we'd have the
+    # following setup: the PersistenceLandscapes class itself would
+    # have a boolean flag that tracks whether the landscape computation
+    # has finished yet, since we can't check by the length of a list
+    # or anything. We then factor out one iteration of the transform
+    # code, and all other methods would call a while loop on it. Once
+    # we've computed out to the landscape we need, we return it. Any
+    # other method would first check if the cache has that appropriate
+    # entry, then either return or resume the computation.
 
     def compute_landscape_by_depth(self, depth: int) -> list:
         """Returns the landscape function specified by idx.
