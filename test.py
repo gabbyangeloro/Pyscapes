@@ -15,8 +15,13 @@ data = np.random.random((100,2))
 diagrams = rips.fit_transform(data)
 rips.plot(diagrams)
 
-#pl = PL(homological_degree=1)
-#landscape = pl.fit_transform(diagrams)
+# pl = PL(homological_degree=1][]
+# landscape = pl.fit_transform(diagrams)
 
-pl = PersistenceLandscape(diagrams,homological_degree=1)
-L = pl.compute_landscape(verbose=True)
+L = PersistenceLandscape(diagrams,homological_degree=1)
+L.compute_landscape(verbose=True)
+
+print(L)
+print("The number of critical pairs is ", len(L.critical_pairs))
+print("The first two are given by ", L[:2])
+# M = L + L

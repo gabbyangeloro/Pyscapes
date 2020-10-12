@@ -10,7 +10,7 @@ from ripser import ripser
 from persim import plot_diagrams
 from PersistenceLandscape import PersistenceLandscape
 
-data = np.random.random((100,2))
+data = np.random.random((100, 2))
 diagrams = ripser(data)['dgms']
 plot_diagrams(diagrams, show=True)
 
@@ -42,7 +42,7 @@ ax = fig.gca(projection='3d')
 
 # Make verts a list, verts[i] will be a list of (x,y) pairs defining polygon i
 verts = []
-#verts = [L]
+# verts = [L]
 
 
 # Set up the x sequence
@@ -51,12 +51,12 @@ xs = np.linspace(0., 10., 26)
 # The ith polygon will appear on the plane y = zs[i]
 # zs = range(4)
 
-#for i in zs:
-#    ys = np.random.rand(len(xs))
-#    verts.append(polygon_under_graph(xs, ys))
+# for i in zs:
+#     ys = np.random.rand(len(xs))
+#     verts.append(polygon_under_graph(xs, ys))
 
-#poly = PolyCollection(verts, facecolors=['r','g','b','r'], linewidths=3, alpha=.6)
-#ax.add_collection3d(poly, zs=zs, zdir='y')
+# poly = PolyCollection(verts, facecolors=['r','g','b','r'], linewidths=3, alpha=.6)
+# ax.add_collection3d(poly, zs=zs, zdir='y')
 poly = PolyCollection(L,
                       linewidths =[0.5 for _ in range(len(L))],
                       edgecolors=['k' for _ in range(len(L))],
