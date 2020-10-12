@@ -175,9 +175,13 @@ rips.plot(diag_infty)
 rips.plot(diag_sphere)
 rips.plot(diag_swiss)
 rips.plot(diag_torus)
+#%%
+from PersistenceLandscape import PersistenceLandscape
+P = PersistenceLandscape(diag_infty, 0)
+P.transform()
 
 #%% Compute landscapes
-
+'''
 from PersistenceLandscape import PersistenceLandscape
 #from PersistenceLandscape_Alist_Larray import PersistenceLandscape_Alist_Larray
 #from PersistenceLandscape_Alist_Llist import PersistenceLandscape_Alist_Llist
@@ -269,8 +273,6 @@ row_format ="{:>15}" * (len(typeOfPl) + 1)
 print(row_format.format("", *typeOfPl))
 for shape, row in zip(typeOfShape, data):
     print(row_format.format(shape, *row))
-    
-    
-    
+'''  
     
     

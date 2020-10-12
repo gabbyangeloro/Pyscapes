@@ -167,6 +167,11 @@ class PersistenceLandscape:
 
         # Sort A: read from right to left inside ()
         A = sorted(A, key = lambda x: [x[0], -x[1]])
+        
+        # Remove duplicates
+        # include element in A if it doesnt appear in A up until the idx of
+        # that element 
+        A = [item for i, item in enumerate(A) if item not in A[:i] ]
 
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
@@ -179,15 +184,18 @@ class PersistenceLandscape:
             verboseprint(f'(b,d) is ({b},{d})')
 
             # outer brackets for start of L_k
-            L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) # outer brackets for start of L_k
-
+            L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) 
+            # edge case: bars that die at the same time 
+            # end bars and start new function lambda 
+            if all(d == _[1] for _ in A):
+                    # end this lambda function
+                    L[landscape_idx].extend([ [d,0], [np.inf,0] ])
            
             while L[landscape_idx][-1] != [np.inf, 0]:
                 # Check if d is greater than all remaining pairs
                 # prints list [False, True, ....]
-                # if false notin list is true than d > all 2nd coordinates of A
-                if False not in [d> item[1] for item in A]:
-
+                # must be true for all remaining elements in A
+                if all(d > _[1] for _ in A):
                     # add to end of L_k
                     L[landscape_idx].extend([ [d,0], [np.inf, 0] ])
 
@@ -247,7 +255,7 @@ class PersistenceLandscape:
         # As written, this function shouldn't return anything, but rather 
         # update self.critical pairs. 
         self.critical_pairs = [item[1:-1] for item in L]
-        #return [item[1:-1] for item in L]
+
 
     '''
     def plot_diagrams(self):
