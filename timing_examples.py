@@ -179,60 +179,60 @@ rips.plot(diag_torus)
 #%% Compute landscapes
 
 from PersistenceLandscape import PersistenceLandscape
-from PersistenceLandscape_Alist_Larray import PersistenceLandscape_Alist_Larray
-from PersistenceLandscape_Alist_Llist import PersistenceLandscape_Alist_Llist
+#from PersistenceLandscape_Alist_Larray import PersistenceLandscape_Alist_Larray
+#from PersistenceLandscape_Alist_Llist import PersistenceLandscape_Alist_Llist
 
 #Time for sphere
 PL_infity1_sphere = PersistenceLandscape(diag_sphere, 1)
 startPL_sphere = timer()
-PL_infity1_sphere.transform()
+PL_infity1_sphere.compute_landscape()
 endPL_sphere = timer()
 
-PL_infity2_sphere = PersistenceLandscape_Alist_Larray(diag_sphere, 1)
-startPLlistArray_sphere = timer()
-PL_infity2_sphere.transform()
-endPLlistArray_sphere = timer()
+# PL_infity2_sphere = PersistenceLandscape_Alist_Larray(diag_sphere, 1)
+# startPLlistArray_sphere = timer()
+# PL_infity2_sphere.transform()
+# endPLlistArray_sphere = timer()
 
 
-PL_infity3_sphere = PersistenceLandscape_Alist_Llist(diag_sphere, 1)
-startPLlist_sphere = timer()
-PL_infity3_sphere.transform()  
-endPLlist_sphere = timer()
+# PL_infity3_sphere = PersistenceLandscape_Alist_Llist(diag_sphere, 1)
+# startPLlist_sphere = timer()
+# PL_infity3_sphere.transform()  
+# endPLlist_sphere = timer()
 
 
 #Time for swiss
 
 PL_infity1_swiss = PersistenceLandscape(diag_swiss, 1)
 startPL_swiss = timer()
-PL_infity1_swiss.transform()
+PL_infity1_swiss.compute_landscape()
 endPL_swiss = timer()
 
-PL_infity2_swiss = PersistenceLandscape_Alist_Larray(diag_swiss, 1)
-startPLlistArray_swiss = timer()
-PL_infity2_swiss.transform()
-endPLlistArray_swiss = timer()
+# PL_infity2_swiss = PersistenceLandscape_Alist_Larray(diag_swiss, 1)
+# startPLlistArray_swiss = timer()
+# PL_infity2_swiss.transform()
+# endPLlistArray_swiss = timer()
 
-PL_infity3_swiss = PersistenceLandscape_Alist_Llist(diag_swiss, 1)
-startPLlist_swiss = timer()
-PL_infity3_swiss.transform()  
-endPLlist_swiss = timer()
+# PL_infity3_swiss = PersistenceLandscape_Alist_Llist(diag_swiss, 1)
+# startPLlist_swiss = timer()
+# PL_infity3_swiss.transform()  
+# endPLlist_swiss = timer()
 
 #Time for torus
 
 PL_infity1_torus = PersistenceLandscape(diag_torus, 1)
 startPL_torus = timer()
-PL_infity1_torus.transform()
+PL_infity1_torus.compute_landscape()
 endPL_torus = timer()
 
-PL_infity2_torus = PersistenceLandscape_Alist_Larray(diag_torus, 1)
-startPLlistArray_torus = timer()
-PL_infity2_torus.transform()
-endPLlistArray_torus = timer()
+# PL_infity2_torus = PersistenceLandscape_Alist_Larray(diag_torus, 1)
+# startPLlistArray_torus = timer()
+# PL_infity2_torus.transform()
+# endPLlistArray_torus = timer()
 
-PL_infity3_torus = PersistenceLandscape_Alist_Llist(diag_torus, 1)
-startPLlist_torus = timer()
-PL_infity3_torus.transform()  
-endPLlist_torus = timer()
+# PL_infity3_torus = PersistenceLandscape_Alist_Llist(diag_torus, 1)
+# startPLlist_torus = timer()
+# PL_infity3_torus.transform()  
+# endPLlist_torus = timer()
 
 
 
@@ -241,28 +241,28 @@ print("Computing persistent landscape with L array A array took \n"
       f"swiss {endPL_swiss - startPL_swiss},\n"
       f"torus {endPL_torus - startPL_torus}.")
 
-print("Computing persistent landscape with L array A list took \n"
-      f"sphere: {endPLlistArray_sphere - startPLlistArray_sphere},"
-      f" swiss {endPLlistArray_swiss - startPLlistArray_swiss},\n"
-      f" torus {endPLlistArray_torus - startPLlistArray_torus}.")
+# print("Computing persistent landscape with L array A list took \n"
+#       f"sphere: {endPLlistArray_sphere - startPLlistArray_sphere},"
+#       f" swiss {endPLlistArray_swiss - startPLlistArray_swiss},\n"
+#       f" torus {endPLlistArray_torus - startPLlistArray_torus}.")
 
-print("Computing persistent landscape with L list A list took \n"
-      f"sphere: {endPLlist_sphere - startPLlist_sphere},"
-      f" swiss {endPLlist_swiss - startPLlist_swiss},\n"
-      f" torus {endPLlist_torus - startPLlist_torus}.")
+# print("Computing persistent landscape with L list A list took \n"
+#       f"sphere: {endPLlist_sphere - startPLlist_sphere},"
+#       f" swiss {endPLlist_swiss - startPLlist_swiss},\n"
+#       f" torus {endPLlist_torus - startPLlist_torus}.")
 
 #%%
 
 typeOfPl = ['L array A array', 'L list A array', 'L list A list']
 typeOfShape = ['sphere', 'swiss roll', 'torus']
 data = np.array([[endPL_sphere - startPL_sphere, endPL_swiss - startPL_swiss, 
-                 endPL_torus - startPL_torus],
-                [endPLlistArray_sphere - startPLlistArray_sphere, 
-                 endPLlistArray_swiss - startPLlistArray_swiss,
-                 endPLlistArray_torus - startPLlistArray_torus],
-                [endPLlist_sphere - startPLlist_sphere,
-                 endPLlist_swiss - startPLlist_swiss,
-                 endPLlist_torus - startPLlist_torus]])
+                 endPL_torus - startPL_torus]])
+                # [endPLlistArray_sphere - startPLlistArray_sphere, 
+                #  endPLlistArray_swiss - startPLlistArray_swiss,
+                #  endPLlistArray_torus - startPLlistArray_torus],
+                # [endPLlist_sphere - startPLlist_sphere,
+                #  endPLlist_swiss - startPLlist_swiss,
+                #  endPLlist_torus - startPLlist_torus]])
 
 
 row_format ="{:>15}" * (len(typeOfPl) + 1)
