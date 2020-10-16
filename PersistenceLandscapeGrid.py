@@ -32,27 +32,27 @@ class PersistenceLandscapeGrid():
     """
     def __init__(
         self, grid_num: int, diagrams: list = [], homological_degree: int = 0, 
-        start_grid: float = None , end_grid: float = None, 
+        start_gridx: float = None , end_gridx: float = None, 
         PL_funct_values: list = []):
         
         self.diagrams = diagrams
         self.homological_degree = homological_degree
         
-        if start_grid is None:
-            start_grid = np.floor(min(diagrams[homological_degree][:,0]))
+        if start_gridx is None:
+            start_gridx = np.floor(min(diagrams[homological_degree][:,0]))
             
-        if end_grid is None:
-            end_grid = np.ceil(max(diagrams[homological_degree][:,0]))
+        if end_gridx is None:
+            end_gridx = np.ceil(max(diagrams[homological_degree][:,0]))
       
       # grid default?  
       #  if grid_step is None: 
       #     grid_step = 
         
-        self.start_grid = start_grid
-        self.end_grid = end_grid
+        self.start_gridx = start_gridx
+        self.end_gridx = end_gridx
         self.grid_num = grid_num
         self.PL_funct_values = PL_funct_values
-        self.step_size = (self.end_grid-self.start_grid) / self.grid_num
+        self.step_size = (self.end_gridx-self.start_gridx) / self.grid_num
         
         
         
@@ -63,38 +63,78 @@ class PersistenceLandscapeGrid():
         for _ in self.flat_diagrams:
             if _ % 2 == 1:
                 raise TypeError('Elements in diagrams must be even')
+        
+        ndsnap = self.ndsnap
     
     def __repr__(self):
         
         return ('The persistence landscapes of diagrams in homological '
-        f'degree {self.homological_degree} on grid from {self.start_grid} to {self.end_grid}'
+        f'degree {self.homological_degree} on grid from {self.start_gridx} to {self.end_gridx}'
         f' with step size {self.step_size}')
+    
+    def ndsnap(self, points, grid):
+        """
+        Snap an 2D-array of points to values along an 2D-array grid.
+        Each point will be snapped to the grid value with the smallest
+        city-block distance.
+    
+        Parameters
+        ---------
+        points: 2D-array. Must have same number of columns as grid
+        grid: 2D-array. Must have same number of columns as points
+    
+        Returns
+        -------
+        A 2D-array with one row per row of points. Each i-th row will
+        correspond to row of grid to which the i-th row of points is closest.
+        In case of ties, it will be snapped to the row of grid with the
+        smaller index.
+        """      
+        # transpose grid 
+        grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
+        # axis 1 is x-values of points
+        diffs = np.sum(np.abs(grid_3d - points[:,:,np.newaxis]), axis=1)
+        # argmin returns the indices of the minimum values along an axis
+        best = np.argmin(diffs, axis=1)
+        return grid[best,:]
     
     def transform(self):
         if self.PL_funct_values:
             return self.PL_funct_values
         
+        start_gridx = self.start_gridx
+        end_gridx = self.end_gridx
+        homological_degree = self.homological_degree
+        diagrams = self.diagrams
+        grid_num = self.grid_num
+        
+        
         # make grid
+        # calculate max y -value for grid (always start at y=0)
+        end_gridy = np.ceil(max(diagrams[homological_degree][:,1]))
+        x, step = np.linspace(start_gridx, end_gridx, grid_num, retstep = True)[:]
         
-        diagrams = self.diagrams[self.homological_degree]
-        flat_diagrams = self.flat_diagrams
+        y = np.arange(0, end_gridy+ step, step)
         
-        # calculate m 
-        m = int(max(flat_diagrams)/2)
+        grid = np.array([[itemx, itemy] for itemx in x for itemy in y])
+        diagrams = diagrams[homological_degree]
+        
+        diagrams_grid = self.ndsnap(diagrams, grid)
+        
         
         # initialze W to a list of 2m + 1 empty lists
-        W = [[] for i in range(2*m +1)]
+        W = [[] for i in range(end_gridx +1)]
         
         # for each birth death pair
-        for bd in diagrams:
+        for ind, bd in enumerate(diagrams_grid):
             b, d = bd
             # for j=1 to j=height of (b_i, d_i) from rank function
             for j in range(1, int((bd[1]- bd[0])/2 +1)) :
-                W[b + j].append(j)
+                W[ind + j].append(j*step)
             
             # for j=1 to j=height of (b_i, d_i) +1 from rank function
             for j in range(1, int(((bd[1]- bd[0])/2))):
-                W[d - j].append(j)
+                W[ind - j].append(j*step)
         
         # sort each list in W
         for i in range(len(W)):
@@ -104,10 +144,10 @@ class PersistenceLandscapeGrid():
         K = max([len(_) for _ in W ])
         
         # initialize L to be a zeros matrix of size K x (2m+1)
-        L = [[0] * (2*m + 1) for _ in range(K)]
+        L = [[0] * (end_gridx + 1) for _ in range(K)]
         
         #input Lalues from W to L
-        for i in range(2*m +1):
+        for i in range(end_gridx +1):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 

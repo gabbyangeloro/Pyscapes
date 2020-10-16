@@ -159,6 +159,8 @@ rips.plot(diag_swiss)
 rips.plot(diag_torus)
 #%%
 
-torus1 = diag_torus[1]
+from PersistenceLandscapeGrid import *
+P = PersistenceLandscapeGrid(10, diag_sphere, 1, 0, 6)
+P.transform()
 
-min, max = min(torus1[:,0]), max(torus1[:,0])
+
