@@ -12,10 +12,11 @@ from PersistenceLandscape import PersistenceLandscape
 
 data = np.random.random((100, 2))
 diagrams = ripser(data)['dgms']
-plot_diagrams(diagrams, show=True)
+#plot_diagrams(diagrams, show=True)
 
 M = PersistenceLandscape(diagrams, homological_degree=1)
-L = M.compute_landscape()
+M.compute_landscape()
+L = M.critical_pairs
 
 # This import registers the 3D projection, but is otherwise unused.
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
@@ -46,7 +47,7 @@ verts = []
 
 
 # Set up the x sequence
-xs = np.linspace(0., 10., 26)
+xs = np.linspace(0., 10., 1000)
 
 # The ith polygon will appear on the plane y = zs[i]
 # zs = range(4)
@@ -77,4 +78,37 @@ ax.set_zlim(0, 0.06)
 ax.view_init(30,90)
 
 #plt.style.context('ggplot')
+#plt.show()
+
+#%% line with no fill
+
+fig2 = plt.figure()
+ax2 = fig2.gca(projection='3d')
+for i, l in enumerate(L):
+    xs, ys = zip(*l)
+    ax2.plot(xs,ys,zs=i*len(xs),label=i, zdir='y')
+#ax2.plot(xs,ys=L, zs=0.2*np.linspace(0.,10.,len(L)))
+ax2.set_xlabel('X')
+#ax.set_ylabel('Y')
+ax2.set_zlabel('Z')
+#ax2.set_xlim(0, 0.3)
+#ax2.set_ylim(-1, 4)
+#ax2.set_zlim(0, 0.06)
+ax2.legend()
+ax2.view_init(30,90)
+plt.gray()
+
 plt.show()
+
+#%% color according to z-value
+# https://stackoverflow.com/questions/20165169/change-colour-of-curve-according-to-its-y-value-in-matplotlib
+from matplotlib import cm
+fig3 = plt.figure()
+ax3 = fig3.gca(projection="3d")
+xs2, zs2 = zip(*L[0])
+ax3.plot(xs=xs2,ys=[1 for _ in xs2],zs=zs2,zdir='y',c=cm.jet(np.abs(zs2)))
+plt.show()
+
+#%% fill under
+# https://stackoverflow.com/questions/16917919/filling-above-below-matplotlib-line-plot
+# More on using colormaps https://stackoverflow.com/questions/8931268/using-colormaps-to-set-color-of-line-in-matplotlib
