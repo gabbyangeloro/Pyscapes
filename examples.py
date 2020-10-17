@@ -62,7 +62,7 @@ poly = PolyCollection(L,
                       linewidths =[0.5 for _ in range(len(L))],
                       edgecolors=['k' for _ in range(len(L))],
                      # facecolors=plt.cm.jet,
-                      facecolors=['r','g','b','r','g','y','b','r','g'],
+                      facecolors=['g','g','b','r','g','y','b','r','g'],
                       alpha=.7)
 ax.add_collection3d(poly, zs=0.2*np.linspace(0.,10.,len(L)), zdir='y')
 
@@ -112,3 +112,55 @@ plt.show()
 #%% fill under
 # https://stackoverflow.com/questions/16917919/filling-above-below-matplotlib-line-plot
 # More on using colormaps https://stackoverflow.com/questions/8931268/using-colormaps-to-set-color-of-line-in-matplotlib
+
+#%% test for 2-d plot
+
+fig3 = plt.figure()
+#x = np.linspace(0, 2*np.pi, 1000)
+#y = np.sin(2*x)
+xs2, zs2 = zip(*L[0])
+plt.plot(xs2,zs2, c=cm.hot(np.abs(zs2))) # , edgecolor='none')
+plt.show()
+
+#%% First good working case
+# Ideas:
+# If an exact landscape is passed, interpolate it. If a discrete landscape
+# is passed, then use the grid it is based on. This one is the exact version
+
+fig4 = plt.figure()
+ax = plt.axes()
+num_steps = 3000
+xs,ys = zip(*L[0])
+domain = np.linspace(0, 0.3, num=num_steps)
+image = np.interp(domain, xs, ys)
+# plt.plot(domain,image)
+plt.scatter(domain, image, c=cm.jet(image/max(image)), edgecolor='none', alpha=0.1, marker='.')
+d = np.zeros(len(ys))
+#ax.fill_between(xs, ys, where=ys>=d, interpolate=True, color='b')
+#ax.fill_between(xs, ys, where=ys<=d, interpolate=True, color='red')
+ax.set_xlabel('x')
+
+#%% Plot all of them
+
+fig5 = plt.figure()
+ax5 = fig5.gca(projection='3d')
+num_steps = 1000
+domain = np.linspace(0., 0.3, num=num_steps)
+for i, l in enumerate(L):
+    xs, zs = zip(*l)
+    image = np.interp(domain, xs, zs)
+    ax5.scatter(xs=domain, ys=[1 for _ in domain], zs=image, 
+                c = cm.jet(image/max(image)), edgecolor='none', 
+                marker='.')
+#ax2.plot(xs,ys=L, zs=0.2*np.linspace(0.,10.,len(L)))
+ax5.set_xlabel('X')
+#ax.set_ylabel('Y')
+ax5.set_zlabel('Z')
+#ax2.set_xlim(0, 0.3)
+#ax2.set_ylim(-1, 4)
+#ax2.set_zlim(0, 0.06)
+#ax2.legend()
+ax5.view_init(30,90)
+#plt.gray()
+
+plt.show()
