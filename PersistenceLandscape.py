@@ -102,7 +102,8 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
         # Remove duplicates
         # include element in A if it doesnt appear in A up until the idx of
         # that element 
-        A = [item for i, item in enumerate(A) if item not in A[:i] ]
+        #A = [item for i, item in enumerate(A) if item not in A[:i] ]
+        
 
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
@@ -126,7 +127,7 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
                 # Check if d is greater than all remaining pairs
                 # prints list [False, True, ....]
                 # must be true for all remaining elements in A
-                if all(d > _[1] for _ in A):
+                if all(d >= _[1] for _ in A):
                     # add to end of L_k
                     L[landscape_idx].extend([ [d,0], [np.inf, 0] ])
 
@@ -154,16 +155,21 @@ class PersistenceLandscape(BaseEstimator, TransformerMixin):
                         L[landscape_idx].extend([ [(b_prime + d)/2, (d-b_prime)/2] ])
 
 
-                        # Push (b', d) into A in order
+                        # push (b', d) into A in order
                         # find the first b_i in A so that b'<= b_i
+                        
+                        # push (b', d) to end of list if b' not <= any bi
+                        ind = len(A) 
                         for i in range(len(A)):
                             if b_prime <= A[i][0]:
                                 ind = i # index to push (b', d) if b' != b_i
                                 break
-
+                        # if b' not <= any bi, put at the end of list
+                        if ind == len(A):
+                            pass
                         # if b' = b_i
                         # move index to the right one for every d_i such that d < d_i
-                        if b_prime == A[ind][0]:
+                        elif b_prime == A[ind][0]:
                             A_i = [item for item in A if item[0] == b_prime ]
 
                             for j in range(len(A_i)):

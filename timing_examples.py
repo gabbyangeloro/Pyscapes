@@ -176,9 +176,17 @@ rips.plot(diag_sphere)
 rips.plot(diag_swiss)
 rips.plot(diag_torus)
 #%%
+
 from PersistenceLandscape import PersistenceLandscape
-P = PersistenceLandscape(diag_infty, 0)
-P.transform()
+P1 = PersistenceLandscape(diag_infty, 0)
+P1.transform()
+
+#%%
+
+from PersistenceLandscape import PersistenceLandscape
+B = [np.array([[1,5],[1,5], [3,6]])]
+P2 = PersistenceLandscape(B, 0)
+P2.transform()
 
 #%% Compute landscapes
 '''
