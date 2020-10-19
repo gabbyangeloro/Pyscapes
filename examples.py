@@ -189,7 +189,7 @@ for i, l in enumerate(L):
     for x, z in zip(domain,image):
         ax6.plot(
             [x,x],
-            [i,i],
+            [0.5*i,0.5*i],
             [0,z],
             linewidth=0.5,
             alpha=0.8,
@@ -202,7 +202,6 @@ ax6.set_xlim(min_crit_pt-padding, max_crit_pt+padding)
 ax6.set_ylim(0, 0.4*len(L)+1)
 ax6.set_zlim(0, max_crit_val+0.001)
 ax6.view_init(15,90)
-ax6.view_init(10,90)
 plt.show()
 
 #%% I think the following shows that simple masking won't work. The ends get
