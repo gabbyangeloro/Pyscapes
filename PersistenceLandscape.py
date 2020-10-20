@@ -222,16 +222,21 @@ class PersistenceLandscape:
                     else:
                         L[landscape_idx].extend([ [(b_prime + d)/2, (d-b_prime)/2] ])
 
-                        # Push (b', d) into A in order
+                        # push (b', d) into A in order
                         # find the first b_i in A so that b'<= b_i
+                        
+                        # push (b', d) to end of list if b' not <= any bi
+                        ind = len(A) 
                         for i in range(len(A)):
                             if b_prime <= A[i][0]:
                                 ind = i # index to push (b', d) if b' != b_i
                                 break
-
+                        # if b' not <= any bi, put at the end of list
+                        if ind == len(A):
+                            pass
                         # if b' = b_i
                         # move index to the right one for every d_i such that d < d_i
-                        if b_prime == A[ind][0]:
+                        elif b_prime == A[ind][0]:
                             A_i = [item for item in A if item[0] == b_prime ]
 
                             for j in range(len(A_i)):
@@ -240,8 +245,7 @@ class PersistenceLandscape:
 
 
                         A.insert(ind ,[b_prime, d])
-
-
+            
                     L[landscape_idx].extend([ [(b_prime + d_prime)/2, (d_prime-b_prime)/2] ])
                     #size_landscapes[landscape_idx] += 1
 
