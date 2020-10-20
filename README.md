@@ -8,7 +8,7 @@ landscapes as proposed by Peter Bubenik and Pawel Dlotko.
 2. Allow the user to specifically pass a list/array of lists/arrays, manually
   specifying the landscape and homological degree.
 3. ~~Implement arithmetic operations.~~
-3a. Debug arithmetic ops.
+3a. ~~Debug arithmetic ops.~~
 4. Implement norms: $L^2$, ~~$L^{\infty}$~~.
 5. Visualization methods.
 6. ~~Implement slicing.~~
