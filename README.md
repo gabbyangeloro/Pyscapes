@@ -55,5 +55,5 @@ from auxiliary import plot_landscape
 plot_landscape(M)
 ```
 
-<!-- [!PL1](docs/PL_rand_sample.png) -->
+![PL1](docs/PL_rand_sample.png)
 
