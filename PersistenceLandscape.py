@@ -2,6 +2,7 @@
 Define Persistence Landscape class.
 """
 import numpy as np
+from operator import itemgetter
 from auxiliary import union_crit_pairs
 
 
@@ -58,6 +59,7 @@ class PersistenceLandscape:
         else:
             self.critical_pairs = []
             self.diagrams = diagrams
+        self.max_depth = len(self.critical_pairs)
 
     def __repr__(self):
         return (
@@ -258,6 +260,7 @@ class PersistenceLandscape:
         # gets rid of infinity terms 
         # As written, this function shouldn't return anything, but rather 
         # update self.critical pairs. 
+        self.max_depth = len(L)
         self.critical_pairs = [item[1:-1] for item in L]
 
 
@@ -309,4 +312,5 @@ class PersistenceLandscape:
         pass
 
     def infinity_norm(self) -> float:
-        return max([critical[1] for critical in self.critical_pairs])
+        self.compute_landscape()
+        return max(self.critical_pairs[0],key=itemgetter(1))[1]

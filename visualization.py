@@ -23,9 +23,9 @@ def plot_landscape(landscape: PersistenceLandscape,
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     landscape.compute_landscape()
-    min_crit_pt = min(landscape[0], key=itemgetter(0))[0]
-    max_crit_pt = max(landscape[0], key=itemgetter(0))[0]
-    max_crit_val = max(landscape[0],key=itemgetter(1))[1]
+    min_crit_pt = min(landscape[0], key=itemgetter(1))[0]
+    max_crit_pt = max(landscape[0], key=itemgetter(0))[0] 
+    max_crit_val = max(landscape[0],key=itemgetter(1))[1] 
     domain = np.linspace(min_crit_pt-padding*0.1, max_crit_pt+padding*0.1, num=num_steps)
     for depth, l in enumerate(landscape):
         xs, zs = zip(*l)
@@ -43,8 +43,17 @@ def plot_landscape(landscape: PersistenceLandscape,
     #ax.set_xlabel('X')
     #ax.set_ylabel('depth')
     #ax.set_zlabel('Z')
-    #ax.set_xlim(min_crit_pt-padding, max_crit_pt+padding)
+    #ax.set_xlim(max_crit_pt+padding, min_crit_pt-padding) # reversed
     #ax.set_ylim(0, depth_padding*landscape.max_depth+1)
     # ax.set_zlim(0, max_crit_val+padding)
+    # for line in ax.xaxis.get_ticklines():
+    #     line.set_visible(False)
+    # for line in ax.yaxis.get_ticklines():
+    #     line.set_visible(False)
+    # for line in ax.zaxis.get_ticklines():
+    #     line.set_visible(False)
+    ax.set_xticklabels(np.arange(min_crit_pt,max_crit_pt, 0.2))
+    ax.set_yticklabels(np.arange(0, landscape.max_depth, 3))
+    #plt.axis(False)
     ax.view_init(10,90)
     plt.show()
