@@ -28,25 +28,28 @@ import numpy as np
 from ripser import ripser
 from PersistenceLandscape import PersistenceLandscape
 
-data = np.random.random_sample((200,2))
-diagrams = ripser(data)['dgms']
+data = np.random.random_sample((200,2)) # generate random points
+diagrams = ripser(data)['dgms'] # compute persistent homology
 M = PersistenceLandscape(diagrams=diagrams, homological_degree=1)
-M.compute_landscape()
+M.compute_landscape() # Compute the landscape
 ```
 Computing persistence landscapes can be computationally intensive, so we
 don't compute them upon instantiation. Instead they're only computed 
 after the `compute_landscape` method is called, serving as an initialization 
 method. The set of critical pairs is stored in the `critical_pairs` attribute.
 
-Basic arithmetic operations are implemented. This allows for arbitrary linear
-combinations of persistence landscapes, including averages. 
+Basic arithmetic operations are implemented. This allows for
+arbitrary linear combinations of persistence landscapes, including
+averages. Norms are implemented for quantifying differences and to
+ease the use of permutation tests.
 ```python
 L = 2*M
-J = M + M + M + M
+J = M + M
 K = M/5
+L.p_norm(p=2)
+L.infinity_norm() # 0.0311
 ```
-Norms are implemented for quantifying differences and to ease the use 
-of permutation tests.
+
 
 Persistence Landscapes can also be plotted.
 ```python
@@ -55,5 +58,4 @@ from auxiliary import plot_landscape
 plot_landscape(M)
 ```
 
-![PL1](docs/PL_rand_sample.png)
-
+![PL1](docs/PL_rand_sample.png) ![PL2](docs/PL_rand_samp_2.png)
