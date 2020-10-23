@@ -39,8 +39,6 @@ class PersistenceLandscape:
 
     """
 
-    example = [np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0], [6.0, 7.0]])]
-
     def __init__(
         self, diagrams: list = [], homological_degree: int = 0, critical_pairs: list = []
     ):

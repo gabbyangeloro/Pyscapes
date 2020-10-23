@@ -184,11 +184,11 @@ P1.transform()
 #%%
 import numpy as np
 
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscape import *
 B = [np.array([[1,5],[1,5], [3,6]])]
 P2 = PersistenceLandscape(B, 0)
-P2.transform()
-print(P2.cache)
+P2.compute_landscape()
+print(P2.critical_pairs[0],'\n', P2.critical_pairs[1],'\n', P2.critical_pairs[2])
 
 #%% Compute landscapes
 '''
