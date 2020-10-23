@@ -25,44 +25,21 @@ class PersistenceLandscapeGrid():
     
     Examples
     --------
-    diagrams = [[2,6], [4, 10]]
-    diagrams =[[0, 10], [2,4]]
-    diagrams = [ [2,8], [4,10], [6, 12], [4,6] ]
+
     
     """
     def __init__(
-        self, grid_num: int, diagrams: list = [], homological_degree: int = 0, 
-        start_gridx: float = None , end_gridx: float = None, 
+        self, start_gridx:float, end_gridx: float, grid_num: int, 
+        diagrams: list = [], homological_degree: int = 0, 
         PL_funct_values: list = []):
         
         self.diagrams = diagrams
         self.homological_degree = homological_degree
-        
-        if start_gridx is None:
-            start_gridx = np.floor(min(diagrams[homological_degree][:,0]))
-            
-        if end_gridx is None:
-            end_gridx = np.ceil(max(diagrams[homological_degree][:,0]))
-      
-      # grid default?  
-      #  if grid_step is None: 
-      #     grid_step = 
-        
         self.start_gridx = start_gridx
         self.end_gridx = end_gridx
         self.grid_num = grid_num
         self.PL_funct_values = PL_funct_values
         self.step_size = (self.end_gridx-self.start_gridx) / self.grid_num
-        
-        
-        
-        # check that all numbers in diagrams are eLen 
-        # use list comprehension to flatten diagrams to check eLery element
-        self.flat_diagrams = [x for pair in self.diagrams[self.homological_degree] 
-                  for x in pair]
-        for _ in self.flat_diagrams:
-            if _ % 2 == 1:
-                raise TypeError('Elements in diagrams must be even')
         
         ndsnap = self.ndsnap
     
@@ -98,13 +75,10 @@ class PersistenceLandscapeGrid():
         best = np.argmin(diffs, axis=1)
         return grid[best,:]
     
-    def transform(self):
-        if self.PL_funct_values:
-            return self.PL_funct_values
-        
+    def create_grid(self):
+        homological_degree = self.homological_degree
         start_gridx = self.start_gridx
         end_gridx = self.end_gridx
-        homological_degree = self.homological_degree
         diagrams = self.diagrams
         grid_num = self.grid_num
         
@@ -113,6 +87,7 @@ class PersistenceLandscapeGrid():
         # calculate max y -value for grid (always start at y=0)
         end_gridy = np.ceil(max(diagrams[homological_degree][:,1]))
         x, step = np.linspace(start_gridx, end_gridx, grid_num, retstep = True)[:]
+        self.step = step
         
         y = np.arange(0, end_gridy+ step, step)
         
@@ -120,6 +95,19 @@ class PersistenceLandscapeGrid():
         diagrams = diagrams[homological_degree]
         
         diagrams_grid = self.ndsnap(diagrams, grid)
+        self.diagrams_grid = diagrams_grid
+        
+    
+    def transform(self):
+        if self.PL_funct_values:
+            return self.PL_funct_values
+        
+        diagrams_grid = self.diagrams_grid 
+        homological_degree = self.homological_degree
+        start_gridx = self.start_gridx
+        end_gridx = self.end_gridx
+        diagrams = self.diagrams
+        grid_num = self.grid_num
         
         
         # initialze W to a list of 2m + 1 empty lists
@@ -127,14 +115,15 @@ class PersistenceLandscapeGrid():
         
         # for each birth death pair
         for ind, bd in enumerate(diagrams_grid):
-            b, d = bd
+            b = bd[0]
+            d = bd[1]
             # for j=1 to j=height of (b_i, d_i) from rank function
             for j in range(1, int((bd[1]- bd[0])/2 +1)) :
-                W[ind + j].append(j*step)
+                W[ind + j].append(j*self.step)
             
             # for j=1 to j=height of (b_i, d_i) +1 from rank function
             for j in range(1, int(((bd[1]- bd[0])/2))):
-                W[ind - j].append(j*step)
+                W[ind - j].append(j*self.step)
         
         # sort each list in W
         for i in range(len(W)):
