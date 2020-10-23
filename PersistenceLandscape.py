@@ -40,8 +40,8 @@ class PersistenceLandscape:
     """
 
     def __init__(
-        self, diagrams: list = [], homological_degree: int = 0, critical_pairs: list = []
-    ):
+        self, diagrams: list = [], homological_degree: int = 0,
+        critical_pairs: list = []):
         if isinstance(homological_degree, int) == False:
             raise TypeError("homological_degree must be an integer")
         # if homological_degree < 0:
