@@ -169,11 +169,7 @@ class PersistenceLandscape:
 
         # Sort A: read from right to left inside ()
         A = sorted(A, key = lambda x: [x[0], -x[1]])
-        
-        # Remove duplicates
-        # include element in A if it doesnt appear in A up until the idx of
-        # that element 
-        A = [item for i, item in enumerate(A) if item not in A[:i] ]
+    
 
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
@@ -192,14 +188,28 @@ class PersistenceLandscape:
             if all(d == _[1] for _ in A):
                     # end this lambda function
                     L[landscape_idx].extend([ [d,0], [np.inf,0] ])
+            
+            # check for duplicates
+            duplicate = 0
+            
+            for j, itemj in enumerate(A):
+                if itemj == [b,d]:
+                    duplicate += 1
+                    A.pop(j)
+                else:
+                    break
            
-            while L[landscape_idx][-1] != [np.inf, 0]:
-                # Check if d is greater than all remaining pairs
+            while L[landscape_idx][-1] != [np.inf, 0]: 
+                # check if d is greater than all remaining pairs
                 # prints list [False, True, ....]
                 # must be true for all remaining elements in A
                 if all(d > _[1] for _ in A):
                     # add to end of L_k
                     L[landscape_idx].extend([ [d,0], [np.inf, 0] ])
+                    # for duplicates, add another copy of the last computed lambda
+                    for _ in range(duplicate):
+                        L.append(L[-1])
+                        landscape_idx += 1
 
                 else:
                     # set (b', d')  to be the first term so that d' > d
@@ -223,7 +233,6 @@ class PersistenceLandscape:
                     # Case III
                     else:
                         L[landscape_idx].extend([ [(b_prime + d)/2, (d-b_prime)/2] ])
-
                         # push (b', d) into A in order
                         # find the first b_i in A so that b'<= b_i
                         
@@ -252,10 +261,10 @@ class PersistenceLandscape:
                     #size_landscapes[landscape_idx] += 1
 
                     b,d = b_prime, d_prime # Set (b',d')= (b, d)
+                    
 
             landscape_idx += 1
-        
-        # self.critical_pairs = L
+            
         verboseprint('cache was empty and algorthim was executed')
         # gets rid of infinity terms 
         # As written, this function shouldn't return anything, but rather 
