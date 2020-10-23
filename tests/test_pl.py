@@ -34,6 +34,25 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         [[3.0, 0], [3.5, 0.5], [4.0, 0], [6.0, 0], [6.5, 0.5],
         [7.0, 0]]])
         
+    def test_pl_hom_degree(self):
+        """
+        Test homological degree
+        """
+        P = PersistenceLandscape(
+            diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
+                                [6.0, 7.0]])],
+            homological_degree=0)
+        self.assertEqual(P.homological_degree,0)
+
+class PersistenceLandscapeBad(unittest.TestCase):
+    # TODO: Add bad/error test cases here.
+    
+    # def test_pl_hom_degree(self):
+    #    diagrams = []
+    #    hom_deg = -1
+    #    self.assertRaises
+    pass
+
 if __name__ == '__main__':
     unittest.main()
         

@@ -115,14 +115,6 @@ class PersistenceLandscape:
         """
         self.compute_landscape()
         return self.critical_pairs[key]
-    
-    # TODO: Fix the following.
-    # def depth(self, key: slice) -> list:
-    #     """
-    #    Returns a list of critical pairs of 
-    #    """
-    #    self.compute_landscape()
-    #    return self.critical_pairs[key]
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
