@@ -28,6 +28,8 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
                                 [6.0, 7.0]])],
             homological_degree=0)
         P.compute_landscape()
+        
+        
         self.assertEqual(P.critical_pairs, [[[1.0, 0],[3.0, 2.0],
         [3.5, 1.5],[5.0, 3.0],[6.5, 1.5],[7.0, 2.0],[9.0, 0]],
         [[2.0, 0], [3.5, 1.5], [5.0, 0], [6.5, 1.5], [8.0, 0]],

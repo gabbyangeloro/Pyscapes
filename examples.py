@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from ripser import ripser
 from persim import plot_diagrams
 from PersistenceLandscape import PersistenceLandscape
+#%%
 
 wine_data, wine_target = load_wine(return_X_y=True)
 bc_data, bc_target = load_breast_cancer(return_X_y=True)
@@ -24,7 +25,6 @@ plot_diagrams(bc_dgms, show=True)
 
 wine_pl = PersistenceLandscape(wine_dgms, homological_degree=1)
 bc_pl = PersistenceLandscape(bc_dgms, homological_degree=1)
-#%%
 
 wine_pl.compute_landscape(verbose=True)
 bc_pl.compute_landscape(verbose=True)

@@ -173,11 +173,6 @@ class PersistenceLandscape:
 
             # outer brackets for start of L_k
             L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) 
-            # edge case: bars that die at the same time 
-            # end bars and start new function lambda 
-            if all(d == _[1] for _ in A):
-                    # end this lambda function
-                    L[landscape_idx].extend([ [d,0], [np.inf,0] ])
             
             # check for duplicates
             duplicate = 0
@@ -190,10 +185,10 @@ class PersistenceLandscape:
                     break
            
             while L[landscape_idx][-1] != [np.inf, 0]: 
-                # check if d is greater than all remaining pairs
-                # prints list [False, True, ....]
-                # must be true for all remaining elements in A
-                if all(d > _[1] for _ in A):
+                
+                # if d is > = all remaining pairs, then end lambda
+                # includes edge case with (b,d) pairs with the same death time
+                if all(d >= _[1] for _ in A):
                     # add to end of L_k
                     L[landscape_idx].extend([ [d,0], [np.inf, 0] ])
                     # for duplicates, add another copy of the last computed lambda
@@ -232,18 +227,20 @@ class PersistenceLandscape:
                             if b_prime <= A[i][0]:
                                 ind = i # index to push (b', d) if b' != b_i
                                 break
-                        # if b' not <= any bi, put at the end of list
+                        # if b' not < = any bi, put at the end of list
                         if ind == len(A):
                             pass
                         # if b' = b_i
-                        # move index to the right one for every d_i such that d < d_i
                         elif b_prime == A[ind][0]:
+                            # pick out (bk,dk) such that b' = bk
                             A_i = [item for item in A if item[0] == b_prime ]
-
+                        
+                            # move index to the right one for every d_i such that d < d_i
                             for j in range(len(A_i)):
                                 if d < A_i[j][1]:
-                                    ind = ind + 1
-
+                                    ind += 1 
+                                
+                                # d > dk for all k 
 
                         A.insert(ind ,[b_prime, d])
             
