@@ -262,31 +262,6 @@ class PersistenceLandscape:
         self.max_depth = len(L)
         self.critical_pairs = [item[1:-1] for item in L]
 
-
-    '''
-    def plot_diagrams(self):
-        # check if landscapes were already computed
-        if len(self.cache) != 0:
-            landscapes = self.cache[0]
-            return graph(landscapes)
-
-        else:
-            landscapes = self.landscapes()
-            return graph(landscapes)
-    '''
-
-    # If we want landscape by index, then we probably need to
-    # refactor the above code. This could get complicated so maybe
-    # we don't worry about it now. In a perfect world, we'd have the
-    # following setup: the PersistenceLandscapes class itself would
-    # have a boolean flag that tracks whether the landscape computation
-    # has finished yet, since we can't check by the length of a list
-    # or anything. We then factor out one iteration of the transform
-    # code, and all other methods would call a while loop on it. Once
-    # we've computed out to the landscape we need, we return it. Any
-    # other method would first check if the cache has that appropriate
-    # entry, then either return or resume the computation.
-
     def compute_landscape_by_depth(self, depth: int) -> list:
         """Returns the landscape function specified by idx.
         
@@ -306,10 +281,36 @@ class PersistenceLandscape:
 
     def p_norm(self, p: int = 2) -> float:
         """Returns the L_{`p`} norm of self."""
-        if p != 2:
-            raise NotImplementedError()
-        pass
+        if p == -1:
+            return self.infinity_norm()
+        if p < -1 or 0 < p < 1:
+            raise ValueError(f"p can't be negative, but {p} was passed")
+        self.compute_landscape()
+        result = 0.
+        for l in self.critical_pairs:
+            for [[x0,y0], [x1,y1]] in zip(l,l[1:]):
+                if y0 == y1:
+                    # horizontal line segment
+                    result += (np.abs(y0)**p)*(x1-x0)
+                    continue
+                # slope is well-defined
+                slope = (y1 - y0)/(x1-x0)
+                b = y0 - slope*x0
+                if (y0 < 0 and y1 > 0) or (y0 > 0 and y1 < 0):
+                    # segment crosses the x-axis
+                    z = -b/slope
+                    ev_x1 = (slope*x1+b)**(p+1)/(slope*(p+1))
+                    ev_x0 = (slope*x0+b)**(p+1)/(slope*(p+1))
+                    ev_z = (slope*z++b)**(p+1)/(slope*(p+1))
+                    result += np.abs(ev_x1 + ev_x0 -2*ev_z)
+                else: 
+                    ev_x1 = (slope*x1+b)**(p+1)/(slope*(p+1))
+                    ev_x0 = (slope*x0+b)**(p+1)/(slope*(p+1))
+                    result += np.abs(ev_x1 - ev_x0)
+        return (result)**(1.0/p)
+                
+        
 
     def infinity_norm(self) -> float:
         self.compute_landscape()
-        return max(self.critical_pairs[0],key=itemgetter(1))[1]
+        return max(np.abs(self.critical_pairs[0]),key=itemgetter(1))[1]

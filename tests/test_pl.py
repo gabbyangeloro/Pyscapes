@@ -43,15 +43,46 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
                                 [6.0, 7.0]])],
             homological_degree=0)
         self.assertEqual(P.homological_degree,0)
+        
+    def test_p_norm(self):
+        """
+        Test p-norms
+        """
+        P = PersistenceLandscape(
+            critical_pairs=[[[0, 0], [1, 1], [2, 1], [3, 1], [4, 0]]],
+            homological_degree=0)
+        negP = PersistenceLandscape(
+            critical_pairs=[[[0, 0], [1, -1], [2, -1], [3, -1], [4, 0]]],
+            homological_degree=0)
+        self.assertEqual(P.infinity_norm(), 1)
+        self.assertAlmostEqual(P.p_norm(p=2), np.sqrt(2 + (2.0/3.0)))
+        self.assertAlmostEqual(P.p_norm(p=5), (2 + (1.0/3.0))**(1.0/5.0))
+        self.assertAlmostEqual(P.p_norm(p=113), (2+ (1.0/57.0))**(1.0/113.0))
+        self.assertEqual(negP.infinity_norm(), 1)
+        self.assertAlmostEqual(negP.p_norm(p=2), np.sqrt(2 + (2.0/3.0)))
+        self.assertAlmostEqual(negP.p_norm(p=5), (2 + (1.0/3.0))**(1.0/5.0))
+        self.assertAlmostEqual(negP.p_norm(p=113), (2+ (1.0/57.0))**(1.0/113.0))
+        
+        
 
 class PersistenceLandscapeBad(unittest.TestCase):
-    # TODO: Add bad/error test cases here.
-    
+    """ Test bad/error test cases here.
+    # TODO
+    """
     # def test_pl_hom_degree(self):
     #    diagrams = []
     #    hom_deg = -1
-    #    self.assertRaises
-    pass
+    #    self.assertRaises 
+    # def test_p_norm(self):
+    #     """
+    #     Test p-norms
+    #     """
+    #     P = PersistenceLandscape(
+    #         critical_pairs=[[[0, 0], [1, 1], [2, 1], [3, 1], [4, 0]]],
+    #         homological_degree=0)
+    #     self.assertEqual(P.infinity_norm(), 1)
+    #     self.assertAlmostEqual(P.p_norm(p=2), np.sqrt(2 + (2.0/3.0)))
+    #     self.assertAlmostEqual(P.p_norm(p=5), (2 + (1.0/3.0))**(1.0/5.0))
 
 if __name__ == '__main__':
     unittest.main()
