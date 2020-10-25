@@ -2,6 +2,7 @@
 Auxilary functions for working with persistence diagrams.
 """
 import itertools
+import numpy as np
 
 def death_vector(diagram: list, homological_degree: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram.
@@ -123,3 +124,28 @@ def sum_slopes(a, b):
         #     result.pop()
 
     return result
+
+def prepare_diagram(A):
+    """ Helper function for compute_landscapes 
+
+    Converts diagram to list, removes infinity value and sorts
+    """
+    # change A into a list
+    A = list(A)
+    
+    # change inner nparrays into lists
+    for i in range(len(A)):
+        A[i] = list(A[i])
+        
+    # store infitiy values 
+    infty_bar = False
+    if A[-1][1] == np.inf:
+        A. pop(-1)
+        infty_bar = True
+        # TODO: Do we need this infty_bar variable?
+    
+    # Sort A: read from right to left inside ()
+        A = sorted(A, key = lambda x: [x[0], -x[1]])
+        
+    return A
+    

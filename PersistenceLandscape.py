@@ -3,7 +3,7 @@ Define Persistence Landscape class.
 """
 import numpy as np
 from operator import itemgetter
-from auxiliary import union_crit_pairs
+from auxiliary import union_crit_pairs, prepare_diagram
 
 
 class PersistenceLandscape:
@@ -115,6 +115,7 @@ class PersistenceLandscape:
         """
         self.compute_landscape()
         return self.critical_pairs[key]
+    
 
     def compute_landscape(self, verbose: bool = False) -> dict:
         """Compute the persistence landscapes of self.diagrams.
@@ -141,25 +142,11 @@ class PersistenceLandscape:
             verboseprint('cache was not empty and stored value was returned')
             return self.critical_pairs
 
-        A = self.diagrams[self.homological_degree]    
-        # change A into a list
-        A = list(A)
-        # change inner nparrays into lists
-        for i in range(len(A)):
-            A[i] = list(A[i])
-        # store infitiy values 
-        infty_bar = False
-        if A[-1][1] == np.inf:
-            A. pop(-1)
-            infty_bar = True
-            # TODO: Do we need this infty_bar variable?
-     
+        A = self.diagrams[self.homological_degree]  
+        A = prepare_diagram(A)
+        
         landscape_idx = 0
         L = []
-
-        # Sort A: read from right to left inside ()
-        A = sorted(A, key = lambda x: [x[0], -x[1]])
-    
 
         while len(A) != 0:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
