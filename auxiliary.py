@@ -120,8 +120,8 @@ def sum_slopes(a, b):
             assert ax == bx
             result.append([ax, am + bm])
         # reduce trailing zeroes
-        # if len(result) > 2 and result[-1][1] == result[2][1]:
-        #     result.pop()
+        if len(result) > 2 and result[-1][1] == result[2][1]:
+            result.pop()
 
     return result
 

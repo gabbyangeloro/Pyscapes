@@ -293,8 +293,25 @@ class PersistenceLandscape:
                     result += np.abs(ev_x1 - ev_x0)
         return (result)**(1.0/p)
                 
-        
-
     def infinity_norm(self) -> float:
         self.compute_landscape()
         return max(np.abs(self.critical_pairs[0]),key=itemgetter(1))[1]
+    
+    def vectorize(self, start: float = -1., stop: float = -1., num_dims: int = 100) -> list:
+        """
+        Method for turning the list of critical pairs into a list of vectors
+        sampled at `num_dims` number of points starting from `start` and
+        ending at `stop`. If no values are passed for start and stop, they will
+        be defaulted to the minimum birth value and maximum death value, 
+        respectively.
+        """
+        self.compute_landscape()
+        # if start == -1.:
+        # if stop == -1.:
+        grid = np.linspace(start, stop, num_dims)
+        result = []
+        for l in self.critical_pairs:
+            xs, ys = zip(*l)
+            result.append(np.interp(grid, xs, ys))
+        return result
+        

@@ -26,5 +26,17 @@ plot_diagrams(bc_dgms, show=True)
 wine_pl = PersistenceLandscape(wine_dgms, homological_degree=1)
 bc_pl = PersistenceLandscape(bc_dgms, homological_degree=1)
 
-wine_pl.compute_landscape(verbose=True)
-bc_pl.compute_landscape(verbose=True)
+wine_pl.compute_landscape()
+bc_pl.compute_landscape()
+
+#%%
+data = np.random.random_sample((200,2))
+diagrams = ripser(data)['dgms']
+# rips.plot(diagrams)
+
+# pl = PL(homological_degree=1][]
+# landscape = pl.fit_transform(diagrams)
+
+L = PersistenceLandscape(diagrams,homological_degree=1)
+L.compute_landscape(verbose=True)
+L.p_norm(p=2)
