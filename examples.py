@@ -40,3 +40,10 @@ diagrams = ripser(data)['dgms']
 L = PersistenceLandscape(diagrams,homological_degree=1)
 L.compute_landscape(verbose=True)
 L.p_norm(p=2)
+#%%
+random_data = np.random.random((100, 2))
+diagrams = ripser(data)['dgms']
+#plot_diagrams(diagrams, show=True)
+
+M = PersistenceLandscape(diagrams, homological_degree=1)
+M.compute_landscape()

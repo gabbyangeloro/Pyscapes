@@ -292,7 +292,7 @@ class PersistenceLandscape:
                     result += np.abs(ev_x1 - ev_x0)
         return (result)**(1.0/p)
                 
-    def infinity_norm(self) -> float:
+    def sup_norm(self) -> float:
         self.compute_landscape()
         return max(np.abs(self.critical_pairs[0]),key=itemgetter(1))[1]
     
