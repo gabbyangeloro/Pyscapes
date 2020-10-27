@@ -161,7 +161,7 @@ class PersistenceLandscape:
             # outer brackets for start of L_k
             L.append([ [-np.inf, 0], [b, 0], [(b+d)/2, (d-b)/2] ] ) 
             
-            # check for duplicates
+            # check for duplicates of (b,d)
             duplicate = 0
             
             for j, itemj in enumerate(A):

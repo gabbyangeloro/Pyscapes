@@ -1,1 +1,2 @@
-from .PersistenceLandscapes import *
+from .PersistenceLandscape import *
+
