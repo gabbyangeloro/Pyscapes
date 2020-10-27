@@ -83,12 +83,12 @@ class PersistenceLandscape:
     def __sub__(self, other):
         return self + -other
 
-    def __mul__(self, other: int):
+    def __mul__(self, other: float):      
         self.compute_landscape()
         return PersistenceLandscape(
-            critical_pairs=[[(a, other*b) for a, b in self.critical_pairs[i]] 
-                            for i in range(len(self.critical_pairs))],
-            homological_degree=self.homological_degree)
+            homological_degree=self.homological_degree,
+            critical_pairs=[[(a, other*b) for a, b in depth_list] 
+                            for depth_list in self.critical_pairs])
     
     def __rmul__(self,other: int):
         return self.__mul__(other)
