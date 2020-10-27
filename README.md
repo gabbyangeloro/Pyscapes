@@ -58,4 +58,4 @@ from auxiliary import plot_landscape
 plot_landscape(M)
 ```
 
-![PL1](docs/PL_rand_sample.png) ![PL2](docs/PL_rand_samp_2.png)
+![PL1](docs/PL_rand_sample.png) | ![PL2](docs/PL_bc_pl.png)
