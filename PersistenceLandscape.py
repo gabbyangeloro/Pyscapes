@@ -66,11 +66,10 @@ class PersistenceLandscape:
         )
 
     def __neg__(self):
-        self.compute_landscape( )
+        self.compute_landscape()
         return PersistenceLandscape(homological_degree=self.homological_degree,
-                                    critical_pairs=[ [[a,-b] for a, b in
-                                                    self.critical_pairs[i]]
-                                                    for i in range(len(self.critical_pairs))])
+                                    critical_pairs=[ [[a,-b] for a, b in depth_list]
+                                                    for depth_list in self.critical_pairs])
 
     def __add__(self, other):
         # This requires a list implementation as written.
