@@ -11,8 +11,8 @@ from matplotlib import cm
 
 def plot_landscape(landscape: PersistenceLandscape,
                    num_steps: int = 3000,
-                   color=cm.viridis,
-                   alpha=0.8,
+                   color = cm.viridis,
+                   alpha = 0.8,
                    padding: float = 0.1,
                    depth_padding: float = 0.5):
     """

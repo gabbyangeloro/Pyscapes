@@ -20,14 +20,21 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
     
     def test_pl_critical_pairs(self):
         """
-        Test example from Peter & Pavel's paper
+        Test PersistenceLandscape
 
         """
+        # example from Peter & Pavel's paper
         P = PersistenceLandscape(
             diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
                                 [6.0, 7.0]])],
             homological_degree=0)
         P.compute_landscape()
+        
+        # duplicate bars
+        Q = PersistenceLandscape(
+            diagrams=[np.array([[1, 5],[1, 5],[3, 6]])],
+            homological_degree=0)
+        Q.compute_landscape()
         
         
         self.assertEqual(P.critical_pairs, [[[1.0, 0],[3.0, 2.0],
@@ -35,6 +42,10 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         [[2.0, 0], [3.5, 1.5], [5.0, 0], [6.5, 1.5], [8.0, 0]],
         [[3.0, 0], [3.5, 0.5], [4.0, 0], [6.0, 0], [6.5, 0.5],
         [7.0, 0]]])
+        
+        self.assertEqual(Q.critical_pairs, [[[1, 0], [3.0, 2.0], [4.0, 1.0], 
+        [4.5, 1.5], [6, 0]],[[1, 0], [3.0, 2.0], [4.0, 1.0], [4.5, 1.5], 
+        [6, 0]],[[3, 0], [4.0, 1.0], [5, 0]]])
         
     def test_pl_hom_degree(self):
         """
