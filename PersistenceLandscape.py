@@ -42,11 +42,11 @@ class PersistenceLandscape:
     def __init__(
         self, diagrams: list = [], homological_degree: int = 0,
         critical_pairs: list = []):
-        if isinstance(homological_degree, int) == False:
+        if not isinstance(homological_degree, int):
             raise TypeError("homological_degree must be an integer")
-        # if homological_degree < 0:
-        # raise ValueError('homological_degree must be positive')
-        if isinstance(diagrams, list) == False:
+        if homological_degree < 0:
+            raise ValueError('homological_degree must be positive')
+        if not isinstance(diagrams, list):
             raise TypeError("diagrams must be a list")
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
