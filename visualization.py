@@ -3,6 +3,7 @@ Visualization methods for plotting persistence landscapes.
 
 """
 
+import itertools
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -15,21 +16,22 @@ def plot_landscape(landscape: PersistenceLandscape,
                    color = cm.viridis,
                    alpha = 0.8,
                    padding: float = 0.1,
-                   depth_padding: float = 0.5):
+                   depth_padding: float = 0.7):
     """
     A plot of the persistence landscape.
     
-    Warning: This function is quite slow, especially for large landscapes.
+    Warning: This function is quite slow, especially for large landscapes. 
     """
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     landscape.compute_landscape()
     # itemgetter index selects which entry to take max/min wrt.
     # the hanging [0] or [1] takes that entry.
-    min_crit_pt = min(landscape[0], key=itemgetter(0))[0]
-    max_crit_pt = max(landscape[0], key=itemgetter(0))[0] 
-    max_crit_val = max(landscape[0],key=itemgetter(1))[1] 
-    min_crit_val = min(landscape[0], key=itemgetter(1))[1]
+    crit_pairs = list(itertools.chain.from_iterable(landscape.critical_pairs))
+    min_crit_pt = min(crit_pairs, key=itemgetter(0))[0]
+    max_crit_pt = max(crit_pairs, key=itemgetter(0))[0] 
+    max_crit_val = max(crit_pairs,key=itemgetter(1))[1] 
+    min_crit_val = min(crit_pairs, key=itemgetter(1))[1]
     norm = mpl.colors.Normalize(vmin=min_crit_val, vmax=max_crit_val)
     domain = np.linspace(min_crit_pt-padding*0.1, max_crit_pt+padding*0.1, num=num_steps)
     for depth, l in enumerate(landscape):
@@ -51,6 +53,7 @@ def plot_landscape(landscape: PersistenceLandscape,
                 linewidth=0.5,
                 alpha=alpha,
                 c=color(norm(z)))
+            ax.plot([x], [depth_padding*depth], [z], 'k.', markersize=0.1)
     
     #ax.set_xlabel('X')
     ax.set_ylabel('depth')
