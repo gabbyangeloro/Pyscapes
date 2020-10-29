@@ -57,5 +57,7 @@ from auxiliary import plot_landscape
 
 plot_landscape(M)
 ```
-
-![PL1](docs/PL_rand_sample.png) ![PL2](docs/PL_rand_samp_2.png)
+<p float="left">
+<img src="docs/PL_rand_sample.png" width = 45% />
+<img src="docs/PL_bc_pl.png" width=45%>
+</p>

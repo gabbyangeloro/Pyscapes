@@ -5,6 +5,7 @@ from sklearn.datasets import load_wine
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 
+from visualization import plot_landscape
 from ripser import ripser
 from persim import plot_diagrams
 from PersistenceLandscape import PersistenceLandscape
@@ -29,6 +30,9 @@ bc_pl = PersistenceLandscape(bc_dgms, homological_degree=1)
 wine_pl.compute_landscape()
 bc_pl.compute_landscape()
 
+#%% 
+plot_landscape(wine_pl)
+plot_landscape(bc_pl)
 #%%
 data = np.random.random_sample((200,2))
 diagrams = ripser(data)['dgms']
@@ -40,3 +44,10 @@ diagrams = ripser(data)['dgms']
 L = PersistenceLandscape(diagrams,homological_degree=1)
 L.compute_landscape(verbose=True)
 L.p_norm(p=2)
+#%%
+random_data = np.random.random((100, 2))
+diagrams = ripser(data)['dgms']
+#plot_diagrams(diagrams, show=True)
+
+M = PersistenceLandscape(diagrams, homological_degree=1)
+M.compute_landscape()
