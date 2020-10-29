@@ -7,7 +7,7 @@ from operator import itemgetter
 from auxiliary import union_crit_pairs
 
 
-class PersistenceLandscape:
+class PersistenceLandscapeExact:
     """Persistence Landscape class.
 
     Parameters
@@ -66,7 +66,7 @@ class PersistenceLandscape:
 
     def __neg__(self):
         self.compute_landscape()
-        return PersistenceLandscape(homological_degree=self.homological_degree,
+        return PersistenceLandscapeExact(homological_degree=self.homological_degree,
                                     critical_pairs=[ [[a,-b] for a, b in depth_list]
                                                     for depth_list in self.critical_pairs])
         """
@@ -85,7 +85,7 @@ class PersistenceLandscape:
         # This requires a list implementation as written.
         if self.homological_degree != other.homological_degree:
             raise ValueError("homological degrees must match")
-        return PersistenceLandscape(
+        return PersistenceLandscapeExact(
             critical_pairs=union_crit_pairs(self, other),
             homological_degree=self.homological_degree
             )
@@ -94,7 +94,7 @@ class PersistenceLandscape:
         
         Parameters
         -------
-        other: PersistenceLandscape
+        other: PersistenceLandscapeExact
             
         Returns
         -------
@@ -125,7 +125,7 @@ class PersistenceLandscape:
 
     def __mul__(self, other: float):      
         self.compute_landscape()
-        return PersistenceLandscape(
+        return PersistenceLandscapeExact(
             homological_degree=self.homological_degree,
             critical_pairs=[[(a, other*b) for a, b in depth_list] 
                             for depth_list in self.critical_pairs])

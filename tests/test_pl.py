@@ -7,7 +7,7 @@ Unit test for PersistenceLandscapeExact
 import unittest 
 import numpy as np
 
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeExact import PersistenceLandscapeExact
 
 class TestPersistenceLandscapeExact(unittest.TestCase):
     
@@ -24,14 +24,14 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
 
         """
         # example from Peter & Pavel's paper
-        P = PersistenceLandscape(
+        P = PersistenceLandscapeExact(
             diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
                                 [6.0, 7.0]])],
             homological_degree=0)
         P.compute_landscape()
         
         # duplicate bars
-        Q = PersistenceLandscape(
+        Q = PersistenceLandscapeExact(
             diagrams=[np.array([[1, 5],[1, 5],[3, 6]])],
             homological_degree=0)
         Q.compute_landscape()
@@ -51,7 +51,7 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         """
         Test homological degree
         """
-        P = PersistenceLandscape(
+        P = PersistenceLandscapeExact(
             diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
                                 [6.0, 7.0]])],
             homological_degree=0)
@@ -61,10 +61,10 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         """
         Test p-norms
         """
-        P = PersistenceLandscape(
+        P = PersistenceLandscapeExact(
             critical_pairs=[[[0, 0], [1, 1], [2, 1], [3, 1], [4, 0]]],
             homological_degree=0)
-        negP = PersistenceLandscape(
+        negP = PersistenceLandscapeExact(
             critical_pairs=[[[0, 0], [1, -1], [2, -1], [3, -1], [4, 0]]],
             homological_degree=0)
         self.assertEqual(P.infinity_norm(), 1)
@@ -78,7 +78,7 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         
         
 
-class PersistenceLandscapeBad(unittest.TestCase):
+class PersistenceLandscapeExactBad(unittest.TestCase):
     """ Test bad/error test cases here.
     # TODO
     """

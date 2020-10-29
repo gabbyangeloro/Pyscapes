@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from visualization import plot_landscape
 from ripser import ripser
 from persim import plot_diagrams
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeExact import PersistenceLandscapeExact
 #%%
 
 wine_data, wine_target = load_wine(return_X_y=True)
@@ -24,8 +24,8 @@ plot_diagrams(wine_dgms, show=True)
 plot_diagrams(bc_dgms, show=True)
 #%%
 
-wine_pl = PersistenceLandscape(wine_dgms, homological_degree=1)
-bc_pl = PersistenceLandscape(bc_dgms, homological_degree=1)
+wine_pl = PersistenceLandscapeExact(wine_dgms, homological_degree=1)
+bc_pl = PersistenceLandscapeExact(bc_dgms, homological_degree=1)
 
 wine_pl.compute_landscape()
 bc_pl.compute_landscape()
@@ -41,7 +41,7 @@ diagrams = ripser(data)['dgms']
 # pl = PL(homological_degree=1][]
 # landscape = pl.fit_transform(diagrams)
 
-L = PersistenceLandscape(diagrams,homological_degree=1)
+L = PersistenceLandscapeExact(diagrams,homological_degree=1)
 L.compute_landscape(verbose=True)
 L.p_norm(p=2)
 #%%
@@ -49,5 +49,5 @@ random_data = np.random.random((100, 2))
 diagrams = ripser(data)['dgms']
 #plot_diagrams(diagrams, show=True)
 
-M = PersistenceLandscape(diagrams, homological_degree=1)
+M = PersistenceLandscapeExact(diagrams, homological_degree=1)
 M.compute_landscape()

@@ -22,7 +22,7 @@ import numpy as np
 import random
 
 from ripser import ripser
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeExact import PersistenceLandscapeExact
 from visualization import plot_landscape
 
 from tadasets import dsphere
@@ -40,23 +40,23 @@ for i in range(99):
     sph3_pts = dsphere(n=100, d=3, r=1)
     sph3_dgm = ripser(sph3_pts, maxdim=2)['dgms']
     
-    sph2_pl1 = PersistenceLandscape(diagrams=sph2_dgm, homological_degree=1)
+    sph2_pl1 = PersistenceLandscapeExact(diagrams=sph2_dgm, homological_degree=1)
     sph2_pl1.compute_landscape()
     sph2_pl1_list.append(sph2_pl1)
-    sph2_pl2 = PersistenceLandscape(diagrams=sph2_dgm, homological_degree=2)
+    sph2_pl2 = PersistenceLandscapeExact(diagrams=sph2_dgm, homological_degree=2)
     sph2_pl2.compute_landscape
     sph2_pl2_list.append(sph2_pl2)
-    sph3_pl1 = PersistenceLandscape(diagrams=sph3_dgm, homological_degree=1)
+    sph3_pl1 = PersistenceLandscapeExact(diagrams=sph3_dgm, homological_degree=1)
     sph3_pl1.compute_landscape()
     sph3_pl1_list.append(sph3_pl1)
-    sph3_pl2 = PersistenceLandscape(diagrams=sph3_dgm, homological_degree=2)
+    sph3_pl2 = PersistenceLandscapeExact(diagrams=sph3_dgm, homological_degree=2)
     sph3_pl2.compute_landscape()
     sph3_pl2_list.append(sph3_pl2)
     
 #%% Construct the true average landscape
-avg_sph2_pl1 = PersistenceLandscape(diagrams=sph2_dgm, homological_degree=1)
+avg_sph2_pl1 = PersistenceLandscapeExact(diagrams=sph2_dgm, homological_degree=1)
 avg_sph2_pl1.compute_landscape()
-avg_sph3_pl1 = PersistenceLandscape(diagrams=sph3_dgm, homological_degree=1)
+avg_sph3_pl1 = PersistenceLandscapeExact(diagrams=sph3_dgm, homological_degree=1)
 avg_sph3_pl1.compute_landscape()
 
 for i in range(99):

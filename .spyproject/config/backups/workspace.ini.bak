@@ -6,5 +6,5 @@ save_non_project_files = False
 
 [main]
 version = 0.2.0
-recent_files = ['tests/timing_examples.py', 'pl_transformer.py', 'visualization.py']
+recent_files = ['PersistenceLandscape.py', 'auxiliary.py', 'visualization.py', 'pl_transformer.py', 'tests/test_pl.py', 'examples.py']
 

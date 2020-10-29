@@ -7,11 +7,11 @@ import itertools
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeExact import PersistenceLandscapeExact
 from operator import itemgetter
 from matplotlib import cm
 
-def plot_landscape(landscape: PersistenceLandscape,
+def plot_landscape(landscape: PersistenceLandscapeExact,
                    num_steps: int = 3000,
                    color = cm.viridis,
                    alpha = 0.8,

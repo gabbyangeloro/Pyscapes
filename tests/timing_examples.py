@@ -177,38 +177,38 @@ rips.plot(diag_swiss)
 rips.plot(diag_torus)
 #%%
 
-from PersistenceLandscape import PersistenceLandscape
-P1 = PersistenceLandscape(diag_infty, 0)
+from PersistenceLandscapeExact import PersistenceLandscapeExact
+P1 = PersistenceLandscapeExact(diag_infty, 0)
 P1.transform()
 
 #%%
 import numpy as np
 
-from PersistenceLandscape import *
+from PersistenceLandscapeExact import *
 B = [np.array([[1,5],[1,5], [3,6]])]
-P2 = PersistenceLandscape(B, 0)
+P2 = PersistenceLandscapeExact(B, 0)
 P2.compute_landscape()
 print(P2.critical_pairs[0],'\n', P2.critical_pairs[1],'\n', P2.critical_pairs[2])
 
 #%% Compute landscapes
 
-from PersistenceLandscape import PersistenceLandscape
-from PersistenceLandscape_Alist_Larray import PersistenceLandscape_Alist_Larray
-from PersistenceLandscape_Alist_Llist import PersistenceLandscape_Alist_Llist
+from PersistenceLandscapeExact import PersistenceLandscapeExact
+from PersistenceLandscapeExact_Alist_Larray import PersistenceLandscapeExact_Alist_Larray
+from PersistenceLandscapeExact_Alist_Llist import PersistenceLandscapeExact_Alist_Llist
 
 #Time for sphere
-PL_infity1_sphere = PersistenceLandscape(diag_sphere, 1)
+PL_infity1_sphere = PersistenceLandscapeExact(diag_sphere, 1)
 startPL_sphere = timer()
 PL_infity1_sphere.compute_landscape()
 endPL_sphere = timer()
 
-PL_infity2_sphere = PersistenceLandscape_Alist_Larray(diag_sphere, 1)
+PL_infity2_sphere = PersistenceLandscapeExact_Alist_Larray(diag_sphere, 1)
 startPLlistArray_sphere = timer()
 PL_infity2_sphere.transform()
 endPLlistArray_sphere = timer()
 
 
-PL_infity3_sphere = PersistenceLandscape_Alist_Llist(diag_sphere, 1)
+PL_infity3_sphere = PersistenceLandscapeExact_Alist_Llist(diag_sphere, 1)
 startPLlist_sphere = timer()
 PL_infity3_sphere.transform()  
 endPLlist_sphere = timer()
@@ -216,34 +216,34 @@ endPLlist_sphere = timer()
 
 #Time for swiss
 
-PL_infity1_swiss = PersistenceLandscape(diag_swiss, 1)
+PL_infity1_swiss = PersistenceLandscapeExact(diag_swiss, 1)
 startPL_swiss = timer()
 PL_infity1_swiss.compute_landscape()
 endPL_swiss = timer()
 
-PL_infity2_swiss = PersistenceLandscape_Alist_Larray(diag_swiss, 1)
+PL_infity2_swiss = PersistenceLandscapeExact_Alist_Larray(diag_swiss, 1)
 startPLlistArray_swiss = timer()
 PL_infity2_swiss.transform()
 endPLlistArray_swiss = timer()
 
-PL_infity3_swiss = PersistenceLandscape_Alist_Llist(diag_swiss, 1)
+PL_infity3_swiss = PersistenceLandscapeExact_Alist_Llist(diag_swiss, 1)
 startPLlist_swiss = timer()
 PL_infity3_swiss.transform()  
 endPLlist_swiss = timer()
 
 #Time for torus
 
-PL_infity1_torus = PersistenceLandscape(diag_torus, 1)
+PL_infity1_torus = PersistenceLandscapeExact(diag_torus, 1)
 startPL_torus = timer()
 PL_infity1_torus.compute_landscape()
 endPL_torus = timer()
 
-PL_infity2_torus = PersistenceLandscape_Alist_Larray(diag_torus, 1)
+PL_infity2_torus = PersistenceLandscapeExact_Alist_Larray(diag_torus, 1)
 startPLlistArray_torus = timer()
 PL_infity2_torus.transform()
 endPLlistArray_torus = timer()
 
-PL_infity3_torus = PersistenceLandscape_Alist_Llist(diag_torus, 1)
+PL_infity3_torus = PersistenceLandscapeExact_Alist_Llist(diag_torus, 1)
 startPLlist_torus = timer()
 PL_infity3_torus.transform()  
 endPLlist_torus = timer()
