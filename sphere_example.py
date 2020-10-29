@@ -99,7 +99,7 @@ plot_landscape(true_diff_pl, title='Difference of average landscapes in degree 1
 comb_pl_list = sph2_pl1_list + sph3_pl1_list
 significant = 0
 
-for run in range(10):
+for run in range(100):
     A_indices = random.sample(range(200), 100)
     B_indices = [_ for _ in range(200) if _ not in A_indices]
     
@@ -119,7 +119,7 @@ for run in range(10):
     if (AB_diff.sup_norm() > true_diff): significant += 1
 
 
-print(f'Significant is {significant}')
+print(f'Significant is {significant}') # Significant = 0
 #%% do multithreading
 
 # with concurrent.futures.ProcessPoolExecutor() as executor:
