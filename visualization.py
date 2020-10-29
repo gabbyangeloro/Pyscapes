@@ -11,12 +11,15 @@ from PersistenceLandscapeExact import PersistenceLandscapeExact
 from operator import itemgetter
 from matplotlib import cm
 
+mpl.rcParams['text.usetex'] = True
+
 def plot_landscape(landscape: PersistenceLandscapeExact,
                    num_steps: int = 3000,
                    color = cm.viridis,
                    alpha = 0.8,
                    padding: float = 0.1,
-                   depth_padding: float = 0.7):
+                   depth_padding: float = 0.7,
+                   title = None):
     """
     A plot of the persistence landscape.
     
@@ -91,5 +94,6 @@ def plot_landscape(landscape: PersistenceLandscapeExact,
     #ax.set_xticklabels(np.arange(min_crit_pt,max_crit_pt, 0.2))
     #ax.set_yticklabels(np.arange(0, landscape.max_depth, 3))
     #plt.axis(False)
+    if title: plt.title(title)
     ax.view_init(10,90)
     plt.show()

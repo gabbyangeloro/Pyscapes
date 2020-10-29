@@ -1,5 +1,5 @@
 
-
+#%%
 import numpy as np
 from sklearn.datasets import load_wine
 from sklearn.datasets import load_breast_cancer
@@ -31,8 +31,8 @@ wine_pl.compute_landscape()
 bc_pl.compute_landscape()
 
 #%% 
-plot_landscape(wine_pl)
-plot_landscape(bc_pl)
+plot_landscape(wine_pl, title='Wine persistence landscape')
+plot_landscape(bc_pl, title='Breast cancer landscape')
 #%%
 data = np.random.random_sample((200,2))
 diagrams = ripser(data)['dgms']
