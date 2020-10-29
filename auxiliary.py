@@ -4,7 +4,7 @@ Auxilary functions for working with persistence diagrams.
 import itertools
 
 def death_vector(diagram: list, homological_degree: int = 0):
-    """ Returns the death vector in degree 0 for the persistence diagram.
+    """ Returns the death vector in degree 0 for the persistence diagram
 
     """
     if homological_degree != 0:
@@ -14,14 +14,13 @@ def death_vector(diagram: list, homological_degree: int = 0):
 
 
 def linear_combination(landscapes: list, coeffs: list):
-    """ Compute a linear combination of landscapes.
-
+    """ Compute a linear combination of landscapes
 
     Parameters
     ----------
-    landscapes : list of PersistenceLandscape objects.
+    landscapes : list of PersistenceLandscape objects
 
-    coeffs : list, optional.
+    coeffs : list, optional
 
     Returns
     -------
@@ -47,11 +46,15 @@ def union_crit_pairs(A, B):
     result_pairs = []
     A.compute_landscape()
     B.compute_landscape()
+    # zip functions in landscapes A and B and pad with None
     for a, b in list(itertools.zip_longest(A.critical_pairs, B.critical_pairs)):
+        # B had more functions
         if a == None:
             result_pairs.append(b)
+        # A had more functions
         elif b == None:
             result_pairs.append(a)
+        # A, B > pos_to_slope_interp > sum_slopes > slope_to_pos_interp
         else:
             result_pairs.append(
                 slope_to_pos_interp(
@@ -68,9 +71,15 @@ def pos_to_slope_interp(l: list) -> list:
     """
     Convert positions of critical pairs to (x-value, slope) pairs. Intended
     for internal use. Inverse function of `slope_to_pos_interp`.
+    
+    Result
+    ------
+    list
+        [(xi,mi)]_i for i in len(function in landscape)
     """
 
     output = []
+    # for sequential pairs in landscape function
     for [[x0,y0], [x1,y1]] in zip(l,l[1:]):
         slope = (y1 - y0)/(x1 - x0)
         output.append([x0,slope])
@@ -82,20 +91,32 @@ def slope_to_pos_interp(l: list) -> list:
     """
     Convert positions of (x-value, slope) pairs to critical pairs. Intended
     for internal use. Inverse function of `pos_to_slope_interp`.
+    
+    Result
+    ------
+    list
+        [(xi, yi)]_i for i in len(function in landscape)
     """
     output = [[l[0][0],0]]
+    # for sequential pairs in [(xi,mi)]_i
     for [[x0, m], [x1, _]] in zip(l, l[1:]):
+        # uncover y0 and y1 from slope formula
         y0 = output[-1][1]
         y1 = y0 + (x1 - x0)*m
         output.append([x1, y1])
     return output
 
-def sum_slopes(a, b):
+def sum_slopes(a: list, b: list) -> list:
     """
     Sum two piecewise linear functions, each represented as a list
     of pairs (xi,mi), where each xi is the x-value of critical pair and
     mi is the slope. The input should be of the form of the output of the
     `pos_to_slope_interp' function.
+    
+    Result
+    ------
+    list
+        
 
     """
     result = []
@@ -104,19 +125,21 @@ def sum_slopes(a, b):
         if len(a) == 0 or (len(a) > 0 and len(b) > 0 and a[0][0] > b[0][0]):
             # The next critical pair comes from list b.
             bx, bm = b[0]
+            # pop b0
             b = b[1:]
             result.append([bx, am + bm])
         elif len(b) == 0 or (len(a) > 0 and len(b) > 0 and a[0][0] < b[0][0]):
             # The next critical pair comes from list a.
             ax, am = a[0]
+            # pop a0
             a = a[1:]
             result.append([ax, am + bm])
         else:
             # The x-values of two critical pairs coincide.
             ax, am = a[0]
             bx, bm = b[0]
+            # pop a0 and b0
             a, b = a[1:], b[1:]
-            assert ax == bx
             result.append([ax, am + bm])
         # reduce trailing zeroes
         if len(result) > 2 and result[-1][1] == result[2][1]:

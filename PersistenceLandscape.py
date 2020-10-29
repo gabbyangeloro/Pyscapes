@@ -14,32 +14,34 @@ class PersistenceLandscape:
     ----------
     diagrams : list of numpy arrays, optional
         A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
-        Each entry in the list corresponds to a single homological degree.
-        Each array represents the birth death pairs for a homology degree.
-        Inside each homology degree array are arrays representing birth death pairs.
-        Expecting output from ripser: ripser(data_user)['dgms']. Only
-        one of diagrams or critical pairs should be specified.
+    Each entry in the list corresponds to a single homological degree.
+    Each array represents the birth death pairs for a homology degree.
+    Inside each homology degree array are arrays representing birth death pairs.
+    Expecting output from ripser: ripser(data_user)['dgms']. Only
+    one of diagrams or critical pairs should be specified.
 
     homological_degree : int
         Represents the homology degree of the persistence diagram.
 
     critical_pairs: list, optional
         A list of critical pairs (points, values) for specifying a persistence
-       landscape. These do not necessarily have to arise from a persistence
-       diagram. Only one of diagrams or critical pairs should be specified.
+    landscape. These do not necessarily have to arise from a persistence
+    diagram. Only one of diagrams or critical pairs should be specified.
 
 
     Methods
     -------
-    landscape : returns persistence landscape associated to persistence diagram
-        for given homology degree
+    compute_landscape : stores persistence landscape associated to persistence diagram
+        for given homology degree in attribute `critical_paris`
 
-    transform : graphs persistence landscapes
-
-    get_kth_landscape : returns the kth landscape for a given homology degree
+    p_norm: returns p-norm of a landscape
+        
+    sup_norm: returns sup norm of a landscape
+        
+    vectorize: returns interpolated y-values of `critical_pairs` on user specified grid
 
     """
-
+    
     def __init__(
         self, diagrams: list = [], homological_degree: int = 0,
         critical_pairs: list = []):
@@ -67,6 +69,17 @@ class PersistenceLandscape:
         return PersistenceLandscape(homological_degree=self.homological_degree,
                                     critical_pairs=[ [[a,-b] for a, b in depth_list]
                                                     for depth_list in self.critical_pairs])
+        """
+        Computes the negation of a persistence landscape object
+
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (-P).critical_pairs returns the sum
+        """
 
     def __add__(self, other):
         # This requires a list implementation as written.
@@ -76,9 +89,39 @@ class PersistenceLandscape:
             critical_pairs=union_crit_pairs(self, other),
             homological_degree=self.homological_degree
             )
-
+        """
+        Computes the sum of two persistence landscape objects
+        
+        Parameters
+        -------
+        other: PersistenceLandscape
+            
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (P+Q).critical_pairs returns the sum
+        """
     def __sub__(self, other):
         return self + -other
+    
+        """
+        Computes the difference of two persistence landscape objects
+        
+        Parameters
+        -------
+        other: PersistenceLandscape
+            
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (P-Q).critical_pairs returns the difference
+        """
 
     def __mul__(self, other: float):      
         self.compute_landscape()
@@ -86,47 +129,90 @@ class PersistenceLandscape:
             homological_degree=self.homological_degree,
             critical_pairs=[[(a, other*b) for a, b in depth_list] 
                             for depth_list in self.critical_pairs])
+        """
+        Computes the product of a persistence landscape object and a float 
+        
+        Parameters
+        -------
+        other: float
+            the number the persistence landscape will be multiplied by 
+            
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (3*P).critical_pairs returns the product
+        """
     
     def __rmul__(self,other: float):
         return self.__mul__(other)
+        """
+        Computes the product of a persistence landscape object and a float 
+        
+        Parameters
+        -------
+        other: float
+            the number the persistence landscape will be multiplied by 
+            
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (P*3).critical_pairs returns the product
+    
+        """
 
     def __truediv__(self, other: float):
         return self*(1.0/other)
+        """
+        Computes the quotient of a persistence landscape object and a float 
+        
+        Parameters
+        -------
+        other: float
+            the divisor of the persistence landscape object
+            
+        Returns
+        -------
+        None.
+        
+        Usage
+        -----
+        (P/3).critical_pairs returns the quotient
+    
+        """
 
     # Indexing, slicing
     def __getitem__(self, key: slice) -> list:
         """
         Returns a list of critical pairs corresponding in range specified by 
-        depth.
+        depth
 
         Parameters
         ----------
-        key : slice object.
+        key : slice object
 
         Returns
         -------
         list
             The critical pairs of the landscape function corresponding
-            to depths given by key.
+        to depths given by key
         """
         self.compute_landscape()
         return self.critical_pairs[key]
 
-    def compute_landscape(self, verbose: bool = False) -> dict:
-        """Compute the persistence landscapes of self.diagrams.
-
+    def compute_landscape(self, verbose: bool = False) -> list:
+        """
+        Stores the persistence landscape in `self.critical_pairs` as a list
+        
         Parameters
         ----------
         verbose: bool
-            If true, progress messages are printed during computation.
-
-        Returns
-        -------
-        L_dict : dict
-
-            The keys of L_dict are L1, ..., Lk and the corresponding value is
-            each corresponds to critical values are respective function in
-            persistence landscape represented as arrays.
+            if true, progress messages are printed during computation
 
         """
 
@@ -256,27 +342,32 @@ class PersistenceLandscape:
         self.critical_pairs = [item[1:-1] for item in L]
 
     def compute_landscape_by_depth(self, depth: int) -> list:
-        """Returns the landscape function specified by idx.
+        """
+        Returns the function of depth from `self.critical_pairs` as a list
         
         Parameters
         ----------
-        idx: int
-            The index of the desired landscape function.
-
-        Returns
-        --------
-        The landscape function of index idx.
+        depth: int
+            the depth of the desired landscape function
         """
+        
         if self.critical_pairs:
             return self.critical_pairs[depth]
         else:
             return self.compute_landscape()[depth]
 
     def p_norm(self, p: int = 2) -> float:
-        """Returns the L_{`p`} norm of self."""
+        """
+        Returns the L_{`p`} norm of `self.critical_pairs`
+        
+        Parameters
+        ----------
+        p: float, default 2
+            value p of the L_{`p`} norm 
+        """
         if p == -1:
             return self.infinity_norm()
-        if p < -1 or 0 < p < 1:
+        if p < -1 or -1 < p < 0:
             raise ValueError(f"p can't be negative, but {p} was passed")
         self.compute_landscape()
         result = 0.
@@ -289,13 +380,14 @@ class PersistenceLandscape:
                 # slope is well-defined
                 slope = (y1 - y0)/(x1-x0)
                 b = y0 - slope*x0
+                # segment crosses the x-axis
                 if (y0 < 0 and y1 > 0) or (y0 > 0 and y1 < 0):
-                    # segment crosses the x-axis
                     z = -b/slope
                     ev_x1 = (slope*x1+b)**(p+1)/(slope*(p+1))
                     ev_x0 = (slope*x0+b)**(p+1)/(slope*(p+1))
                     ev_z = (slope*z++b)**(p+1)/(slope*(p+1))
                     result += np.abs(ev_x1 + ev_x0 -2*ev_z)
+                # segment does not cross the x-axis
                 else: 
                     ev_x1 = (slope*x1+b)**(p+1)/(slope*(p+1))
                     ev_x0 = (slope*x0+b)**(p+1)/(slope*(p+1))
@@ -303,23 +395,41 @@ class PersistenceLandscape:
         return (result)**(1.0/p)
                 
     def sup_norm(self) -> float:
+        """
+        Returns the sup norm of `self.critical_pairs`
+        """
+
         self.compute_landscape()
         cvals = list(itertools.chain.from_iterable(self.critical_pairs))
         return max(np.abs(cvals), key=itemgetter(1))[1]
     
     def vectorize(self, start: float = -1., stop: float = -1., num_dims: int = 100) -> list:
         """
-        Method for turning the list of critical pairs into a list of vectors
-        sampled at `num_dims` number of points starting from `start` and
-        ending at `stop`. If no values are passed for start and stop, they will
-        be defaulted to the minimum birth value and maximum death value, 
-        respectively.
+        Returns a list of interpolated y-values of `self.critical_pairs` 
+        on user specified grid 
+        
+        Parameters
+        ----------
+        start: float, default -1
+            start value of grid
+        if start is not inputed, start is assigned to minimum birth value
+        
+        stop: float, default -1
+            stop value of grid 
+        if stop is not inputed, stop is assigned to maximum death value
+        
+        num_dims: int, default 100
+            number of points starting from `start` and ending at `stop`
+        
         """
+       
         self.compute_landscape()
+        # default start and stop value to min/max birth/death value 
         # if start == -1.:
         # if stop == -1.:
         grid = np.linspace(start, stop, num_dims)
         result = []
+        # creates sequential pairs of points for each lambda in critical_pairs
         for l in self.critical_pairs:
             xs, ys = zip(*l)
             result.append(np.interp(grid, xs, ys))

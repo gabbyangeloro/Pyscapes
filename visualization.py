@@ -21,6 +21,24 @@ def plot_landscape(landscape: PersistenceLandscape,
     A plot of the persistence landscape.
     
     Warning: This function is quite slow, especially for large landscapes. 
+    
+    Parameters
+    ----------
+    num_steps: int, default 3000
+        number of sampled points that are plotted
+    
+    color, defualt cm.viridis
+        color scheme for shading of landscape functions
+    
+    alpha, default 0.8
+        transparency of shading
+        
+    padding: float, default 0.1
+        amount of empty grid shown to left and right of landscape functions
+    
+    depth_padding: float, default = 0.7
+        amount of space between sequential landscape functions
+        
     """
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -28,26 +46,29 @@ def plot_landscape(landscape: PersistenceLandscape,
     # itemgetter index selects which entry to take max/min wrt.
     # the hanging [0] or [1] takes that entry.
     crit_pairs = list(itertools.chain.from_iterable(landscape.critical_pairs))
-    min_crit_pt = min(crit_pairs, key=itemgetter(0))[0]
-    max_crit_pt = max(crit_pairs, key=itemgetter(0))[0] 
-    max_crit_val = max(crit_pairs,key=itemgetter(1))[1] 
-    min_crit_val = min(crit_pairs, key=itemgetter(1))[1]
+    min_crit_pt = min(crit_pairs, key=itemgetter(0))[0] # smallest birth time
+    max_crit_pt = max(crit_pairs, key=itemgetter(0))[0] # largest death time
+    max_crit_val = max(crit_pairs,key=itemgetter(1))[1] # largest peak of landscape
+    min_crit_val = min(crit_pairs, key=itemgetter(1))[1] # smallest peak of landscape
     norm = mpl.colors.Normalize(vmin=min_crit_val, vmax=max_crit_val)
+    # x-axis for grid
     domain = np.linspace(min_crit_pt-padding*0.1, max_crit_pt+padding*0.1, num=num_steps)
+    # for each landscape function
     for depth, l in enumerate(landscape):
+        # sequential pairs in landscape
         xs, zs = zip(*l)
-        image = np.interp(domain, xs, zs)
+        image = np.interp(domain, xs, zs) 
         for x, z in zip(domain,image):
             if z == 0.:
                 # plot a single point here?
-                continue
+                continue # moves to the next iterable in for loop
             if z > 0.:
                 ztuple = [0, z] 
             elif z < 0.:
                 ztuple = [z,0] 
             # for coloring https://matplotlib.org/3.1.0/tutorials/colors/colormapnorms.html
             ax.plot(
-                [x,x],
+                [x,x], # plotting a line to get shaded function
                 [depth_padding*depth,depth_padding*depth],
                 ztuple,
                 linewidth=0.5,
