@@ -24,6 +24,9 @@ distribution as done there. While this isn't necessarily difficult to implement
 we just have yet to do it. Hence, the results from this script are biased and we only
 use them to a) explore our full workflow, b) get a feel for the statistics of landscapes,
 and c) debug our visualization methods.
+
+UPDATE: Without parallelization, the above parameters simply take too long to run.
+We'll drop everything by an order of magnitude or two.
 """
 #%% Imports
 import numpy as np
@@ -36,7 +39,7 @@ from visualization import plot_landscape
 
 from tadasets import dsphere
 
-#%% Construct the list of 1000 landscapes from randomly sampled points.
+#%% Construct the list of 100 landscapes from randomly sampled points.
 sph2_pl1_list = []
 sph2_pl2_list = []
 sph3_pl1_list = []
