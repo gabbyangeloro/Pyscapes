@@ -52,12 +52,8 @@ class PersistenceLandscape:
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
         self.homological_degree = homological_degree
-        if critical_pairs:
-            self.critical_pairs = critical_pairs
-            self.diagrams = []
-        else:
-            self.critical_pairs = []
-            self.diagrams = diagrams
+        self.critical_pairs = critical_pairs
+        self.diagrams = diagrams
         self.max_depth = len(self.critical_pairs)
 
     def __repr__(self):
@@ -91,10 +87,10 @@ class PersistenceLandscape:
             critical_pairs=[[(a, other*b) for a, b in depth_list] 
                             for depth_list in self.critical_pairs])
     
-    def __rmul__(self,other: int):
+    def __rmul__(self,other: float):
         return self.__mul__(other)
 
-    def __truediv__(self, other: int):
+    def __truediv__(self, other: float):
         return self*(1.0/other)
 
     # Indexing, slicing
