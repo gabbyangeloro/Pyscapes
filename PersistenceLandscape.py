@@ -1,7 +1,8 @@
 """
 Define a base Persistence Landscape class
 """
-from abc import ABC
+from abc import ABC, abstractmethod
+
 
 class PersistenceLandscape(ABC):
     """
@@ -22,3 +23,11 @@ class PersistenceLandscape(ABC):
             raise TypeError("diagrams must be a list")
         self.diagrams = diagrams
         self.homological_degree = homological_degree
+
+    @abstractmethod
+    def p_norm(self, p: int = 2) -> float:
+        pass
+
+    @abstractmethod
+    def sup_norm(self) -> float:
+        pass

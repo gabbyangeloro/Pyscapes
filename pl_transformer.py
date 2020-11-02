@@ -1,5 +1,5 @@
 """
-    Implementation of scikit-learn transformer functionality for persistence
+    Implementation of scikit-learn transformers for persistence
     landscapes.
 """
 
