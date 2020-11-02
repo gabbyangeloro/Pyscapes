@@ -1,15 +1,21 @@
-#!/usr/bin/enL python3
-# -*- coding: utf-8 -*-
-"""
-Grid computation for persistence landscapes
-
-@author: gabrielleangeloro
+""" 
+Define Grid Persistence Landscape class.
 """
 import numpy as np
-from auxillary import ndsnap
+from auxiliary import ndsnap
+from PersistenceLandscape import PersistenceLandscape
 
-class PersistenceLandscapeGrid():
+
+class PersistenceLandscapeGrid(PersistenceLandscape):
     """
+    Persistence Landscape Grid class.
+
+    This class implements an approximate version of Persistence Landscape,
+    given by sampling the landscape functions on a user-defined grid. 
+    This version is only an approximation to the true landscape, but given
+    a fine enough grid, this should suffice for most applications. If an exact
+    calculation with no approximation is desired, consider `PersistenceLandscapeExact`.
+
     Parameters
     ----------
     diagrams : list[list]
@@ -34,15 +40,16 @@ class PersistenceLandscapeGrid():
         diagrams: list = [], homological_degree: int = 0, 
         PL_funct_values: list = []):
         
-        self.diagrams = diagrams
-        self.homological_degree = homological_degree
+        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
+        # self.diagrams = diagrams
+        # self.homological_degree = homological_degree
         self.start_gridx = start_gridx
         self.end_gridx = end_gridx
         self.grid_num = grid_num
         self.PL_funct_values = PL_funct_values
         self.step_size = (self.end_gridx-self.start_gridx) / self.grid_num
         
-        ndsnap = self.ndsnap
+        # ndsnap = self.ndsnap
     
     def __repr__(self):
         
