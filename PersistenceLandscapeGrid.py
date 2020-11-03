@@ -36,9 +36,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     
     """
     def __init__(
-        self, start_gridx:float, end_gridx: float, grid_num: int, 
+        self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        PL_funct_values: list = []):
+        funct_values: list = []):
         
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
         # self.diagrams = diagrams
@@ -48,6 +48,12 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.grid_num = grid_num
         self.PL_funct_values = PL_funct_values
         self.step_size = (self.end_gridx-self.start_gridx) / self.grid_num
+        self.diagrams = diagrams
+        self.homological_degree = homological_degree
+        self.start = start
+        self.stop = stop
+        self.num_dims = num_dims
+        self.funct_values = funct_values
         
         # ndsnap = self.ndsnap
     
@@ -56,73 +62,75 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         return ('The persistence landscapes of diagrams in homological '
         f'degree {self.homological_degree} on grid from {self.start_gridx} to {self.end_gridx}'
         f' with step size {self.step_size}')
+        
     
-    def create_grid(self):
-        homological_degree = self.homological_degree
-        start_gridx = self.start_gridx
-        end_gridx = self.end_gridx
-        diagrams = self.diagrams
-        grid_num = self.grid_num
+    def compute_landscape(self, verbose: bool = False):
         
+        verboseprint = print if verbose else lambda *a, **k: None
         
+        if self.funct_values:
+            return self.funct_values
+        
+    
         # make grid
-        # calculate max y -value for grid (always start at y=0)
-        end_gridy = np.ceil(max(diagrams[homological_degree][:,1]))
-        x, step = np.linspace(start_gridx, end_gridx, grid_num, retstep = True)[:]
-        self.step = step
+        grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
+                                        retstep = True)[:]
+        grid_values = list(grid_values)
+        grid = np.array([[x,y] for x in grid_values for y in grid_values])
+        points = self.diagrams[self.homological_degree]
+        diagram_grid = ndsnap(points, grid)
         
-        y = np.arange(0, end_gridy+ step, step)
+        # make grid dictionary 
         
-        grid = np.array([[itemx, itemy] for itemx in x for itemy in y])
-        diagrams = diagrams[homological_degree]
+        values = list(range(self.num_dims))
+        dict_grid = dict(zip( grid_values, values))
         
-        diagrams_grid = self.ndsnap(diagrams, grid)
-        self.diagrams_grid = diagrams_grid
-        
-    
-    def transform(self):
-        if self.PL_funct_values:
-            return self.PL_funct_values
-        
-        diagrams_grid = self.diagrams_grid 
-        homological_degree = self.homological_degree
-        start_gridx = self.start_gridx
-        end_gridx = self.end_gridx
-        diagrams = self.diagrams
-        grid_num = self.grid_num
-        
-        
+        verboseprint(f'diagram_grid is {diagram_grid}')
+        verboseprint(f'step is {step}')
         # initialze W to a list of 2m + 1 empty lists
-        W = [[] for i in range(end_gridx +1)]
+        #W = [[] for i in range(self.stop +1)]
+        W = [[] for _ in range(self.num_dims)]
+        
+        verboseprint(f'W is {W}')
         
         # for each birth death pair
-        for ind, bd in enumerate(diagrams_grid):
-            b = bd[0]
-            d = bd[1]
-            # for j=1 to j=height of (b_i, d_i) from rank function
-            for j in range(1, int((bd[1]- bd[0])/2 +1)) :
-                W[ind + j].append(j*self.step)
+        for  bd in diagram_grid:
+            b,d = bd
+            j = 0
+            # step through by x value
+            for _ in np.arange(b+step, (b+d)/2 +1, step):
+                j += 1
+                # dict_grid[b]: index in W that b corresponds to
+                # j*step: adding points from a line with slope 1
+                W[dict_grid[b]+j].append(j* step) 
             
-            # for j=1 to j=height of (b_i, d_i) +1 from rank function
-            for j in range(1, int(((bd[1]- bd[0])/2))):
-                W[ind - j].append(j*self.step)
+    
+            
+            j = 0
+            # step through x backwards from d-step to b+d/2 by step
+            # arange doesn't include right endpoint, i.e. b+d/2
+            for _ in np.arange(d- step, (b+d)/2, -step):
+                j += 1
+                W[dict_grid[d] - j].append(j* step)
         
         # sort each list in W
         for i in range(len(W)):
             W[i] = sorted(W[i], reverse = True)
             
+        verboseprint(f'W is {W}')
+            
         # calculate k: max length of lists in W
         K = max([len(_) for _ in W ])
         
         # initialize L to be a zeros matrix of size K x (2m+1)
-        L = [[0] * (end_gridx + 1) for _ in range(K)]
+        L = [[0] * (self.num_dims) for _ in range(K)]
         
         #input Lalues from W to L
-        for i in range(end_gridx +1):
+        for i in range(self.num_dims):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 
-        self.PL_funct_values = L
+        self.funct_values = L
         return(L)   
         
 

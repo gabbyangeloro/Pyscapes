@@ -2,20 +2,18 @@
 Auxilary functions for working with persistence diagrams.
 """
 import itertools
+import numpy as np
 
 def death_vector(diagram: list, homological_degree: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
-
     """
     if homological_degree != 0:
         raise NotImplementedError("The death vector is not defined for "
                                   "homological degrees greater than zero.")
     pass
 
-
 def linear_combination(landscapes: list, coeffs: list):
     """ Compute a linear combination of landscapes
-
     Parameters
     ----------
     landscapes : list of PersistenceLandscape objects
@@ -25,7 +23,6 @@ def linear_combination(landscapes: list, coeffs: list):
     Returns
     -------
     None.
-
     """
     result = coeffs[0]*landscapes[0]
     for c, L in enumerate(landscapes):
@@ -40,7 +37,6 @@ def average_landscape(landscapes: list):
 
 def union_crit_pairs(A, B):
     """ Helper function for summing landscapes. 
-
     This should handle all the edge cases, like an empty list.
     """
     result_pairs = []
@@ -117,7 +113,6 @@ def sum_slopes(a: list, b: list) -> list:
     ------
     list
         
-
     """
     result = []
     am, bm = 0, 0  # initialize slopes
@@ -165,15 +160,11 @@ def ndsnap(points, grid):
     In case of ties, it will be snapped to the row of grid with the
     smaller index.
     """
-    # make grid
-    x, step = np.linspace(0, 4, 5, retstep = True)[:]
-    y = np.arange(0, 5+ step, step)
-    grid = np.array([[itemx, itemy] for itemx in x for itemy in y])
-    
+
     # transpose grid 
     grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
     # axis 1 is x-values of points
     diffs = np.sum(np.abs(grid_3d - points[:,:,np.newaxis]), axis=1)
     # argmin returns the indices of the minimum values along an axis
     best = np.argmin(diffs, axis=1)
-    return grid[best,:]
+    return  grid[best,:]
