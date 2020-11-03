@@ -120,6 +120,50 @@ for run in range(100):
 
 
 print(f'Significant is {significant}') # Significant = 0
-#%% do multithreading
+#%% do multiprocessing first
 
-# with concurrent.futures.ProcessPoolExecutor() as executor:
+from concurrent.futures import ProcessPoolExecutor
+
+sph2_pl1_list = []
+sph2_pl2_list = []
+sph3_pl1_list = []
+sph3_pl2_list = []
+
+def compute_sph2_pl1():
+    sph2_pts = dsphere(n=100, d=2, r=1)
+    sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
+    sph2_pl = PersistenceLandscapeExact(diagrams=sph2_dgm, homological_degree=1)
+    sph2_pl.compute_landscape()
+    sph2_pl1_list.append(sph2_pl)
+    return sph2_pl
+
+# %% execute
+
+def mutliproc(func, workers=10):
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        res = executor.map(func)
+    return list(res)
+# %%
+
+sph2pl1list = mutliproc(compute_sph2_pl1)
+
+#%%
+
+from multiprocessing import Process, Queue
+import random
+
+def rand_num():
+    num = random.random()
+    print(num)
+
+if __name__ == "__main__":
+    queue = Queue()
+
+    processes = [Process(target=compute_sph2_pl1, args=()) for x in range(100)]
+
+    for p in processes:
+        p.start()
+
+    for p in processes:
+        p.join()
+# %%
