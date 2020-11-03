@@ -175,6 +175,8 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         """
 
     def __truediv__(self, other: float):
+        if other == 0.:
+            raise ValueError("Cannot divide by zero")
         return self*(1.0/other)
         """
         Computes the quotient of a persistence landscape object and a float 

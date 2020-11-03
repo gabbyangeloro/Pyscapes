@@ -24,6 +24,9 @@ class PersistenceLandscape(ABC):
         self.diagrams = diagrams
         self.homological_degree = homological_degree
 
+    # We enforce landscapes have arithmetic and norms, 
+    # this is the whole reason for using them.
+    
     @abstractmethod
     def p_norm(self, p: int = 2) -> float:
         pass
@@ -31,3 +34,21 @@ class PersistenceLandscape(ABC):
     @abstractmethod
     def sup_norm(self) -> float:
         pass
+        
+    @abstractmethod
+    def __add__(self, other):
+        pass
+    
+    @abstractmethod
+    def __neg__(self):
+        pass
+    
+    @abstractmethod
+    def __sub__(self, other):
+        pass
+    
+    @abstractmethod
+    def __mul__(self, other):
+        pass
+        
+        

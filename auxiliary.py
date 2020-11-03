@@ -3,6 +3,8 @@ Auxilary functions for working with persistence diagrams.
 """
 import itertools
 import numpy as np
+from PersistenceLandscapeExact import PersistenceLandscapeExact
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
 def death_vector(diagram: list, homological_degree: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
@@ -168,3 +170,9 @@ def ndsnap(points, grid):
     # argmin returns the indices of the minimum values along an axis
     best = np.argmin(diffs, axis=1)
     return  grid[best,:]
+
+def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
+    """
+    Converts a PersistenceLandscapeExact class to a PersistenceLandscapeGrid class.
+    """
+    pass
