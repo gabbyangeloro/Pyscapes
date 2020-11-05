@@ -95,7 +95,6 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
                 W[dict_grid[b]+j].append(j* step) 
             
     
-            
             j = 0
             # step through x backwards from d-step to b+d/2 by step
             # arange doesn't include right endpoint, i.e. b+d/2
