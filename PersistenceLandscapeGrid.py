@@ -32,7 +32,7 @@ class PersistenceLandscapeGrid():
     def __init__(
         self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        funct_values: list = []):
+        funct_values: list = [], funct_pairs: list = []):
         
         self.diagrams = diagrams
         self.homological_degree = homological_degree
@@ -40,23 +40,25 @@ class PersistenceLandscapeGrid():
         self.stop = stop
         self.num_dims = num_dims
         self.funct_values = funct_values
+        self.funct_pairs = funct_pairs
 
     
     def __repr__(self):
         
         return ('The persistence landscapes of diagrams in homological '
-        f'degree {self.homological_degree} on grid from {self.start_gridx} to {self.end_gridx}'
-        f' with step size {self.step_size}')
+        f'degree {self.homological_degree} on grid from {self.start} to {self.stop}'
+        f' with step size {self.num_dims}')
         
     
     def compute_landscape(self, verbose: bool = False):
         
         verboseprint = print if verbose else lambda *a, **k: None
-        
+         
         if self.funct_values:
-            return self.funct_values
+            verboseprint('funct_pairs was entered, value is stored')
+            return 
         
-    
+        verboseprint('funct_values and funct_pairs were empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
                                         retstep = True)[:]
@@ -70,13 +72,10 @@ class PersistenceLandscapeGrid():
         values = list(range(self.num_dims))
         dict_grid = dict(zip( grid_values, values))
         
-        verboseprint(f'diagram_grid is {diagram_grid}')
-        verboseprint(f'step is {step}')
         # initialze W to a list of 2m + 1 empty lists
         #W = [[] for i in range(self.stop +1)]
         W = [[] for _ in range(self.num_dims)]
-        
-        verboseprint(f'W is {W}')
+    
         
         # for each birth death pair
         for  bd in diagram_grid:
@@ -102,8 +101,6 @@ class PersistenceLandscapeGrid():
         for i in range(len(W)):
             W[i] = sorted(W[i], reverse = True)
             
-        verboseprint(f'W is {W}')
-            
         # calculate k: max length of lists in W
         K = max([len(_) for _ in W ])
         
@@ -116,7 +113,27 @@ class PersistenceLandscapeGrid():
                 L[k][i] = W[i][k]
 
         self.funct_values = L
-        return(L)   
+        return
+    
+    
+    def funct_values_to_pairs(self):
+        """
+        Converts function values to ordered pairs and stores in `self.funct_pairs`
+
+        Returns
+        -------
+        None.
+
+        """
+        self.compute_landscape()
+        
+        grid_values = list(np.linspace(self.start, self.stop, self.num_dims, ))
+        
+        for l in self.funct_values:
+            pairs = list(zip(grid_values, l))
+            self.funct_pairs.append( pairs )
+        return
+          
         
 
 
