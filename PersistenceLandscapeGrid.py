@@ -3,8 +3,10 @@ Define Grid Persistence Landscape class.
 """
 from __future__ import annotations
 import numpy as np
+import itertools
 from auxiliary import ndsnap
 from PersistenceLandscape import PersistenceLandscape
+
 
 
 
@@ -66,14 +68,23 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             verboseprint('funct_pairs was entered, value is stored')
             return 
         
-        verboseprint('funct_values and funct_pairs were empty, computing values')
+        verboseprint('funct_values was empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
                                         retstep = True)[:]
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
-        points = self.diagrams[self.homological_degree]
-        diagram_grid = ndsnap(points, grid)
+        
+        # create list of triangle top for each birth death pair
+        bd_pairs = self.diagrams[self.homological_degree]
+        birth: 'np.ndarray' = bd_pairs[:, 0]
+        death: 'np.ndarray' = bd_pairs[:, 1]
+        triangle_top_ycoord = (death - birth)/ 2
+        triangle_top = np.array(list(zip((birth + death)/2, (death - birth)/2)))
+        
+        # snap birth-death pairs and triangle tops to grid 
+        bd_pairs_grid = ndsnap(bd_pairs, grid)
+        triangle_top_grid = ndsnap(triangle_top, grid)
         
         # make grid dictionary 
         
@@ -81,16 +92,36 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         dict_grid = dict(zip( grid_values, values))
         
         # initialze W to a list of 2m + 1 empty lists
-        #W = [[] for i in range(self.stop +1)]
+        # W = [[] for i in range(self.stop +1)]
         W = [[] for _ in range(self.num_dims)]
     
-        
+        # for each birth death pair
+        for ind_in_bd_pairs, bd in enumerate(bd_pairs_grid):
+            b, d = bd
+            ind_in_Wb = dict_grid[b] # index in W
+            ind_in_Wd = dict_grid[d] # index in W
+            
+            # step through by x value
+            j = 0
+            # j in (b, b+d/2]
+            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
+                j += 1
+                # j*step: adding points from a line with slope 1
+                W[ind_in_Wb +j].append(j* step) 
+          
+            j = 0
+            # j in (b+d/2, d)
+            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
+                j += 1
+                W[ind_in_Wd  - j].append(j* step)
+    
+        '''  
         # for each birth death pair
         for  bd in diagram_grid:
             b,d = bd
             j = 0
             # step through by x value
-            for _ in np.arange(b+step, (b+d)/2 +1, step):
+            for _ in np.arange(b+step, (b+d)/2 , step):
                 j += 1
                 # dict_grid[b]: index in W that b corresponds to
                 # j*step: adding points from a line with slope 1
@@ -103,6 +134,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             for _ in np.arange(d- step, (b+d)/2, -step):
                 j += 1
                 W[dict_grid[d] - j].append(j* step)
+        '''
         
         # sort each list in W
         for i in range(len(W)):
@@ -164,6 +196,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             homological_degree=self.homological_degree,
             values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
         pass
+    
+    def __sub__(self, other):
+        return self + -other
     
     def __mul__(self, other: float) -> PersistenceLandscapeGrid:
         if issubclass(other, PersistenceLandscape):
