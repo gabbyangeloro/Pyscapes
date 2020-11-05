@@ -1,9 +1,11 @@
 """ 
 Define Grid Persistence Landscape class.
 """
+from __future__ import annotations
 import numpy as np
 from auxiliary import ndsnap
 from PersistenceLandscape import PersistenceLandscape
+
 
 
 class PersistenceLandscapeGrid(PersistenceLandscape):
