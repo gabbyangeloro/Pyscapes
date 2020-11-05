@@ -1,15 +1,21 @@
-#!/usr/bin/enL python3
-# -*- coding: utf-8 -*-
-"""
-Grid computation for persistence landscapes
-
-@author: gabrielleangeloro
+""" 
+Define Grid Persistence Landscape class.
 """
 import numpy as np
 from auxiliary import ndsnap
+from PersistenceLandscape import PersistenceLandscape
 
-class PersistenceLandscapeGrid():
+
+class PersistenceLandscapeGrid(PersistenceLandscape):
     """
+    Persistence Landscape Grid class.
+
+    This class implements an approximate version of Persistence Landscape,
+    given by sampling the landscape functions on a user-defined grid. 
+    This version is only an approximation to the true landscape, but given
+    a fine enough grid, this should suffice for most applications. If an exact
+    calculation with no approximation is desired, consider `PersistenceLandscapeExact`.
+
     Parameters
     ----------
     diagrams : list[list]
@@ -32,25 +38,25 @@ class PersistenceLandscapeGrid():
     def __init__(
         self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        funct_values: list = [], funct_pairs: list = []):
+        funct_values: list = [], funct_pairs: list = []) -> None:
         
-        self.diagrams = diagrams
-        self.homological_degree = homological_degree
+        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
+        # self.diagrams = diagrams
+        # self.homological_degree = homological_degree
         self.start = start
         self.stop = stop
         self.num_dims = num_dims
         self.funct_values = funct_values
         self.funct_pairs = funct_pairs
-
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         
         return ('The persistence landscapes of diagrams in homological '
         f'degree {self.homological_degree} on grid from {self.start} to {self.stop}'
         f' with step size {self.num_dims}')
         
     
-    def compute_landscape(self, verbose: bool = False):
+    def compute_landscape(self, verbose: bool = False) -> list:
         
         verboseprint = print if verbose else lambda *a, **k: None
          
@@ -135,14 +141,46 @@ class PersistenceLandscapeGrid():
         return
           
         
+    
+    def __add__(self, other: PersistenceLandscapeGrid) -> PersistenceLandscapeGrid:
+        # This assumes the values are stored in numpy arrays
+        if self.homological_degree != other.homological_degree:
+            raise ValueError("Persistence landscapes must be of same homological degree")
+        if self.start_gridx != other.start_gridx:
+            raise ValueError("Start values of grids do not coincide")
+        if self.end_gridx != other.end_gridx:
+            raise ValueError("Stop values of grids do not coincide")
+        if self.grid_num != other.grid_num:
+            raise ValueError("Number of steps of grids do not coincide")
+        return PersistenceLandscapeGrid(start_gridx=self.start_gridx, end_gridx=self.end_gridx, grid_num=self.grid_num,
+                                        homological_degree=self.homological_degree, values=self.values+other.values)
+    
+    def __neg__(self) -> PersistenceLandscapeGrid:
+        return PersistenceLandscapeGrid(
+            start_gridx=self.start_gridx, 
+            end_gridx=self.end_gridx, 
+            grid_num=self.grid_num,
+            homological_degree=self.homological_degree,
+            values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
+        pass
+    
+    def __mul__(self, other: float) -> PersistenceLandscapeGrid:
+        if issubclass(other, PersistenceLandscape):
+            raise TypeError("Cannot multiply persistence landscapes together")
+        pass
+    
+    def __rmul__(self,other: float) -> PersistenceLandscapeGrid:
+        return other*self
+    
+    def __truediv__(self, other: float) -> PersistenceLandscapeGrid:
+        if other == 0.:
+            raise ValueError("Cannot divide by zero")
+        return (1.0/other)*self
+    
+    def p_norm(self, p:int = 2) -> float:
+        return np.sum([np.linalg.norm(depth,p) for depth in self.values])
 
+    def sup_norm(self) -> float:
+        return np.max(np.abs(self.values))
 
-    
-    
-            
-        
-        
-        
-        
-    
-    
+# max and min crit values are given by taking np.max/min on the list of lists.
