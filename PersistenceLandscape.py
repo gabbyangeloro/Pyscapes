@@ -20,8 +20,9 @@ class PersistenceLandscape(ABC):
             raise TypeError("homological_degree must be an integer")
         if homological_degree < 0:
             raise ValueError('homological_degree must be positive')
-        if not isinstance(diagrams, (list, tuple, np.array)):
-            raise TypeError("diagrams must be a list, tuple, or numpy array")
+        # TODO: Fix the check below.
+        # if not isinstance(diagrams, (list, tuple, type(np.array))):
+        #     raise TypeError("diagrams must be a list, tuple, or numpy array")
         self.diagrams = diagrams
         self.homological_degree = homological_degree
 

@@ -32,6 +32,7 @@ We'll drop everything by an order of magnitude or two.
 import numpy as np
 import random
 import concurrent.futures
+from operator import itemgetter
 
 from ripser import ripser
 from PersistenceLandscapeGrid import PersistenceLandscapeGrid
@@ -39,39 +40,60 @@ from visualization import plot_landscape
 
 from tadasets import dsphere
 
-#%% Construct the list of 100 landscapes from randomly sampled points.
-sph2_pl1_list = []
-sph2_pl2_list = []
-sph3_pl1_list = []
-sph3_pl2_list = []
+#%% Construct a list of 100 landscapes from randomly sampled points.
+sph2_dgm_list = []
+sph3_dgm_list = []
+sph2_b = 100.
+sph2_d = -100.
+sph3_b = 100.
+sph3_d = -100.
 
 for i in range(100):
     sph2_pts = dsphere(n=100, d=2, r=1)
     sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
+    if min(sph2_dgm[1],key=itemgetter(0))[0] < sph2_b:
+        sph2_b = min(sph2_dgm[1],key=itemgetter(0))[0]
+    if max(sph2_dgm[1],key=itemgetter(1))[1] > sph2_d:
+        sph2_d = max(sph2_dgm[1],key=itemgetter(1))[1]
+    sph2_dgm_list.append(sph2_dgm)
     
     sph3_pts = dsphere(n=100, d=3, r=1)
     sph3_dgm = ripser(sph3_pts, maxdim=2)['dgms']
+    if min(sph3_dgm[1],key=itemgetter(0))[0] < sph3_b:
+        sph3_b = min(sph3_dgm[1],key=itemgetter(0))[0]
+    if max(sph3_dgm[1],key=itemgetter(1))[1] > sph3_d:
+        sph3_d = max(sph3_dgm[1],key=itemgetter(1))[1]
+    sph3_dgm_list.append(sph3_dgm)
+#%%
+_b = min(sph2_b,sph3_b)
+_d = max(sph2_d, sph3_d)
+sph2_pl1_list = []
+sph2_pl2_list = []
+sph3_pl1_list = []
+sph3_pl2_list = []
+for i in range(100):
     
-    sph2_pl1 = PersistenceLandscapeGrid(diagrams=sph2_dgm, homological_degree=1)
+    sph2_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
+                                        diagrams=sph2_dgm_list[i], 
+                                        homological_degree=1)
     sph2_pl1.compute_landscape()
     sph2_pl1_list.append(sph2_pl1)
-    sph2_pl2 = PersistenceLandscapeGrid(diagrams=sph2_dgm, homological_degree=2)
-    sph2_pl2.compute_landscape
-    sph2_pl2_list.append(sph2_pl2)
-    sph3_pl1 = PersistenceLandscapeGrid(diagrams=sph3_dgm, homological_degree=1)
+    #sph2_pl2 = PersistenceLandscapeGrid(diagrams=sph2_dgm, homological_degree=2)
+    #sph2_pl2.compute_landscape
+    #sph2_pl2_list.append(sph2_pl2)
+    sph3_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
+                                        diagrams=sph3_dgm_list[i], homological_degree=1)
     sph3_pl1.compute_landscape()
     sph3_pl1_list.append(sph3_pl1)
-    sph3_pl2 = PersistenceLandscapeGrid(diagrams=sph3_dgm, homological_degree=2)
-    sph3_pl2.compute_landscape()
-    sph3_pl2_list.append(sph3_pl2)
+    #sph3_pl2 = PersistenceLandscapeGrid(diagrams=sph3_dgm, homological_degree=2)
+    #sph3_pl2.compute_landscape()
+    #sph3_pl2_list.append(sph3_pl2)
     
 #%% Construct the true average landscape
-avg_sph2_pl1 = PersistenceLandscapeExact(diagrams=sph2_dgm, homological_degree=1)
-avg_sph2_pl1.compute_landscape()
-avg_sph3_pl1 = PersistenceLandscapeExact(diagrams=sph3_dgm, homological_degree=1)
-avg_sph3_pl1.compute_landscape()
+avg_sph2_pl1 = sph2_pl1_list[0]
+avg_sph3_pl1 = sph3_pl1_list[0]
 
-for i in range(100):
+for i in range(1,100):
     avg_sph2_pl1 += sph2_pl1_list[i]
     avg_sph3_pl1 += sph3_pl1_list[i]
 

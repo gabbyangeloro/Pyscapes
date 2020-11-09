@@ -216,17 +216,18 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         return self + -other
     
     def __mul__(self, other: float) -> PersistenceLandscapeGrid:
-        if issubclass(other, PersistenceLandscape):
-            raise TypeError("Cannot multiply persistence landscapes together")
+        # TODO: Fix this check.
+        #if issubclass(PersistenceLandscape, other):
+        #    raise TypeError("Cannot multiply persistence landscapes together")
         return PersistenceLandscapeGrid(
             start=self.start, 
             stop=self.stop, 
             num_dims=self.num_dims,
             homological_degree=self.homological_degree,
-            values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
+            values = np.array([other*depth_array for depth_array in self.values]))
     
     def __rmul__(self,other: float) -> PersistenceLandscapeGrid:
-        return other*self
+        return self.__mul__(other)
     
     def __truediv__(self, other: float) -> PersistenceLandscapeGrid:
         if other == 0.:
