@@ -2,6 +2,7 @@
 Define a base Persistence Landscape class
 """
 from abc import ABC, abstractmethod
+import numpy as np
 
 
 class PersistenceLandscape(ABC):
@@ -19,8 +20,8 @@ class PersistenceLandscape(ABC):
             raise TypeError("homological_degree must be an integer")
         if homological_degree < 0:
             raise ValueError('homological_degree must be positive')
-        if not isinstance(diagrams, list):
-            raise TypeError("diagrams must be a list")
+        if not isinstance(diagrams, (list, tuple, np.array)):
+            raise TypeError("diagrams must be a list, tuple, or numpy array")
         self.diagrams = diagrams
         self.homological_degree = homological_degree
 
