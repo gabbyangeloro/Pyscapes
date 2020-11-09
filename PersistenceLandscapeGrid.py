@@ -234,6 +234,25 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             raise ValueError("Cannot divide by zero")
         return (1.0/other)*self
     
+    # Indexing, slicing
+    def __getitem__(self, key: slice) -> list:
+        """
+        Returns a list of values corresponding in range specified by 
+        depth
+
+        Parameters
+        ----------
+        key : slice object
+
+        Returns
+        -------
+        list
+            The values of the landscape function corresponding
+        to depths given by key
+        """
+        self.compute_landscape()
+        return self.values[key]
+    
     def p_norm(self, p:int = 2) -> float:
         return np.sum([np.linalg.norm(depth,p) for depth in self.values])
 
