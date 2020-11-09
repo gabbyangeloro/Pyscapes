@@ -31,7 +31,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     Methods
     -------
     transform : computes persistence landscape using the grid method 
-        for the giLen homological degree
+        for the given homological degree
     
     
     Examples
@@ -149,12 +149,23 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         # initialize L to be a zeros matrix of size K x (2m+1)
         L = [[0] * (self.num_dims) for _ in range(K)]
         
-        #input Lalues from W to L
+        #input Values from W to L
         for i in range(self.num_dims):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 
+
         self.values = L
+        # TODO: Isn't self.values a list now? Shouldn't it be a np.array?
+        # Maybe it should be 
+        # self.values = np.array([np.array(l) for l in L])?
+        # But this seems slow since we have to iterate over everything again.
+        # Maybe the right place to do this is on line 150, where L is initialized.
+        # There it should be 
+        # L = np.array([ np.zeros(self.num_dims) for _ in range(K)])
+        # Where numpy arrays are slow is with appending elements, because the entire array
+        # has to be copied over in memory (they have to be contiguous I think), but once you
+        # know the size of the array, i don't think they're slow anymore.
         return
     
     
@@ -198,7 +209,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             stop=self.stop, 
             num_dims=self.num_dims,
             homological_degree=self.homological_degree,
-            values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
+            values = np.array([-1*depth_array for depth_array in self.values]))
         pass
     
     def __sub__(self, other):
@@ -207,7 +218,12 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def __mul__(self, other: float) -> PersistenceLandscapeGrid:
         if issubclass(other, PersistenceLandscape):
             raise TypeError("Cannot multiply persistence landscapes together")
-        pass
+        return PersistenceLandscapeGrid(
+            start=self.start, 
+            stop=self.stop, 
+            num_dims=self.num_dims,
+            homological_degree=self.homological_degree,
+            values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
     
     def __rmul__(self,other: float) -> PersistenceLandscapeGrid:
         return other*self
