@@ -42,7 +42,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def __init__(
         self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        funct_values: list = [], funct_pairs: list = []) -> None:
+        values: list = [], pairs: list = []) -> None:
         
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
         # self.diagrams = diagrams
@@ -50,8 +50,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.start = start
         self.stop = stop
         self.num_dims = num_dims
-        self.funct_values = funct_values
-        self.funct_pairs = funct_pairs
+        self.values = values
+        self.pairs = pairs
+        # TODO: Do we need self.pairs?
     
     def __repr__(self) -> str:
         
@@ -64,11 +65,13 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         
         verboseprint = print if verbose else lambda *a, **k: None
          
-        if self.funct_values:
-            verboseprint('funct_pairs was entered, value is stored')
+        # TODO: I don't understand the following check. We check funct_values
+        #       but print a message about funct_pairs.
+        if self.values:
+            verboseprint('pairs was entered, value is stored')
             return 
         
-        verboseprint('funct_values was empty, computing values')
+        verboseprint('values was empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
                                         retstep = True)[:]
@@ -151,13 +154,13 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 
-        self.funct_values = L
+        self.values = L
         return
     
     
-    def funct_values_to_pairs(self):
+    def values_to_pairs(self):
         """
-        Converts function values to ordered pairs and stores in `self.funct_pairs`
+        Converts function values to ordered pairs and stores in `self.pairs`
 
         Returns
         -------
@@ -168,31 +171,32 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         
         grid_values = list(np.linspace(self.start, self.stop, self.num_dims, ))
         
-        for l in self.funct_values:
+        for l in self.values:
             pairs = list(zip(grid_values, l))
-            self.funct_pairs.append( pairs )
+            self.pairs.append( pairs )
         return
           
         
     
     def __add__(self, other: PersistenceLandscapeGrid) -> PersistenceLandscapeGrid:
-        # This assumes the values are stored in numpy arrays
         if self.homological_degree != other.homological_degree:
             raise ValueError("Persistence landscapes must be of same homological degree")
-        if self.start_gridx != other.start_gridx:
+        if self.start != other.start:
             raise ValueError("Start values of grids do not coincide")
-        if self.end_gridx != other.end_gridx:
+        if self.stop != other.stop:
             raise ValueError("Stop values of grids do not coincide")
-        if self.grid_num != other.grid_num:
+        if self.num_dims != other.num_dims:
             raise ValueError("Number of steps of grids do not coincide")
-        return PersistenceLandscapeGrid(start_gridx=self.start_gridx, end_gridx=self.end_gridx, grid_num=self.grid_num,
-                                        homological_degree=self.homological_degree, values=self.values+other.values)
+        return PersistenceLandscapeGrid(start=self.start, stop=self.stop, 
+                                        num_dims=self.num_dims,
+                                        homological_degree=self.homological_degree, 
+                                        values=self.values+other.values)
     
     def __neg__(self) -> PersistenceLandscapeGrid:
         return PersistenceLandscapeGrid(
-            start_gridx=self.start_gridx, 
-            end_gridx=self.end_gridx, 
-            grid_num=self.grid_num,
+            start=self.start, 
+            stop=self.stop, 
+            num_dims=self.num_dims,
             homological_degree=self.homological_degree,
             values = np.array([np.array([-b for b in depth_array]) for depth_array in self.values]))
         pass
