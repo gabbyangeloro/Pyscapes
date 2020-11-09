@@ -74,7 +74,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         verboseprint('values was empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
-                                        retstep = True)[:]
+                                        retstep = True)[:] # TODO Why this [:]?
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
         
