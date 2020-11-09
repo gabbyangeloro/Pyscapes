@@ -39,6 +39,7 @@ from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 from visualization import plot_landscape
 
 from tadasets import dsphere
+import time
 
 #%% Construct a list of 100 landscapes from randomly sampled points.
 sph2_dgm_list = []
@@ -71,6 +72,8 @@ sph2_pl1_list = []
 sph2_pl2_list = []
 sph3_pl1_list = []
 sph3_pl2_list = []
+
+start_time = time.perf_counter()
 for i in range(100):
     
     sph2_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
@@ -81,14 +84,16 @@ for i in range(100):
     #sph2_pl2 = PersistenceLandscapeGrid(diagrams=sph2_dgm, homological_degree=2)
     #sph2_pl2.compute_landscape
     #sph2_pl2_list.append(sph2_pl2)
-    sph3_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
-                                        diagrams=sph3_dgm_list[i], homological_degree=1)
-    sph3_pl1.compute_landscape()
-    sph3_pl1_list.append(sph3_pl1)
+    #sph3_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
+    #                                    diagrams=sph3_dgm_list[i], homological_degree=1)
+    #sph3_pl1.compute_landscape()
+    #sph3_pl1_list.append(sph3_pl1)
     #sph3_pl2 = PersistenceLandscapeGrid(diagrams=sph3_dgm, homological_degree=2)
     #sph3_pl2.compute_landscape()
     #sph3_pl2_list.append(sph3_pl2)
     
+end_time = time.perf_counter()
+print(f'The time it took for non-parallelized landscapes is {end_time-start_time} s')
 #%% Construct the true average landscape
 avg_sph2_pl1 = sph2_pl1_list[0]
 avg_sph3_pl1 = sph3_pl1_list[0]
@@ -142,6 +147,23 @@ for run in range(100):
 
 
 print(f'Significant is {significant}') # Significant = 0
-#%% do multithreading
+#%% do multiprocessing
+# Write a function which does the above
 
-# with concurrent.futures.ProcessPoolExecutor() as executor:
+import multiprocessing as mp
+
+
+def construct_random_landscape(_):
+    sph2_pts = dsphere(n=100, d=2, r=1)
+    sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
+    pl = PersistenceLandscapeGrid(start=_b,stop=_d,num_dims=500,
+                                    diagrams=sph2_dgm,homological_degree=1)
+    pl.compute_landscape()
+    return pl
+
+pool = mp.Pool(mp.cpu_count()-3)
+start_time = time.perf_counter()
+results = pool.map(construct_random_landscape, [i for i in range(500)])
+pool.close()
+end_time = time.perf_counter()
+print(f'The time it took the parallelized version was {end_time-start_time} s')
