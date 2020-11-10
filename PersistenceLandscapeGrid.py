@@ -74,9 +74,20 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
                                         retstep = True)[:]
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
+        bd_pairs = self.diagrams[self.homological_degree]        
+        '''
+        # check for duplicates of (b,d)
+        duplicate = 0
+        
+        for ind, item in enumerate(list(bd_pairs)):
+            if item == [b,d]:
+                duplicate += 1
+                A.pop(ind)
+            else:
+                break
+        '''
         
         # create list of triangle top for each birth death pair
-        bd_pairs = self.diagrams[self.homological_degree]
         birth: 'np.ndarray' = bd_pairs[:, 0]
         death: 'np.ndarray' = bd_pairs[:, 1]
         triangle_top_ycoord = (death - birth)/ 2
@@ -103,7 +114,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             
             # step through by x value
             j = 0
-            # j in (b, b+d/2]
+            # j in (b, b+d/2] 
             for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
                 j += 1
                 # j*step: adding points from a line with slope 1
@@ -114,27 +125,6 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
                 j += 1
                 W[ind_in_Wd  - j].append(j* step)
-    
-        '''  
-        # for each birth death pair
-        for  bd in diagram_grid:
-            b,d = bd
-            j = 0
-            # step through by x value
-            for _ in np.arange(b+step, (b+d)/2 , step):
-                j += 1
-                # dict_grid[b]: index in W that b corresponds to
-                # j*step: adding points from a line with slope 1
-                W[dict_grid[b]+j].append(j* step) 
-            
-    
-            j = 0
-            # step through x backwards from d-step to b+d/2 by step
-            # arange doesn't include right endpoint, i.e. b+d/2
-            for _ in np.arange(d- step, (b+d)/2, -step):
-                j += 1
-                W[dict_grid[d] - j].append(j* step)
-        '''
         
         # sort each list in W
         for i in range(len(W)):
@@ -151,7 +141,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 
-        self.funct_values = L
+        self.funct_values = np.array(L)
         return
     
     
