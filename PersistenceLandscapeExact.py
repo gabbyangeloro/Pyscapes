@@ -62,7 +62,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         ### arrays? etc?
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
         # self.homological_degree = homological_degree
-        # self.critical_pairs = critical_pairs
+        self.critical_pairs = critical_pairs
         self.diagrams = diagrams
         self.max_depth = len(self.critical_pairs)
 
@@ -230,7 +230,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
         # check if landscapes were already computed
         if self.critical_pairs:
-            verboseprint('cache was not empty and stored value was returned')
+            verboseprint('self.critical_pairs was not empty and stored value was returned')
             return self.critical_pairs
 
         A = self.diagrams[self.homological_degree]    
@@ -344,7 +344,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
             landscape_idx += 1
             
-        verboseprint('cache was empty and algorthim was executed')
+        verboseprint('self.critical_pairs was empty and algorthim was executed')
         # gets rid of infinity terms 
         # As written, this function shouldn't return anything, but rather 
         # update self.critical pairs. 
