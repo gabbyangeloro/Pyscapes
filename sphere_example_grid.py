@@ -73,8 +73,6 @@ sph2_pl2_list = []
 sph3_pl1_list = []
 sph3_pl2_list = []
 
-#%%
-
 start_time = time.perf_counter()
 for i in range(100):
     
@@ -154,8 +152,6 @@ print(f'Significant is {significant}') # Significant = 0
 
 import multiprocessing as mp
 
-_b=0
-_d=1
 
 def construct_random_landscape(_):
     sph2_pts = dsphere(n=100, d=2, r=1)
@@ -165,8 +161,9 @@ def construct_random_landscape(_):
     pl.compute_landscape()
     return pl
 
+pool = mp.Pool(mp.cpu_count()-3)
 start_time = time.perf_counter()
-with mp.Pool(mp.cpu_count()-1) as pool:
-    results = pool.map(construct_random_landscape, [i for i in range(10)])
+results = pool.map(construct_random_landscape, [i for i in range(500)])
+pool.close()
 end_time = time.perf_counter()
 print(f'The time it took the parallelized version was {end_time-start_time} s')
