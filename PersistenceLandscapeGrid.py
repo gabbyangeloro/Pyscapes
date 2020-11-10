@@ -154,7 +154,6 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
 
-
         self.values = L
         # TODO: Isn't self.values a list now? Shouldn't it be a np.array?
         # Maybe it should be 
