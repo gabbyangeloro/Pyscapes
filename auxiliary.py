@@ -196,12 +196,10 @@ def snap_PL(l: list) -> list:
     _d = max(l,key=attrgetter('end')).end
     _dims = max(l,key=attrgetter('num_dims')).num_dims
     # Now use ndsnap somehow?
-    grid_values, step = np.linspace(_b, _d, _dims, 
-                                        retstep = True)[:] # TODO Why this [:]?
+    grid_values = np.linspace(_b, _d, _dims, retstep = True)[:] # TODO Why this [:]?
     grid_values = list(grid_values)
     grid = np.array([[x,y] for x in grid_values for y in grid_values])
-    # k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
-    #                              values=ndsnap(pl.values,grid),
-    #                              homological_degree=l[0].homological_degree) for pl in l]
-    # return k
-    pass
+    k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
+                                 values=ndsnap(pl.values,grid),
+                                 homological_degree=l[0].homological_degree) for pl in l]
+    return k

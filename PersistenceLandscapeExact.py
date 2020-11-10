@@ -253,7 +253,8 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         A = sorted(A, key = lambda x: [x[0], -x[1]])
     
 
-        while len(A) != 0:
+        #while len(A) != 0:
+        while A:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
 
             # add a 0 element to begin count of lamda_k
