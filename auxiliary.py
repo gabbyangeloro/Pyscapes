@@ -3,6 +3,7 @@ Auxilary functions for working with persistence diagrams.
 """
 import itertools
 import numpy as np
+from operator import attrgetter
 # from PersistenceLandscapeExact import PersistenceLandscapeExact
 # from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
@@ -171,8 +172,36 @@ def ndsnap(points, grid):
     best = np.argmin(diffs, axis=1)
     return  grid[best,:]
 
- # def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
- #    """
- #   Converts a PersistenceLandscapeExact class to a PersistenceLandscapeGrid class.
- #    """
- #    pass
+# def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
+#     """
+#     Converts a PersistenceLandscapeExact class to a PersistenceLandscapeGrid class.
+#     """
+#     pass
+
+def num_skip(n: int):
+    """This should make it easy to throw out the first `n` landscape functions,
+    regardless of grid or exact pl passed.
+    """
+    pass
+
+def snap_PL(l: list) -> list:
+    """
+    Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
+    where each entry has the same start, stop, and num_dims. This puts each
+    entry of `l` on the same grid, so they can be added, averaged, etc.
+    
+    This assumes they're all of the same homological degree.
+    """
+    _b = min(l,key=attrgetter('start')).start
+    _d = max(l,key=attrgetter('end')).end
+    _dims = max(l,key=attrgetter('num_dims')).num_dims
+    # Now use ndsnap somehow?
+    grid_values, step = np.linspace(_b, _d, _dims, 
+                                        retstep = True)[:] # TODO Why this [:]?
+    grid_values = list(grid_values)
+    grid = np.array([[x,y] for x in grid_values for y in grid_values])
+    # k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
+    #                              values=ndsnap(pl.values,grid),
+    #                              homological_degree=l[0].homological_degree) for pl in l]
+    # return k
+    pass
