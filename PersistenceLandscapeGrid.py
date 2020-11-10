@@ -190,8 +190,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         
     
     def __add__(self, other: PersistenceLandscapeGrid) -> PersistenceLandscapeGrid:
-        if self.homological_degree != other.homological_degree:
-            raise ValueError("Persistence landscapes must be of same homological degree")
+        super().__add__(other)
         if self.start != other.start:
             raise ValueError("Start values of grids do not coincide")
         if self.stop != other.stop:
@@ -216,9 +215,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         return self + -other
     
     def __mul__(self, other: float) -> PersistenceLandscapeGrid:
-        # TODO: Fix this check.
-        #if issubclass(PersistenceLandscape, other):
-        #    raise TypeError("Cannot multiply persistence landscapes together")
+        super().__mul__(other)
         return PersistenceLandscapeGrid(
             start=self.start, 
             stop=self.stop, 
@@ -230,11 +227,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         return self.__mul__(other)
     
     def __truediv__(self, other: float) -> PersistenceLandscapeGrid:
-        if other == 0.:
-            raise ValueError("Cannot divide by zero")
+        super().__truediv__(other)
         return (1.0/other)*self
     
-    # Indexing, slicing
     def __getitem__(self, key: slice) -> list:
         """
         Returns a list of values corresponding in range specified by 
@@ -259,4 +254,4 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def sup_norm(self) -> float:
         return np.max(np.abs(self.values))
 
-# max and min crit values are given by taking np.max/min on the list of lists.
+

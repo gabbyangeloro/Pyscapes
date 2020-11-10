@@ -21,8 +21,8 @@ class PersistenceLandscape(ABC):
         if homological_degree < 0:
             raise ValueError('homological_degree must be positive')
         # TODO: Fix the check below.
-        # if not isinstance(diagrams, (list, tuple, type(np.array))):
-        #     raise TypeError("diagrams must be a list, tuple, or numpy array")
+        if not isinstance(diagrams, (list, tuple, type(np.ndarray))):
+            raise TypeError("diagrams must be a list, tuple, or numpy array")
         self.diagrams = diagrams
         self.homological_degree = homological_degree
 
@@ -39,7 +39,8 @@ class PersistenceLandscape(ABC):
         
     @abstractmethod
     def __add__(self, other):
-        pass
+        if self.homological_degree != other.homological_degree:
+            raise ValueError("Persistence landscapes must be of same homological degree")
     
     @abstractmethod
     def __neg__(self):
@@ -51,6 +52,11 @@ class PersistenceLandscape(ABC):
     
     @abstractmethod
     def __mul__(self, other):
-        pass
-        
+        if not isinstance(other, (int,float)):
+            raise TypeError("Can only multiply persistence landscapes by real numbers")
+            
+    @abstractmethod
+    def __truediv__(self, other):
+        if other == 0.:
+            raise ValueError("Cannot divide by zero")
         
