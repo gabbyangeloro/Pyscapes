@@ -52,7 +52,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.num_dims = num_dims
         self.values = values
         self.pairs = pairs
-        # TODO: Do we need self.pairs?
+        # TODO: Do we need self.pairs? NO.
     
     def __repr__(self) -> str:
         
@@ -68,13 +68,13 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         # TODO: I don't understand the following check. We check funct_values
         #       but print a message about funct_pairs.
         if self.values:
-            verboseprint('pairs was entered, value is stored')
+            verboseprint('values was stored, exiting')
             return 
         
         verboseprint('values was empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
-                                        retstep = True)[:] # TODO Why this [:]?
+                                        retstep = True)[:] # TODO Why this [:]? Helps unpack
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
         bd_pairs = self.diagrams[self.homological_degree]        
