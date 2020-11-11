@@ -1,8 +1,22 @@
-## Persistence landscapes in python
+## PyLandscapes: Persistence landscapes in python
 
-This repository aims to implement persistence landscapes in a user-friendly
+This packages implements persistence landscapes in a user-friendly
 fashion in python. Persistence landscapes are a vectorization scheme for
 persistent homology, providing a robust set of feature maps. 
+
+Persistence Landscapes were introduced in 
+[Bubenik](https://jmlr.org/papers/volume16/bubenik15a/bubenik15a.pdf).
+These provide a functional representation of persistence diagrams amenable
+to statistical analysis. They have been proven to be very useful in a variety
+of empirical and theoretical applications. See the examples provided 
+in [Bubenik](https://arxiv.org/abs/1810.04963).
+
+Our implementation follows the algorithms provided in 
+[Bubenik, Dlotko](https://www.sciencedirect.com/science/article/abs/pii/S0747717116300104).
+Dlotko has also implemented many of these algorithms in C++ directly in the
+Persistence Landscape Toolbox, available 
+[here](https://www.math.upenn.edu/~dlotko/persistenceLandscape.html).
+
 
 ### Why persistence landscapes?
 - They were one of the first vectorization schemes introduced for persistent
@@ -19,21 +33,44 @@ homology (e.g., [ripser.py](https://github.com/scikit-tda/ripser.py)).
 - To interface cleanly with existing libraries for machine learning
 (e.g., [scikit-learn](https://scikit-learn.org/stable/index.html)).
 
+
 ### Example
 While the code is not yet ready for public consumption, here we give a 
 brief overview of how it can be used.
 
+#### Exact vs Grid
+We provide two different implementations of Persistence Landscapes:
+
+- `PersistenceLandscapeExact` provides an exact implementation. All methods 
+and computations done in this class are as accurate as the floating point
+arithmetic of Python. In particular, there are **no approximations** in
+our calculations. Instantiating these are fast but arithmetic operations,
+such as summing and averaging can be quite slow because of this. 
+
+- `PersistenceLandscapeGrid` provides an approximate implementation. These
+require the user to specify the parameters of an equally spaced grid
+(`start`, `stop`, and `num_steps`) at which each landscape will be sampled at.
+This approximation allows us to easily embed the landscape in a `num_steps`-dimensional
+real vector space. Instantiating these can be slower than their exact counterparts due
+to this sampling. However, arithmetic operations tend to be much faster because
+of this approximation, together with Numpy's vectorized operations.
+
+Examples of both are provided below.
+
+#### Sample code
+
 ```python
 import numpy as np
 from ripser import ripser
-from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
 data = np.random.random_sample((200,2)) # generate random points
 diagrams = ripser(data)['dgms'] # compute persistent homology
-M = PersistenceLandscape(diagrams=diagrams, homological_degree=1)
+M = PersistenceLandscapeGrid(diagrams=diagrams, homological_degree=1)
 M.compute_landscape() # Compute the landscape
 ```
-Computing persistence landscapes can be computationally intensive, so we
+Computing the actual functions that comprise a persistence landscape can 
+be computationally intensive, so we
 don't compute them upon instantiation. Instead they're only computed 
 after the `compute_landscape` method is called, serving as an initialization 
 method. The set of critical pairs is stored in the `critical_pairs` attribute.
