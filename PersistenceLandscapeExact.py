@@ -253,7 +253,6 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         A = sorted(A, key = lambda x: [x[0], -x[1]])
     
 
-        #while len(A) != 0:
         while A:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
 
