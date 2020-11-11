@@ -2,20 +2,21 @@
 Auxilary functions for working with persistence diagrams.
 """
 import itertools
+import numpy as np
+from operator import attrgetter
+# from PersistenceLandscapeExact import PersistenceLandscapeExact
+# from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
 def death_vector(diagram: list, homological_degree: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
-
     """
     if homological_degree != 0:
         raise NotImplementedError("The death vector is not defined for "
                                   "homological degrees greater than zero.")
     pass
 
-
 def linear_combination(landscapes: list, coeffs: list):
     """ Compute a linear combination of landscapes
-
     Parameters
     ----------
     landscapes : list of PersistenceLandscape objects
@@ -25,7 +26,6 @@ def linear_combination(landscapes: list, coeffs: list):
     Returns
     -------
     None.
-
     """
     result = coeffs[0]*landscapes[0]
     for c, L in enumerate(landscapes):
@@ -40,7 +40,6 @@ def average_landscape(landscapes: list):
 
 def union_crit_pairs(A, B):
     """ Helper function for summing landscapes. 
-
     This should handle all the edge cases, like an empty list.
     """
     result_pairs = []
@@ -117,7 +116,6 @@ def sum_slopes(a: list, b: list) -> list:
     ------
     list
         
-
     """
     result = []
     am, bm = 0, 0  # initialize slopes
@@ -146,3 +144,62 @@ def sum_slopes(a: list, b: list) -> list:
    #     result.pop()
 
     return result
+
+def ndsnap(points, grid):
+    """
+    Snap an 2D-array of points to values along an 2D-array grid.
+    Each point will be snapped to the grid value with the smallest
+    city-block distance.
+
+    Parameters
+    ---------
+    points: 2D-array. Must have same number of columns as grid
+    grid: 2D-array. Must have same number of columns as points
+
+    Returns
+    -------
+    A 2D-array with one row per row of points. Each i-th row will
+    correspond to row of grid to which the i-th row of points is closest.
+    In case of ties, it will be snapped to the row of grid with the
+    smaller index.
+    """
+
+    # transpose grid 
+    grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
+    # axis 1 is x-values of points
+    diffs = np.sum(np.abs(grid_3d - points[:,:,np.newaxis]), axis=1)
+    # argmin returns the indices of the minimum values along an axis
+    best = np.argmin(diffs, axis=1)
+    return  grid[best,:]
+
+# def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
+#     """
+#     Converts a PersistenceLandscapeExact class to a PersistenceLandscapeGrid class.
+#     """
+#     pass
+
+def num_skip(n: int):
+    """This should make it easy to throw out the first `n` landscape functions,
+    regardless of grid or exact pl passed.
+    """
+    pass
+
+def snap_PL(l: list) -> list:
+    """
+    Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
+    where each entry has the same start, stop, and num_dims. This puts each
+    entry of `l` on the same grid, so they can be added, averaged, etc.
+    
+    This assumes they're all of the same homological degree.
+    """
+    _b = min(l,key=attrgetter('start')).start
+    _d = max(l,key=attrgetter('end')).end
+    _dims = max(l,key=attrgetter('num_dims')).num_dims
+    # Now use ndsnap somehow?
+    grid_values = np.linspace(_b, _d, _dims, retstep = True)[:] # TODO Why this [:]?
+    grid_values = list(grid_values)
+    grid = np.array([[x,y] for x in grid_values for y in grid_values])
+    k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
+                                 values=ndsnap(pl.values,grid),
+                                 homological_degree=l[0].homological_degree) for pl in l]
+    return k

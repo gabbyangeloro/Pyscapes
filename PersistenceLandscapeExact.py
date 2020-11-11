@@ -1,14 +1,21 @@
 """
-Define Persistence Landscape class.
+Define Persistence Landscape Exact class.
 """
 import itertools
 import numpy as np
 from operator import itemgetter
 from auxiliary import union_crit_pairs
+from PersistenceLandscape import PersistenceLandscape
 
 
-class PersistenceLandscapeExact:
-    """Persistence Landscape class.
+class PersistenceLandscapeExact(PersistenceLandscape):
+    """Persistence Landscape Exact class.
+
+    This class implements an exact version of Persistence Landscapes. All
+    computations done with these classes is exact (modulo floating point
+    rounding, which we have no real control over anyways). For much faster,
+    approximate methods that should suffice for most applications, consider
+    `PersistenceLandscapeGrid`.
 
     Parameters
     ----------
@@ -44,16 +51,17 @@ class PersistenceLandscapeExact:
     
     def __init__(
         self, diagrams: list = [], homological_degree: int = 0,
-        critical_pairs: list = []):
-        if not isinstance(homological_degree, int):
-            raise TypeError("homological_degree must be an integer")
-        if homological_degree < 0:
-            raise ValueError('homological_degree must be positive')
-        if not isinstance(diagrams, list):
-            raise TypeError("diagrams must be a list")
+        critical_pairs: list = []) -> None:
+        # if not isinstance(homological_degree, int):
+        #     raise TypeError("homological_degree must be an integer")
+        # if homological_degree < 0:
+        #     raise ValueError('homological_degree must be positive')
+        # if not isinstance(diagrams, list):
+        #     raise TypeError("diagrams must be a list")
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
-        self.homological_degree = homological_degree
+        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
+        # self.homological_degree = homological_degree
         self.critical_pairs = critical_pairs
         self.diagrams = diagrams
         self.max_depth = len(self.critical_pairs)
@@ -167,6 +175,8 @@ class PersistenceLandscapeExact:
         """
 
     def __truediv__(self, other: float):
+        if other == 0.:
+            raise ValueError("Cannot divide by zero")
         return self*(1.0/other)
         """
         Computes the quotient of a persistence landscape object and a float 
@@ -220,7 +230,7 @@ class PersistenceLandscapeExact:
 
         # check if landscapes were already computed
         if self.critical_pairs:
-            verboseprint('cache was not empty and stored value was returned')
+            verboseprint('self.critical_pairs was not empty and stored value was returned')
             return self.critical_pairs
 
         A = self.diagrams[self.homological_degree]    
@@ -243,7 +253,7 @@ class PersistenceLandscapeExact:
         A = sorted(A, key = lambda x: [x[0], -x[1]])
     
 
-        while len(A) != 0:
+        while A:
             verboseprint(f'computing landscape index {landscape_idx+1}...')
 
             # add a 0 element to begin count of lamda_k
@@ -334,7 +344,7 @@ class PersistenceLandscapeExact:
 
             landscape_idx += 1
             
-        verboseprint('cache was empty and algorthim was executed')
+        verboseprint('self.critical_pairs was empty and algorthim was executed')
         # gets rid of infinity terms 
         # As written, this function shouldn't return anything, but rather 
         # update self.critical pairs. 

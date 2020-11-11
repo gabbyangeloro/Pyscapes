@@ -1,5 +1,5 @@
 """
-    Implementation of scikit-learn transformer functionality for persistence
+    Implementation of scikit-learn transformers for persistence
     landscapes.
 """
 
@@ -30,7 +30,13 @@ class PL_exact(BaseEstimator, TransformerMixin):
         return result.critical_pairs
     
 class PL_grid(BaseEstimator, TransformerMixin):
-    """ A scikit-learn transformer class for approximate persistence
-    landscapes.
+    """ A scikit-learn transformer for grid persistence landscapes.
     """
-    pass
+    def __init__(self,homological_degree:int = 0):
+        self.homological_degree = homological_degree
+        
+    def fit(self,X,y=None):
+        return self
+    
+    def transform(self,X,y=None):
+        return X[self.homological_degree].compute_landscape()

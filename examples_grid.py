@@ -1,40 +1,53 @@
 
-#%%
+#%% Imports
 import numpy as np
 from sklearn.datasets import load_wine
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 
+from operator import itemgetter
+
 from visualization import plot_landscape
 from ripser import ripser
 from persim import plot_diagrams
-from PersistenceLandscapeExact import PersistenceLandscapeExact
 from PersistenceLandscapeGrid import PersistenceLandscapeGrid
-#%%
+#%% Load data
 
 wine_data, wine_target = load_wine(return_X_y=True)
 bc_data, bc_target = load_breast_cancer(return_X_y=True)
 
+#%% Scale data, compute diagrams
 scaler = StandardScaler()
 wine_data_scl = scaler.fit_transform(wine_data)
 bc_data_scl = scaler.fit_transform(bc_data)
 
 wine_dgms = ripser(wine_data_scl)['dgms']
 bc_dgms = ripser(bc_data_scl)['dgms']
-# plot_diagrams(wine_dgms, show=True)
-# plot_diagrams(bc_dgms, show=True)
+plot_diagrams(wine_dgms, show=True)
+plot_diagrams(bc_dgms, show=True)
+#%% Compute landscape grid and landscapes
 
-# Bad code:
-wine_plg1 = PersistenceLandscapeGrid(start=0,stop=1,num_dims=500, homological_degree=1,
-                                     diagrams=wine_dgms)
+min_b_wine = min(wine_dgms[1],key=itemgetter(0))[0]
+max_d_wine = max(wine_dgms[1], key=itemgetter(1))[1]
+min_b_bc = min(bc_dgms[1],key=itemgetter(0))[0]
+max_d_bc = max(bc_dgms[1], key=itemgetter(1))[1]
 
-# Good code:
-wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, homological_degree=1,
-                                     diagrams=wine_dgms)    
-#%%
+padding = 0.1
 
-wine_pl = PersistenceLandscapeExact(wine_dgms, homological_degree=1)
-bc_pl = PersistenceLandscapeExact(bc_dgms, homological_degree=1)
+wine_pl = PersistenceLandscapeGrid(start=min_b_wine - padding,
+                                   stop=max_d_wine+padding,
+                                   num_dims=500,
+                                   diagrams=wine_dgms, 
+                                   homological_degree=1,
+                                   )
+
+
+bc_pl = PersistenceLandscapeGrid(start=min_b_bc-padding,
+                                   stop=max_d_bc+padding,
+                                   num_dims=500,
+                                   diagrams=bc_dgms, 
+                                   homological_degree=1,
+                                   )
 
 wine_pl.compute_landscape()
 bc_pl.compute_landscape()
