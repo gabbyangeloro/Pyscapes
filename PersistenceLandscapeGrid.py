@@ -4,7 +4,7 @@ Define Grid Persistence Landscape class.
 from __future__ import annotations
 import numpy as np
 import itertools
-from auxiliary import ndsnap
+from auxiliary import ndsnap, union_vals
 from PersistenceLandscape import PersistenceLandscape
 
 
@@ -51,8 +51,6 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.stop = stop
         self.num_dims = num_dims
         self.values = values
-        self.pairs = pairs
-        # TODO: Do we need self.pairs? NO.
     
     def __repr__(self) -> str:
         
@@ -64,10 +62,8 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def compute_landscape(self, verbose: bool = False) -> list:
         
         verboseprint = print if verbose else lambda *a, **k: None
-         
-        # TODO: I don't understand the following check. We check funct_values
-        #       but print a message about funct_pairs.
-        if self.values:
+
+        if isinstance(self.values, np.ndarray):
             verboseprint('values was stored, exiting')
             return 
         
@@ -147,38 +143,25 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 
 
         self.values = L
-
-        # TODO: Isn't self.values a list now? Shouldn't it be a np.array?
-        # Maybe it should be 
-        # self.values = np.array([np.array(l) for l in L])?
-        # But this seems slow since we have to iterate over everything again.
-        # Maybe the right place to do this is on line 150, where L is initialized.
-        # There it should be 
-        # L = np.array([ np.zeros(self.num_dims) for _ in range(K)])
-        # Where numpy arrays are slow is with appending elements, because the entire array
-        # has to be copied over in memory (they have to be contiguous I think), but once you
-        # know the size of the array, i don't think they're slow anymore.
-
         return
     
     
     def values_to_pairs(self):
         """
-        Converts function values to ordered pairs and stores in `self.pairs`
+        Converts function values to ordered pairs and returns them.
 
         Returns
         -------
-        None.
 
         """
         self.compute_landscape()
         
-        grid_values = list(np.linspace(self.start, self.stop, self.num_dims, ))
-        
+        grid_values = list(np.linspace(self.start, self.stop, self.num_dims))
+        result = []
         for l in self.values:
             pairs = list(zip(grid_values, l))
-            self.pairs.append( pairs )
-        return
+            result.append( pairs )
+        return result
           
         
     
@@ -190,10 +173,11 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             raise ValueError("Stop values of grids do not coincide")
         if self.num_dims != other.num_dims:
             raise ValueError("Number of steps of grids do not coincide")
+        self_pad, other_pad = union_vals(self.values, other.values)
         return PersistenceLandscapeGrid(start=self.start, stop=self.stop, 
                                         num_dims=self.num_dims,
                                         homological_degree=self.homological_degree, 
-                                        values=self.values+other.values)
+                                        values=self_pad+other_pad)
     
     def __neg__(self) -> PersistenceLandscapeGrid:
         return PersistenceLandscapeGrid(

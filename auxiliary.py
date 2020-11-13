@@ -38,6 +38,24 @@ def average_landscape(landscapes: list):
     pass
     
 
+def union_vals(A,B):
+    """
+    Extends one list to the length of the other by padding with zero lists.
+    AAHelper function for summing grid landscapes.
+
+    """
+    diff = A.shape[0] - B.shape[0]
+    if diff < 0:
+        # B has more entries, so pad A
+        A = np.pad(A, pad_width=((0,np.abs(diff)), (0,0)))
+        return A, B
+    elif diff > 0:
+        # A has more entries, so pad B
+        B = np.pad(B, pad_width=((0,diff),(0,0)))
+        return A, B
+    else:
+        return A, B    
+
 def union_crit_pairs(A, B):
     """ Helper function for summing landscapes. 
     This should handle all the edge cases, like an empty list.
