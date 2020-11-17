@@ -30,9 +30,11 @@ wine_plg1 = PersistenceLandscapeGrid(start=0,stop=1,num_dims=500, homological_de
 
 # Good code:
 wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, homological_degree=1,
-                                     diagrams=wine_dgms)    
+                                     diagrams=wine_dgms)  
+wine_plg2.compute_landscape()  
 #%%
 L = [wine_plg2,wine_plg2]
+#%%
 K = snap_PL(L)
 
 #%%

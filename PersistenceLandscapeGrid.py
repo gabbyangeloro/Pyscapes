@@ -160,7 +160,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         for l in self.values:
             pairs = list(zip(grid_values, l))
             result.append( pairs )
-        return result
+        return np.array(result)
           
         
     
@@ -248,8 +248,8 @@ def snap_PL(l: list) -> list:
     _dims = max(l,key=attrgetter('num_dims')).num_dims
     # Now use ndsnap somehow?
     grid_values = list(np.linspace(start=_b, stop=_d, num=_dims))
-    grid = np.array([[x,y] for x in grid_values for y in grid_values])
+    grid = np.array([[x,y] for x in grid_values for y in grid_values]) # TODO reshape?
     k = [PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
-                                 values=ndsnap(pl.values,grid),
+                                 values=[ndsnap(depth,grid) for depth in pl.values_to_pairs()],
                                  homological_degree=pl[0].homological_degree) for pl in l]
     return k
