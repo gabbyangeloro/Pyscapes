@@ -3,11 +3,10 @@ Define Grid Persistence Landscape class.
 """
 from __future__ import annotations
 import numpy as np
-import itertools
+from operator import attrgetter
+# import itertools
 from auxiliary import ndsnap, union_vals
 from PersistenceLandscape import PersistenceLandscape
-
-
 
 
 class PersistenceLandscapeGrid(PersistenceLandscape):
@@ -231,4 +230,26 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def sup_norm(self) -> float:
         return np.max(np.abs(self.values))
 
+###############################
+# End PLG class definition
+###############################
 
+def snap_PL(l: list) -> list:
+    """
+    Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
+    where each entry has the same start, stop, and num_dims. This puts each
+    entry of `l` on the same grid, so they can be added, averaged, etc.
+    
+    This assumes they're all of the same homological degree and their values have 
+    all been computed.
+    """
+    _b = min(l,key=attrgetter('start')).start
+    _d = max(l,key=attrgetter('stop')).stop
+    _dims = max(l,key=attrgetter('num_dims')).num_dims
+    # Now use ndsnap somehow?
+    grid_values = list(np.linspace(start=_b, stop=_d, num=_dims))
+    grid = np.array([[x,y] for x in grid_values for y in grid_values])
+    k = [PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
+                                 values=ndsnap(pl.values,grid),
+                                 homological_degree=pl[0].homological_degree) for pl in l]
+    return k
