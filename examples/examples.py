@@ -9,7 +9,7 @@ from visualization import plot_landscape
 from ripser import ripser
 from persim import plot_diagrams
 from PersistenceLandscapeExact import PersistenceLandscapeExact
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid, snap_PL
 #%%
 
 wine_data, wine_target = load_wine(return_X_y=True)
@@ -31,6 +31,10 @@ wine_plg1 = PersistenceLandscapeGrid(start=0,stop=1,num_dims=500, homological_de
 # Good code:
 wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, homological_degree=1,
                                      diagrams=wine_dgms)    
+#%%
+L = [wine_plg2,wine_plg2]
+K = snap_PL(L)
+
 #%%
 
 wine_pl = PersistenceLandscapeExact(wine_dgms, homological_degree=1)
