@@ -42,7 +42,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def __init__(
         self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        values: list = [], pairs: list = []) -> None:
+        values = np.array([])) -> None:
         
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
         # self.diagrams = diagrams
@@ -51,8 +51,6 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.stop = stop
         self.num_dims = num_dims
         self.values = values
-        self.pairs = pairs
-        # TODO: Do we need self.pairs? NO.
     
     def __repr__(self) -> str:
         
@@ -65,9 +63,8 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         
         verboseprint = print if verbose else lambda *a, **k: None
          
-        # TODO: I don't understand the following check. We check funct_values
-        #       but print a message about funct_pairs.
-        if self.values:
+       
+        if self.values.size :
             verboseprint('values was stored, exiting')
             return 
         
@@ -78,18 +75,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
         bd_pairs = self.diagrams[self.homological_degree]        
-        '''
-        # check for duplicates of (b,d)
-        duplicate = 0
-        
-        for ind, item in enumerate(list(bd_pairs)):
-            if item == [b,d]:
-                duplicate += 1
-                A.pop(ind)
-            else:
-                break
-        '''
-        
+       
         # create list of triangle top for each birth death pair
         birth: 'np.ndarray' = bd_pairs[:, 0]
         death: 'np.ndarray' = bd_pairs[:, 1]
@@ -101,17 +87,15 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         triangle_top_grid = ndsnap(triangle_top, grid)
         
         # make grid dictionary 
-        
-        values = list(range(self.num_dims))
-        dict_grid = dict(zip( grid_values, values))
+        index = list(range(self.num_dims))
+        dict_grid = dict(zip( grid_values, index))
         
         # initialze W to a list of 2m + 1 empty lists
-        # W = [[] for i in range(self.stop +1)]
         W = [[] for _ in range(self.num_dims)]
     
         # for each birth death pair
         for ind_in_bd_pairs, bd in enumerate(bd_pairs_grid):
-            b, d = bd
+            [b, d] = bd
             ind_in_Wb = dict_grid[b] # index in W
             ind_in_Wd = dict_grid[d] # index in W
             
@@ -137,28 +121,20 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         K = max([len(_) for _ in W ])
         
         # initialize L to be a zeros matrix of size K x (2m+1)
-        #L = [[0] * (self.num_dims) for _ in range(K)]
         L = np.array([ np.zeros(self.num_dims) for _ in range(K)])
         
         #input Values from W to L
         for i in range(self.num_dims):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
+        
+        # check if L is empty 
+        if not L.size:
+            L = np.array(['empty'])
+            print('Bad choice of grid, values is empty')
 
 
         self.values = L
-
-        # TODO: Isn't self.values a list now? Shouldn't it be a np.array?
-        # Maybe it should be 
-        # self.values = np.array([np.array(l) for l in L])?
-        # But this seems slow since we have to iterate over everything again.
-        # Maybe the right place to do this is on line 150, where L is initialized.
-        # There it should be 
-        # L = np.array([ np.zeros(self.num_dims) for _ in range(K)])
-        # Where numpy arrays are slow is with appending elements, because the entire array
-        # has to be copied over in memory (they have to be contiguous I think), but once you
-        # know the size of the array, i don't think they're slow anymore.
-
         return
     
     
@@ -246,5 +222,3 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 
     def sup_norm(self) -> float:
         return np.max(np.abs(self.values))
-
-
