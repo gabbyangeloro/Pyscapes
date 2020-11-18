@@ -51,13 +51,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     
     def __init__(
         self, diagrams: list = [], homological_degree: int = 0,
-        critical_pairs: list = []) -> None:
-        # if not isinstance(homological_degree, int):
-        #     raise TypeError("homological_degree must be an integer")
-        # if homological_degree < 0:
-        #     raise ValueError('homological_degree must be positive')
-        # if not isinstance(diagrams, list):
-        #     raise TypeError("diagrams must be a list")
+        critical_pairs: list = [], compute: bool = False) -> None:
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
@@ -65,6 +59,8 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         self.critical_pairs = critical_pairs
         self.diagrams = diagrams
         self.max_depth = len(self.critical_pairs)
+        if compute:
+            self.compute_landscape()
 
     def __repr__(self):
         return (

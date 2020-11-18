@@ -22,8 +22,8 @@ class PersistenceLandscape(ABC):
             raise ValueError('homological_degree must be positive')
         if not isinstance(diagrams, (list, tuple, np.ndarray)):
             raise TypeError("diagrams must be a list, tuple, or numpy array")
-        self.diagrams = diagrams
         self.homological_degree = homological_degree
+        self.diagrams = diagrams
 
     # We enforce landscapes have arithmetic and norms, 
     # this is the whole reason for using them.

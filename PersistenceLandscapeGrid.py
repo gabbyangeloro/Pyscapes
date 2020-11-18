@@ -41,7 +41,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     def __init__(
         self, start: float, stop: float, num_dims: int, 
         diagrams: list = [], homological_degree: int = 0, 
-        values: list = [], pairs: list = []) -> None:
+        values: list = [], pairs: list = [], compute: bool = False) -> None:
         
         super().__init__(diagrams=diagrams, homological_degree=homological_degree)
         # self.diagrams = diagrams
@@ -50,6 +50,8 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self.stop = stop
         self.num_dims = num_dims
         self.values = values
+        if compute:
+            self.compute_landscape()
     
     def __repr__(self) -> str:
         
