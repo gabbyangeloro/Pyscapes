@@ -27,7 +27,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     Expecting output from ripser: ripser(data_user)['dgms']. Only
     one of diagrams or critical pairs should be specified.
 
-    homological_degree : int
+    hom_deg : int
         Represents the homology degree of the persistence diagram.
 
     critical_pairs: list, optional
@@ -50,18 +50,18 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     """
     
     def __init__(
-        self, diagrams: list = [], homological_degree: int = 0,
+        self, diagrams: list = [], hom_deg: int = 0,
         critical_pairs: list = []) -> None:
-        # if not isinstance(homological_degree, int):
-        #     raise TypeError("homological_degree must be an integer")
-        # if homological_degree < 0:
-        #     raise ValueError('homological_degree must be positive')
+        # if not isinstance(hom_deg, int):
+        #     raise TypeError("hom_deg must be an integer")
+        # if hom_deg < 0:
+        #     raise ValueError('hom_deg must be positive')
         # if not isinstance(diagrams, list):
         #     raise TypeError("diagrams must be a list")
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
-        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
-        # self.homological_degree = homological_degree
+        super().__init__(diagrams=diagrams, hom_deg=hom_deg)
+        # self.hom_deg = hom_deg
         self.critical_pairs = critical_pairs
         self.diagrams = diagrams
         self.max_depth = len(self.critical_pairs)
@@ -69,12 +69,12 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     def __repr__(self):
         return (
             "The persistence landscapes of diagrams in homological "
-            f"degree {self.homological_degree}"
+            f"degree {self.hom_deg}"
         )
 
     def __neg__(self):
         self.compute_landscape()
-        return PersistenceLandscapeExact(homological_degree=self.homological_degree,
+        return PersistenceLandscapeExact(hom_deg=self.hom_deg,
                                     critical_pairs=[ [[a,-b] for a, b in depth_list]
                                                     for depth_list in self.critical_pairs])
         """
@@ -91,11 +91,11 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
     def __add__(self, other):
         # This requires a list implementation as written.
-        if self.homological_degree != other.homological_degree:
+        if self.hom_deg != other.hom_deg:
             raise ValueError("homological degrees must match")
         return PersistenceLandscapeExact(
             critical_pairs=union_crit_pairs(self, other),
-            homological_degree=self.homological_degree
+            hom_deg=self.hom_deg
             )
         """
         Computes the sum of two persistence landscape objects
@@ -134,7 +134,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     def __mul__(self, other: float):      
         self.compute_landscape()
         return PersistenceLandscapeExact(
-            homological_degree=self.homological_degree,
+            hom_deg=self.hom_deg,
             critical_pairs=[[(a, other*b) for a, b in depth_list] 
                             for depth_list in self.critical_pairs])
         """
@@ -233,7 +233,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
             verboseprint('self.critical_pairs was not empty and stored value was returned')
             return self.critical_pairs
 
-        A = self.diagrams[self.homological_degree]    
+        A = self.diagrams   
         # change A into a list
         A = list(A)
         # change inner nparrays into lists
