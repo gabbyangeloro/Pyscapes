@@ -35,7 +35,7 @@ K = snap_PL([wine_plg2, wine_plg2])
 #%%
 
 wine_plg3 = PersistenceLandscapeGrid(start=0,stop=5,num_dims=1000, hom_deg=1,
-                                     diagrams=wine_dgms)    
+                                     dgms=wine_dgms)    
 wine_plg3.compute_landscape(verbose= True)
 #%%
 

@@ -6,7 +6,7 @@ Most of these functions should not be called directly.
 
 from __future__ import annotations
 import itertools
-from operator import itemgetter
+from operator import itemgetter, attrgetter
 import numpy as np
 
 
@@ -40,6 +40,16 @@ def average_landscape(landscapes: list):
     """
     pass
     
+
+def _lc_grid(landscapes: list, coeffs: list) -> PersistenceLandscapeGrid:
+    """ Compute the linear combination of a list of PersistenceLandscapeGrids
+    """
+    # First snap them to a common grid
+    start = min(landscapes, key=attrgetter('start')).start
+    stop = max(landscapes, key=attrgetter('stop')).stop
+    num_dims = max(landscapes, key=attrgetter('num_dims')).num_dims
+    snapped_list = [PersistenceLandscapeG]
+
 
 def union_vals(A,B):
     """

@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import itertools
 from auxiliary import pairs_snap, union_vals, values_snap
-from operator import attrgetter
+from operator import itemgetter, attrgetter
 from PersistenceLandscape import PersistenceLandscape
 
 
@@ -18,6 +18,10 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     This version is only an approximation to the true landscape, but given
     a fine enough grid, this should suffice for most applications. If an exact
     calculation with no approximation is desired, consider `PersistenceLandscapeExact`.
+    
+    The default parameters for start and stop favor dgms over values. That
+    is, if both dgms and values are passed but start and stop are not, the
+    start and stop values will be determined by dgms.
 
     Parameters
     ----------
@@ -39,19 +43,27 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     
     """
     def __init__(
-        self, start: float, stop: float, num_dims: int, 
+        self, start: float = None, stop: float = None, num_dims: int = 500, 
         dgms: list = [], hom_deg: int = 0, 
         values = np.array([]), compute: bool = False) -> None:
         
         super().__init__(dgms=dgms, hom_deg=hom_deg)
-        if dgms:
+        if dgms: # diagrams are passed
             self.dgms = dgms[self.hom_deg] 
-        else: # values are passed
+            if not start:
+                start = min(dgms, key=itemgetter(0))[0]
+            if not stop:
+                stop = max(dgms, key=itemgetter(1))[1]
+        elif values.size > 0: # values passed, diagrams weren't 
             self.dgms = dgms
+            if not start:
+                start = np.amin(values)
+            if not stop:
+                stop = np.amax(values)
         self.start = start
         self.stop = stop
-        self.num_dims = num_dims
         self.values = values
+        self.num_dims = num_dims
         if compute:
             self.compute_landscape()
     
