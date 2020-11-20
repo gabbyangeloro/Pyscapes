@@ -19,7 +19,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
     Parameters
     ----------
-    diagrams : list of numpy arrays, optional
+    dgms : list of numpy arrays, optional
         A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
     Each entry in the list corresponds to a single homological degree.
     Each array represents the birth death pairs for a homology degree.
@@ -229,7 +229,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
             verboseprint('self.critical_pairs was not empty and stored value was returned')
             return self.critical_pairs
 
-        A = self.diagrams   
+        A = self.dgms   
         # change A into a list
         A = list(A)
         # change inner nparrays into lists

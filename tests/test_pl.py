@@ -25,15 +25,15 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         """
         # example from Peter & Pavel's paper
         P = PersistenceLandscapeExact(
-            diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
+            dgms=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
                                 [6.0, 7.0]])],
-            homological_degree=0)
+            hom_deg=0)
         P.compute_landscape()
         
         # duplicate bars
         Q = PersistenceLandscapeExact(
-            diagrams=[np.array([[1, 5],[1, 5],[3, 6]])],
-            homological_degree=0)
+            dgms=[np.array([[1, 5],[1, 5],[3, 6]])],
+            hom_deg=0)
         Q.compute_landscape()
         
         
@@ -52,10 +52,10 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         Test homological degree
         """
         P = PersistenceLandscapeExact(
-            diagrams=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
+            dgms=[np.array([[1.0, 5.0], [2.0, 8.0], [3.0, 4.0], [5.0, 9.0],
                                 [6.0, 7.0]])],
-            homological_degree=0)
-        self.assertEqual(P.homological_degree,0)
+            hom_deg=0)
+        self.assertEqual(P.hom_deg,0)
         
     def test_p_norm(self):
         """
@@ -63,15 +63,15 @@ class TestPersistenceLandscapeExact(unittest.TestCase):
         """
         P = PersistenceLandscapeExact(
             critical_pairs=[[[0, 0], [1, 1], [2, 1], [3, 1], [4, 0]]],
-            homological_degree=0)
+            hom_deg=0)
         negP = PersistenceLandscapeExact(
             critical_pairs=[[[0, 0], [1, -1], [2, -1], [3, -1], [4, 0]]],
-            homological_degree=0)
-        self.assertEqual(P.infinity_norm(), 1)
+            hom_deg=0)
+        self.assertEqual(P.sup_norm(), 1)
         self.assertAlmostEqual(P.p_norm(p=2), np.sqrt(2 + (2.0/3.0)))
         self.assertAlmostEqual(P.p_norm(p=5), (2 + (1.0/3.0))**(1.0/5.0))
         self.assertAlmostEqual(P.p_norm(p=113), (2+ (1.0/57.0))**(1.0/113.0))
-        self.assertEqual(negP.infinity_norm(), 1)
+        self.assertEqual(negP.sup_norm(), 1)
         self.assertAlmostEqual(negP.p_norm(p=2), np.sqrt(2 + (2.0/3.0)))
         self.assertAlmostEqual(negP.p_norm(p=5), (2 + (1.0/3.0))**(1.0/5.0))
         self.assertAlmostEqual(negP.p_norm(p=113), (2+ (1.0/57.0))**(1.0/113.0))
