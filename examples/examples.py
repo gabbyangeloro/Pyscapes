@@ -25,18 +25,12 @@ bc_dgms = ripser(bc_data_scl)['dgms']
 # plot_diagrams(bc_dgms, show=True)
 
 #%%
-# Bad code:
-wine_plg1 = PersistenceLandscapeGrid(start=0,stop=1,num_dims=500, hom_deg=1,
-                                     diagrams=wine_dgms)
-wine_plg1.compute_landscape()
-#%%
 # Good code:
 wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, hom_deg=1,
-                                     diagrams=wine_dgms)    
+                                     dgms=wine_dgms)    
 wine_plg2.compute_landscape()
 #%%
-
-
+K = snap_PL([wine_plg2, wine_plg2])
 
 #%%
 

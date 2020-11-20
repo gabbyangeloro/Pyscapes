@@ -44,8 +44,10 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         values = np.array([]), compute: bool = False) -> None:
         
         super().__init__(dgms=dgms, hom_deg=hom_deg)
-        # self.diagrams = diagrams
-        #self.hom_deg = hom_deg
+        if dgms:
+            self.dgms = dgms[self.hom_deg] 
+        else: # values are passed
+            self.dgms = dgms
         self.start = start
         self.stop = stop
         self.num_dims = num_dims
@@ -245,7 +247,6 @@ def snap_PL(l: list) -> list:
         
         '''
         # for each persistence landscape in the list of persitence landscapes
-        '''
         k = []
         for pl in l:
             # for each function in the persistence landscape
@@ -257,9 +258,9 @@ def snap_PL(l: list) -> list:
             k.append( PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
                                      values=snapped_landscape, 
                                      hom_deg = pl.hom_deg))
-            '''
-        
+        """
         k = [ PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
                                      values=values_snap(funct, grid), 
                                      hom_deg = pl.hom_deg) for pl in l for funct in pl]
+        """
         return k

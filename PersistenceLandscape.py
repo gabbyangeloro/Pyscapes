@@ -23,7 +23,6 @@ class PersistenceLandscape(ABC):
         if not isinstance(dgms, (list, tuple, np.ndarray)):
             raise TypeError("dgms must be a list, tuple, or numpy array")
         self.hom_deg = hom_deg
-        self.dgms = dgms[self.hom_deg] 
 
     # We enforce landscapes have arithmetic and norms, 
     # this is the whole reason for using them.

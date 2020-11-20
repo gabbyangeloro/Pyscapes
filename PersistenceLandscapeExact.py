@@ -52,12 +52,12 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     def __init__(
         self, dgms: list = [], hom_deg: int = 0,
         critical_pairs: list = [], compute: bool = False) -> None:
-        ### Do we need to put additional checks here? Make sure its a list of numpy
-        ### arrays? etc?
         super().__init__(dgms=dgms, hom_deg=hom_deg)
-        # self.hom_deg = hom_deg
         self.critical_pairs = critical_pairs
-        self.dgms = dgms
+        if dgms:
+            self.dgms = dgms[self.hom_deg] 
+        else: # critical pairs are passed. Is this the best check for this?
+            self.dgms = dgms
         self.max_depth = len(self.critical_pairs)
         if compute:
             self.compute_landscape()
