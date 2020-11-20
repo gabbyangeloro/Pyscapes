@@ -43,7 +43,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         dgms: list = [], hom_deg: int = 0, 
         values = np.array([]), compute: bool = False) -> None:
         
-        super().__init__(diagrams=diagrams, hom_deg=hom_deg)
+        super().__init__(dgms=dgms, hom_deg=hom_deg)
         # self.diagrams = diagrams
         #self.hom_deg = hom_deg
         self.start = start
@@ -74,7 +74,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
                                         retstep = True)[:] # TODO Why this [:]? Helps unpack
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
-        bd_pairs = self.diagrams       
+        bd_pairs = self.dgms       
        
         # create list of triangle top for each birth death pair
         birth: 'np.ndarray' = bd_pairs[:, 0]
