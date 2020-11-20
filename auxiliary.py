@@ -1,16 +1,19 @@
 """
 Auxilary functions for working with persistence diagrams.
-"""
-import itertools
-import numpy as np
-#from operator import attrgetter
-#import PersistenceLandscapeExact
-#import PersistenceLandscapeGrid
 
-def death_vector(diagram: list, homological_degree: int = 0):
+Most of these functions should not be called directly.
+"""
+
+from __future__ import annotations
+import itertools
+from operator import itemgetter, attrgetter
+import numpy as np
+
+
+def death_vector(diagram: list, hom_deg: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
     """
-    if homological_degree != 0:
+    if hom_deg != 0:
         raise NotImplementedError("The death vector is not defined for "
                                   "homological degrees greater than zero.")
     pass
@@ -37,6 +40,16 @@ def average_landscape(landscapes: list):
     """
     pass
     
+
+def _lc_grid(landscapes: list, coeffs: list) -> PersistenceLandscapeGrid:
+    """ Compute the linear combination of a list of PersistenceLandscapeGrids
+    """
+    # First snap them to a common grid
+    start = min(landscapes, key=attrgetter('start')).start
+    stop = max(landscapes, key=attrgetter('stop')).stop
+    num_dims = max(landscapes, key=attrgetter('num_dims')).num_dims
+    snapped_list = [PersistenceLandscapeG]
+
 
 def union_vals(A,B):
     """
@@ -163,7 +176,7 @@ def sum_slopes(a: list, b: list) -> list:
 
     return result
 
-def ndsnap(points, grid):
+def pairs_snap(pairs, grid):
     """
     Snap an 2D-array of points to values along an 2D-array grid.
     Each point will be snapped to the grid value with the smallest
@@ -185,9 +198,9 @@ def ndsnap(points, grid):
     # transpose grid 
     grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
     # axis 1 is x-values of points
-    diffs = np.sum(np.abs(grid_3d - points[:,:,np.newaxis]), axis=1)
+    diffs = np.sum(np.abs(grid_3d - pairs[:,:,np.newaxis]), axis=1)
     # argmin returns the indices of the minimum values along an axis
-    best = np.argmin(diffs, axis=1)
+    best = np.argmin(diffs, axis = 1)
     return  grid[best,:]
 
 # def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
@@ -196,9 +209,49 @@ def ndsnap(points, grid):
 #     """
 #     pass
 
+def values_snap(values, grid):
+    # transpose values 
+    values_transpose = values[:, np.newaxis]
+    diffs = np.abs(values_transpose - grid)
+    best = np.argmin(diffs, axis = 1)
+    return grid[best]
+
 def num_skip(n: int):
     """This should make it easy to throw out the first `n` landscape functions,
     regardless of grid or exact pl passed.
     """
     pass
 
+def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> list:
+    """
+    Returns a list of interpolated y-values of `self.critical_pairs` 
+    on user specified grid.
+    
+    Parameters
+    ----------
+    start: float, default None
+        start value of grid
+    if start is not inputed, start is assigned to minimum birth value
+    
+    stop: float, default None
+        stop value of grid 
+    if stop is not inputed, stop is assigned to maximum death value
+    
+    num_dims: int, default 500
+        number of points starting from `start` and ending at `stop`
+    
+    """
+   
+    l.compute_landscape()
+    # default start and stop value to min/max birth/death value 
+    if not start:
+        start = min(l.critical_values,key=itemgetter(0))[0]
+    if not stop:
+        stop = max(l.critical_values, key=itemgetter(0))[0]
+    grid = np.linspace(start, stop, num_dims)
+    result = []
+    # creates sequential pairs of points for each lambda in critical_pairs
+    for l in self.critical_pairs:
+        xs, ys = zip(*l)
+        result.append(np.interp(grid, xs, ys))
+    return result

@@ -13,17 +13,20 @@ class PersistenceLandscape(ABC):
     called directly. The subclasses `PersistenceLandscapeGrid` or
     `PersistenceLandscapeExact` should instead be called.
 
+    Parameters
+    ----------
+    dgms: list[list]
+        A list of birth-death pairs in `hom_deg`
     """
 
-    def __init__(self, diagrams: list = [], homological_degree: int = 0) -> None:
-        if not isinstance(homological_degree, int):
-            raise TypeError("homological_degree must be an integer")
-        if homological_degree < 0:
-            raise ValueError('homological_degree must be positive')
-        if not isinstance(diagrams, (list, tuple, np.ndarray)):
-            raise TypeError("diagrams must be a list, tuple, or numpy array")
-        self.homological_degree = homological_degree
-        self.diagrams = diagrams
+    def __init__(self, dgms: list = [], hom_deg: int = 0) -> None:
+        if not isinstance(hom_deg, int):
+            raise TypeError("hom_deg must be an integer")
+        if hom_deg < 0:
+            raise ValueError('hom_deg must be positive')
+        if not isinstance(dgms, (list, tuple, np.ndarray)):
+            raise TypeError("dgms must be a list, tuple, or numpy array")
+        self.hom_deg = hom_deg
 
     # We enforce landscapes have arithmetic and norms, 
     # this is the whole reason for using them.
@@ -38,7 +41,7 @@ class PersistenceLandscape(ABC):
         
     @abstractmethod
     def __add__(self, other):
-        if self.homological_degree != other.homological_degree:
+        if self.hom_deg != other.hom_deg:
             raise ValueError("Persistence landscapes must be of same homological degree")
     
     @abstractmethod

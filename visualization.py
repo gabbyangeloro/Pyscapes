@@ -21,7 +21,7 @@ def plot_landscape(landscape: PersistenceLandscape,
                    num_steps:int = 3000,
                    color = cm.viridis):
     """
-    plot landscape functions.
+    plot landscape functions. 
     """
     if isinstance(landscape, PersistenceLandscapeGrid):
         return plot_landscape_grid(landscape)

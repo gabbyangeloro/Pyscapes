@@ -19,7 +19,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
     Parameters
     ----------
-    diagrams : list of numpy arrays, optional
+    dgms : list of numpy arrays, optional
         A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
     Each entry in the list corresponds to a single homological degree.
     Each array represents the birth death pairs for a homology degree.
@@ -27,7 +27,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     Expecting output from ripser: ripser(data_user)['dgms']. Only
     one of diagrams or critical pairs should be specified.
 
-    homological_degree : int
+    hom_deg : int
         Represents the homology degree of the persistence diagram.
 
     critical_pairs: list, optional
@@ -50,14 +50,14 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     """
     
     def __init__(
-        self, diagrams: list = [], homological_degree: int = 0,
+        self, dgms: list = [], hom_deg: int = 0,
         critical_pairs: list = [], compute: bool = False) -> None:
-        ### Do we need to put additional checks here? Make sure its a list of numpy
-        ### arrays? etc?
-        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
-        # self.homological_degree = homological_degree
+        super().__init__(dgms=dgms, hom_deg=hom_deg)
         self.critical_pairs = critical_pairs
-        self.diagrams = diagrams
+        if dgms:
+            self.dgms = dgms[self.hom_deg] 
+        else: # critical pairs are passed. Is this the best check for this?
+            self.dgms = dgms
         self.max_depth = len(self.critical_pairs)
         if compute:
             self.compute_landscape()
@@ -65,12 +65,12 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     def __repr__(self):
         return (
             "The persistence landscapes of diagrams in homological "
-            f"degree {self.homological_degree}"
+            f"degree {self.hom_deg}"
         )
 
     def __neg__(self):
         self.compute_landscape()
-        return PersistenceLandscapeExact(homological_degree=self.homological_degree,
+        return PersistenceLandscapeExact(hom_deg=self.hom_deg,
                                     critical_pairs=[ [[a,-b] for a, b in depth_list]
                                                     for depth_list in self.critical_pairs])
         """
@@ -87,11 +87,11 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
     def __add__(self, other):
         # This requires a list implementation as written.
-        if self.homological_degree != other.homological_degree:
+        if self.hom_deg != other.hom_deg:
             raise ValueError("homological degrees must match")
         return PersistenceLandscapeExact(
             critical_pairs=union_crit_pairs(self, other),
-            homological_degree=self.homological_degree
+            hom_deg=self.hom_deg
             )
         """
         Computes the sum of two persistence landscape objects
@@ -130,7 +130,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     def __mul__(self, other: float):      
         self.compute_landscape()
         return PersistenceLandscapeExact(
-            homological_degree=self.homological_degree,
+            hom_deg=self.hom_deg,
             critical_pairs=[[(a, other*b) for a, b in depth_list] 
                             for depth_list in self.critical_pairs])
         """
@@ -229,7 +229,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
             verboseprint('self.critical_pairs was not empty and stored value was returned')
             return self.critical_pairs
 
-        A = self.diagrams[self.homological_degree]    
+        A = self.dgms   
         # change A into a list
         A = list(A)
         # change inner nparrays into lists
@@ -409,35 +409,5 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         cvals = list(itertools.chain.from_iterable(self.critical_pairs))
         return max(np.abs(cvals), key=itemgetter(1))[1]
     
-    def vectorize(self, start: float = -1., stop: float = -1., num_dims: int = 100) -> list:
-        """
-        Returns a list of interpolated y-values of `self.critical_pairs` 
-        on user specified grid 
-        
-        Parameters
-        ----------
-        start: float, default -1
-            start value of grid
-        if start is not inputed, start is assigned to minimum birth value
-        
-        stop: float, default -1
-            stop value of grid 
-        if stop is not inputed, stop is assigned to maximum death value
-        
-        num_dims: int, default 100
-            number of points starting from `start` and ending at `stop`
-        
-        """
-       
-        self.compute_landscape()
-        # default start and stop value to min/max birth/death value 
-        # if start == -1.:
-        # if stop == -1.:
-        grid = np.linspace(start, stop, num_dims)
-        result = []
-        # creates sequential pairs of points for each lambda in critical_pairs
-        for l in self.critical_pairs:
-            xs, ys = zip(*l)
-            result.append(np.interp(grid, xs, ys))
-        return result
+
         

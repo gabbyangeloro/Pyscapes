@@ -24,23 +24,23 @@ bc_dgms = ripser(bc_data_scl)['dgms']
 # plot_diagrams(wine_dgms, show=True)
 # plot_diagrams(bc_dgms, show=True)
 
-# Bad code:
-wine_plg1 = PersistenceLandscapeGrid(start=0,stop=1,num_dims=500, homological_degree=1,
-                                     diagrams=wine_dgms)
-
+#%%
 # Good code:
-wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, homological_degree=1,
-                                     diagrams=wine_dgms)  
-wine_plg2.compute_landscape()  
+wine_plg2 = PersistenceLandscapeGrid(start=0,stop=10,num_dims=500, hom_deg=1,
+                                     dgms=wine_dgms)    
+wine_plg2.compute_landscape()
 #%%
-L = [wine_plg2,wine_plg2]
-#%%
-K = snap_PL(L)
+K = snap_PL([wine_plg2, wine_plg2])
 
 #%%
 
-wine_pl = PersistenceLandscapeExact(wine_dgms, homological_degree=1)
-bc_pl = PersistenceLandscapeExact(bc_dgms, homological_degree=1)
+wine_plg3 = PersistenceLandscapeGrid(start=0,stop=5,num_dims=1000, hom_deg=1,
+                                     dgms=wine_dgms)    
+wine_plg3.compute_landscape(verbose= True)
+#%%
+
+wine_pl = PersistenceLandscapeExact(wine_dgms, hom_deg=1)
+bc_pl = PersistenceLandscapeExact(bc_dgms, hom_deg=1)
 
 wine_pl.compute_landscape()
 bc_pl.compute_landscape()
@@ -53,10 +53,10 @@ data = np.random.random_sample((200,2))
 diagrams = ripser(data)['dgms']
 # rips.plot(diagrams)
 
-# pl = PL(homological_degree=1][]
+# pl = PL(hom_deg=1][]
 # landscape = pl.fit_transform(diagrams)
 
-L = PersistenceLandscapeExact(diagrams,homological_degree=1)
+L = PersistenceLandscapeExact(diagrams,hom_deg=1)
 L.compute_landscape(verbose=True)
 L.p_norm(p=2)
 #%%
@@ -64,5 +64,5 @@ random_data = np.random.random((100, 2))
 diagrams = ripser(data)['dgms']
 #plot_diagrams(diagrams, show=True)
 
-M = PersistenceLandscapeExact(diagrams, homological_degree=1)
+M = PersistenceLandscapeExact(diagrams, hom_deg=1)
 M.compute_landscape()

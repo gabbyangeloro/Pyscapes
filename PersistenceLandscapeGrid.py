@@ -3,9 +3,9 @@ Define Grid Persistence Landscape class.
 """
 from __future__ import annotations
 import numpy as np
-from operator import attrgetter
-# import itertools
-from auxiliary import ndsnap, union_vals
+import itertools
+from auxiliary import pairs_snap, union_vals, values_snap
+from operator import itemgetter, attrgetter
 from PersistenceLandscape import PersistenceLandscape
 
 
@@ -18,13 +18,17 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     This version is only an approximation to the true landscape, but given
     a fine enough grid, this should suffice for most applications. If an exact
     calculation with no approximation is desired, consider `PersistenceLandscapeExact`.
+    
+    The default parameters for start and stop favor dgms over values. That
+    is, if both dgms and values are passed but start and stop are not, the
+    start and stop values will be determined by dgms.
 
     Parameters
     ----------
-    diagrams : list[list]
+    dgms : list[list]
         A list of birth death pairs for each homological degree
     
-     homological_degree : int
+     hom_deg : int
         represents the homology degree of the persistence diagram.
     
     Methods
@@ -39,24 +43,34 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     
     """
     def __init__(
-        self, start: float, stop: float, num_dims: int, 
-        diagrams: list = [], homological_degree: int = 0, 
-        values: list = [], pairs: list = [], compute: bool = False) -> None:
+        self, start: float = None, stop: float = None, num_dims: int = 500, 
+        dgms: list = [], hom_deg: int = 0, 
+        values = np.array([]), compute: bool = False) -> None:
         
-        super().__init__(diagrams=diagrams, homological_degree=homological_degree)
-        # self.diagrams = diagrams
-        # self.homological_degree = homological_degree
+        super().__init__(dgms=dgms, hom_deg=hom_deg)
+        if dgms: # diagrams are passed
+            self.dgms = dgms[self.hom_deg] 
+            if not start:
+                start = min(dgms, key=itemgetter(0))[0]
+            if not stop:
+                stop = max(dgms, key=itemgetter(1))[1]
+        elif values.size > 0: # values passed, diagrams weren't 
+            self.dgms = dgms
+            if not start:
+                start = np.amin(values)
+            if not stop:
+                stop = np.amax(values)
         self.start = start
         self.stop = stop
-        self.num_dims = num_dims
         self.values = values
+        self.num_dims = num_dims
         if compute:
             self.compute_landscape()
     
     def __repr__(self) -> str:
         
         return ('The persistence landscapes of diagrams in homological '
-        f'degree {self.homological_degree} on grid from {self.start} to {self.stop}'
+        f'degree {self.hom_deg} on grid from {self.start} to {self.stop}'
         f' with step size {self.num_dims}')
         
     
@@ -64,7 +78,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         
         verboseprint = print if verbose else lambda *a, **k: None
 
-        if isinstance(self.values, np.ndarray):
+        if self.values.size :
             verboseprint('values was stored, exiting')
             return 
         
@@ -74,19 +88,8 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
                                         retstep = True)[:] # TODO Why this [:]? Helps unpack
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
-        bd_pairs = self.diagrams[self.homological_degree]        
-        '''
-        # check for duplicates of (b,d)
-        duplicate = 0
-        
-        for ind, item in enumerate(list(bd_pairs)):
-            if item == [b,d]:
-                duplicate += 1
-                A.pop(ind)
-            else:
-                break
-        '''
-        
+        bd_pairs = self.dgms       
+       
         # create list of triangle top for each birth death pair
         birth: 'np.ndarray' = bd_pairs[:, 0]
         death: 'np.ndarray' = bd_pairs[:, 1]
@@ -94,21 +97,19 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         triangle_top = np.array(list(zip((birth + death)/2, (death - birth)/2)))
         
         # snap birth-death pairs and triangle tops to grid 
-        bd_pairs_grid = ndsnap(bd_pairs, grid)
-        triangle_top_grid = ndsnap(triangle_top, grid)
+        bd_pairs_grid = pairs_snap(bd_pairs, grid)
+        triangle_top_grid = pairs_snap(triangle_top, grid)
         
         # make grid dictionary 
-        
-        values = list(range(self.num_dims))
-        dict_grid = dict(zip( grid_values, values))
+        index = list(range(self.num_dims))
+        dict_grid = dict(zip( grid_values, index))
         
         # initialze W to a list of 2m + 1 empty lists
-        # W = [[] for i in range(self.stop +1)]
         W = [[] for _ in range(self.num_dims)]
     
         # for each birth death pair
         for ind_in_bd_pairs, bd in enumerate(bd_pairs_grid):
-            b, d = bd
+            [b, d] = bd
             ind_in_Wb = dict_grid[b] # index in W
             ind_in_Wd = dict_grid[d] # index in W
             
@@ -134,13 +135,17 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         K = max([len(_) for _ in W ])
         
         # initialize L to be a zeros matrix of size K x (2m+1)
-        #L = [[0] * (self.num_dims) for _ in range(K)]
         L = np.array([ np.zeros(self.num_dims) for _ in range(K)])
         
         #input Values from W to L
         for i in range(self.num_dims):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
+        
+        # check if L is empty 
+        if not L.size:
+            L = np.array(['empty'])
+            print('Bad choice of grid, values is empty')
 
 
         self.values = L
@@ -156,15 +161,12 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 
         """
         self.compute_landscape()
-        
         grid_values = list(np.linspace(self.start, self.stop, self.num_dims))
         result = []
         for l in self.values:
             pairs = list(zip(grid_values, l))
             result.append( pairs )
-        return np.array(result)
-          
-        
+        return np.array(result)                
     
     def __add__(self, other: PersistenceLandscapeGrid) -> PersistenceLandscapeGrid:
         super().__add__(other)
@@ -177,7 +179,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         self_pad, other_pad = union_vals(self.values, other.values)
         return PersistenceLandscapeGrid(start=self.start, stop=self.stop, 
                                         num_dims=self.num_dims,
-                                        homological_degree=self.homological_degree, 
+                                        hom_deg=self.hom_deg, 
                                         values=self_pad+other_pad)
     
     def __neg__(self) -> PersistenceLandscapeGrid:
@@ -185,7 +187,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             start=self.start, 
             stop=self.stop, 
             num_dims=self.num_dims,
-            homological_degree=self.homological_degree,
+            hom_deg=self.hom_deg,
             values = np.array([-1*depth_array for depth_array in self.values]))
         pass
     
@@ -198,7 +200,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
             start=self.start, 
             stop=self.stop, 
             num_dims=self.num_dims,
-            homological_degree=self.homological_degree,
+            hom_deg=self.hom_deg,
             values = np.array([other*depth_array for depth_array in self.values]))
     
     def __rmul__(self,other: float) -> PersistenceLandscapeGrid:
@@ -237,21 +239,40 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 ###############################
 
 def snap_PL(l: list) -> list:
-    """
-    Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
-    where each entry has the same start, stop, and num_dims. This puts each
-    entry of `l` on the same grid, so they can be added, averaged, etc.
-    
-    This assumes they're all of the same homological degree and their values have 
-    all been computed.
-    """
-    _b = min(l,key=attrgetter('start')).start
-    _d = max(l,key=attrgetter('stop')).stop
-    _dims = max(l,key=attrgetter('num_dims')).num_dims
-    # Now use ndsnap somehow?
-    grid_values = list(np.linspace(start=_b, stop=_d, num=_dims))
-    grid = np.array([[x,y] for x in grid_values for y in grid_values]) # TODO reshape?
-    k = [PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
-                                 values=[ndsnap(depth,grid) for depth in pl.values_to_pairs()],
-                                 homological_degree=pl[0].homological_degree) for pl in l]
-    return k
+        """
+        Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
+        where each entry has the same start, stop, and num_dims. This puts each
+        entry of `l` on the same grid, so they can be added, averaged, etc.
+        
+        This assumes they're all of the same homological degree.
+        """
+        _b = min(l,key=attrgetter('start')).start
+        _d = max(l,key=attrgetter('stop')).stop
+        _dims = max(l,key=attrgetter('num_dims')).num_dims
+        grid = np.linspace(_b, _d, _dims) 
+        #grid_values = list(grid_values)
+        #grid = np.array([[x,y] for x in grid_values for y in grid_values])
+        '''
+        k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
+                                     values=ndsnap(pl.values, grid),
+                                     hom_deg= l[0].hom_deg) for pl in l]
+        
+        '''
+        # for each persistence landscape in the list of persitence landscapes
+        k = []
+        for pl in l:
+            # for each function in the persistence landscape
+            snapped_landscape = []
+            for funct in pl:
+                # snap each function and store 
+                snapped_landscape.append(values_snap(funct, grid))
+            # store snapped persistence landscape   
+            k.append( PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
+                                     values=snapped_landscape, 
+                                     hom_deg = pl.hom_deg))
+        """
+        k = [ PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
+                                     values=values_snap(funct, grid), 
+                                     hom_deg = pl.hom_deg) for pl in l for funct in pl]
+        """
+        return k
