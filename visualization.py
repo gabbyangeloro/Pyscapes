@@ -7,14 +7,29 @@ import itertools
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from PersistenceLandscape import PersistenceLandscape
 from PersistenceLandscapeExact import PersistenceLandscapeExact
 from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 from operator import itemgetter
 from matplotlib import cm
 
+# TODO: Use styles instead of colormaps directly? Or both?
+
 mpl.rcParams['text.usetex'] = True
 
-def plot_landscape(landscape: PersistenceLandscapeExact,
+def plot_landscape(landscape: PersistenceLandscape,
+                   num_steps:int = 3000,
+                   color = cm.viridis):
+    """
+    plot landscape functions.
+    """
+    if isinstance(landscape, PersistenceLandscapeGrid):
+        return plot_landscape_grid(landscape)
+    if isinstance(landscape, PersistenceLandscapeExact):
+        return plot_landscape_exact(landscape)
+    
+
+def plot_landscape_exact(landscape: PersistenceLandscapeExact,
                    num_steps: int = 3000,
                    color = cm.viridis,
                    alpha = 0.8,
@@ -132,8 +147,6 @@ def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     landscape.compute_landscape()
-    # itemgetter index selects which entry to take max/min wrt.
-    # the hanging [0] or [1] takes that entry.
     # TODO: RE the following line: is this better than np.concatenate?
     #       There is probably an even better way without creating an intermediary.
     _vals = list(itertools.chain.from_iterable(landscape.values)) 
@@ -145,7 +158,7 @@ def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
     # for each landscape function
     for depth, l in enumerate(landscape):
         # sequential pairs in landscape
-        xs, zs = zip(*l)
+        # xs, zs = zip(*l)
         image = np.interp(domain, np.linspace(start=landscape.start, stop=landscape.stop,
                                               num=landscape.num_dims), l) 
         for x, z in zip(domain,image):

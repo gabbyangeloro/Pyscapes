@@ -50,21 +50,17 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     """
     
     def __init__(
-        self, diagrams: list = [], hom_deg: int = 0,
-        critical_pairs: list = []) -> None:
-        # if not isinstance(hom_deg, int):
-        #     raise TypeError("hom_deg must be an integer")
-        # if hom_deg < 0:
-        #     raise ValueError('hom_deg must be positive')
-        # if not isinstance(diagrams, list):
-        #     raise TypeError("diagrams must be a list")
+        self, dgms: list = [], hom_deg: int = 0,
+        critical_pairs: list = [], compute: bool = False) -> None:
         ### Do we need to put additional checks here? Make sure its a list of numpy
         ### arrays? etc?
-        super().__init__(diagrams=diagrams, hom_deg=hom_deg)
+        super().__init__(dgms=dgms, hom_deg=hom_deg)
         # self.hom_deg = hom_deg
         self.critical_pairs = critical_pairs
-        self.diagrams = diagrams
+        self.dgms = dgms
         self.max_depth = len(self.critical_pairs)
+        if compute:
+            self.compute_landscape()
 
     def __repr__(self):
         return (

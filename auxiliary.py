@@ -3,9 +3,9 @@ Auxilary functions for working with persistence diagrams.
 """
 import itertools
 import numpy as np
-from operator import attrgetter
-# from PersistenceLandscapeExact import PersistenceLandscapeExact
-#from PersistenceLandscapeGrid import PersistenceLandscapeGrid
+#from operator import attrgetter
+#import PersistenceLandscapeExact
+#import PersistenceLandscapeGrid
 
 def death_vector(diagram: list, hom_deg: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
@@ -37,6 +37,24 @@ def average_landscape(landscapes: list):
     """
     pass
     
+
+def union_vals(A,B):
+    """
+    Extends one list to the length of the other by padding with zero lists.
+    AAHelper function for summing grid landscapes.
+
+    """
+    diff = A.shape[0] - B.shape[0]
+    if diff < 0:
+        # B has more entries, so pad A
+        A = np.pad(A, pad_width=((0,np.abs(diff)), (0,0)))
+        return A, B
+    elif diff > 0:
+        # A has more entries, so pad B
+        B = np.pad(B, pad_width=((0,diff),(0,0)))
+        return A, B
+    else:
+        return A, B    
 
 def union_crit_pairs(A, B):
     """ Helper function for summing landscapes. 
@@ -190,21 +208,4 @@ def num_skip(n: int):
     regardless of grid or exact pl passed.
     """
     pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

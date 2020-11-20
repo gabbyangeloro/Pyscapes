@@ -15,15 +15,15 @@ class PersistenceLandscape(ABC):
 
     """
 
-    def __init__(self, diagrams: list = [], hom_deg: int = 0) -> None:
+    def __init__(self, dgms: list = [], hom_deg: int = 0) -> None:
         if not isinstance(hom_deg, int):
             raise TypeError("hom_deg must be an integer")
         if hom_deg < 0:
             raise ValueError('hom_deg must be positive')
-        if not isinstance(diagrams, (list, tuple, np.ndarray)):
-            raise TypeError("diagrams must be a list, tuple, or numpy array")
-        self.diagrams = diagrams[self.hom_deg] 
+        if not isinstance(dgms, (list, tuple, np.ndarray)):
+            raise TypeError("dgms must be a list, tuple, or numpy array")
         self.hom_deg = hom_deg
+        self.dgms = dgms[self.hom_deg] 
 
     # We enforce landscapes have arithmetic and norms, 
     # this is the whole reason for using them.

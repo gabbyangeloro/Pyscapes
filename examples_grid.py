@@ -23,8 +23,8 @@ bc_data_scl = scaler.fit_transform(bc_data)
 
 wine_dgms = ripser(wine_data_scl)['dgms']
 bc_dgms = ripser(bc_data_scl)['dgms']
-plot_diagrams(wine_dgms, show=True)
-plot_diagrams(bc_dgms, show=True)
+# plot_diagrams(wine_dgms, show=True)
+# plot_diagrams(bc_dgms, show=True)
 #%% Compute landscape grid and landscapes
 
 min_b_wine = min(wine_dgms[1],key=itemgetter(0))[0]
