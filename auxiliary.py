@@ -1,11 +1,14 @@
 """
 Auxilary functions for working with persistence diagrams.
+
+Most of these functions should not be called directly.
 """
+
+from __future__ import annotations
 import itertools
+from operator import itemgetter
 import numpy as np
-#from operator import attrgetter
-#import PersistenceLandscapeExact
-#import PersistenceLandscapeGrid
+
 
 def death_vector(diagram: list, hom_deg: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
@@ -209,3 +212,36 @@ def num_skip(n: int):
     """
     pass
 
+def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> list:
+    """
+    Returns a list of interpolated y-values of `self.critical_pairs` 
+    on user specified grid.
+    
+    Parameters
+    ----------
+    start: float, default None
+        start value of grid
+    if start is not inputed, start is assigned to minimum birth value
+    
+    stop: float, default None
+        stop value of grid 
+    if stop is not inputed, stop is assigned to maximum death value
+    
+    num_dims: int, default 500
+        number of points starting from `start` and ending at `stop`
+    
+    """
+   
+    l.compute_landscape()
+    # default start and stop value to min/max birth/death value 
+    if not start:
+        start = min(l.critical_values,key=itemgetter(0))[0]
+    if not stop:
+        stop = max(l.critical_values, key=itemgetter(0))[0]
+    grid = np.linspace(start, stop, num_dims)
+    result = []
+    # creates sequential pairs of points for each lambda in critical_pairs
+    for l in self.critical_pairs:
+        xs, ys = zip(*l)
+        result.append(np.interp(grid, xs, ys))
+    return result

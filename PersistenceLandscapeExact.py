@@ -409,35 +409,5 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         cvals = list(itertools.chain.from_iterable(self.critical_pairs))
         return max(np.abs(cvals), key=itemgetter(1))[1]
     
-    def vectorize(self, start: float = -1., stop: float = -1., num_dims: int = 100) -> list:
-        """
-        Returns a list of interpolated y-values of `self.critical_pairs` 
-        on user specified grid 
-        
-        Parameters
-        ----------
-        start: float, default -1
-            start value of grid
-        if start is not inputed, start is assigned to minimum birth value
-        
-        stop: float, default -1
-            stop value of grid 
-        if stop is not inputed, stop is assigned to maximum death value
-        
-        num_dims: int, default 100
-            number of points starting from `start` and ending at `stop`
-        
-        """
-       
-        self.compute_landscape()
-        # default start and stop value to min/max birth/death value 
-        # if start == -1.:
-        # if stop == -1.:
-        grid = np.linspace(start, stop, num_dims)
-        result = []
-        # creates sequential pairs of points for each lambda in critical_pairs
-        for l in self.critical_pairs:
-            xs, ys = zip(*l)
-            result.append(np.interp(grid, xs, ys))
-        return result
+
         
