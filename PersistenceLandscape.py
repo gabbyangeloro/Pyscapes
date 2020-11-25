@@ -28,7 +28,7 @@ class PersistenceLandscape(ABC):
             raise TypeError("dgms must be a list, tuple, or numpy array")
         self.hom_deg = hom_deg
 
-    # We enforce landscapes have arithmetic and norms, 
+    # We force landscapes to have arithmetic and norms, 
     # this is the whole reason for using them.
     
     @abstractmethod

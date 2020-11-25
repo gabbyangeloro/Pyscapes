@@ -54,7 +54,7 @@ def _lc_grid(landscapes: list, coeffs: list) -> PersistenceLandscapeGrid:
 def union_vals(A,B):
     """
     Extends one list to the length of the other by padding with zero lists.
-    AAHelper function for summing grid landscapes.
+    A Helper function for summing grid landscapes.
 
     """
     diff = A.shape[0] - B.shape[0]
@@ -170,10 +170,6 @@ def sum_slopes(a: list, b: list) -> list:
             # pop a0 and b0
             a, b = a[1:], b[1:]
             result.append([ax, am + bm])
-        # reduce trailing zeroes
-   # if len(result) > 2 and result[-1][1] == result[2][1]:
-   #     result.pop()
-
     return result
 
 def pairs_snap(pairs, grid):
@@ -215,6 +211,11 @@ def values_snap(values, grid):
     diffs = np.abs(values_transpose - grid)
     best = np.argmin(diffs, axis = 1)
     return grid[best]
+
+def values_interp(values, grid):
+    """ Interpolate
+    """
+    pass
 
 def num_skip(n: int):
     """This should make it easy to throw out the first `n` landscape functions,

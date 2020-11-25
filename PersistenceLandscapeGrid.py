@@ -50,16 +50,17 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         super().__init__(dgms=dgms, hom_deg=hom_deg)
         if dgms: # diagrams are passed
             self.dgms = dgms[self.hom_deg] 
-            if not start:
-                start = min(dgms, key=itemgetter(0))[0]
-            if not stop:
-                stop = max(dgms, key=itemgetter(1))[1]
+            if start is None:
+                start = min(self.dgms, key=itemgetter(0))[0]
+            if stop is None:
+                stop = max(self.dgms, key=itemgetter(1))[1]
         elif values.size > 0: # values passed, diagrams weren't 
             self.dgms = dgms
             if not start:
-                start = np.amin(values)
+                raise ValueError('start parameter must be passed if values are passed.')
             if not stop:
-                stop = np.amax(values)
+                raise ValueError('stop parameter must be passed if values are passed.')
+                # stop = np.amax(values)
         self.start = start
         self.stop = stop
         self.values = values
@@ -85,7 +86,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         verboseprint('values was empty, computing values')
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
-                                        retstep = True)[:] # TODO Why this [:]? Helps unpack
+                                        retstep = True)
         grid_values = list(grid_values)
         grid = np.array([[x,y] for x in grid_values for y in grid_values])
         bd_pairs = self.dgms       
@@ -238,7 +239,7 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 # End PLG class definition
 ###############################
 
-def snap_PL(l: list) -> list:
+def snap_PL(l: list, start: float = None, stop: float = None, num_dims : int =  None) -> list:
         """
         Given a list `l` of PersistenceLandscapeGrid types, convert them to a list
         where each entry has the same start, stop, and num_dims. This puts each
@@ -246,29 +247,23 @@ def snap_PL(l: list) -> list:
         
         This assumes they're all of the same homological degree.
         """
-        _b = min(l,key=attrgetter('start')).start
-        _d = max(l,key=attrgetter('stop')).stop
-        _dims = max(l,key=attrgetter('num_dims')).num_dims
-        grid = np.linspace(_b, _d, _dims) 
-        #grid_values = list(grid_values)
-        #grid = np.array([[x,y] for x in grid_values for y in grid_values])
-        '''
-        k = [PersistenceLandscapeGrid(start=_b, end=_d, num_dims=_dims,
-                                     values=ndsnap(pl.values, grid),
-                                     hom_deg= l[0].hom_deg) for pl in l]
-        
-        '''
-        # for each persistence landscape in the list of persitence landscapes
+        if start is None:
+            start = min(l,key=attrgetter('start')).start
+        if stop is None:
+            stop = max(l,key=attrgetter('stop')).stop
+        if num_dims is None:
+            num_dims = max(l,key=attrgetter('num_dims')).num_dims
+        grid = np.linspace(start, stop, num_dims) 
         k = []
         for pl in l:
-            # for each function in the persistence landscape
             snapped_landscape = []
             for funct in pl:
                 # snap each function and store 
-                snapped_landscape.append(values_snap(funct, grid))
+                snapped_landscape.append(np.array(np.interp(grid, np.linspace(pl.start, pl.stop,
+                                                                     pl.num_dims), funct)))
             # store snapped persistence landscape   
-            k.append( PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
-                                     values=snapped_landscape, 
+            k.append( PersistenceLandscapeGrid(start=start, stop=stop, num_dims=num_dims,
+                                     values=np.array(snapped_landscape), 
                                      hom_deg = pl.hom_deg))
         """
         k = [ PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
