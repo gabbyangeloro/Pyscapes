@@ -35,8 +35,8 @@ import concurrent.futures
 from operator import itemgetter
 
 from ripser import ripser
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid
-from visualization import plot_landscape
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid, snap_PL
+from visualization import plot_landscape_grid
 
 from tadasets import dsphere
 import time
@@ -44,56 +44,60 @@ import time
 #%% Construct a list of 100 landscapes from randomly sampled points.
 sph2_dgm_list = []
 sph3_dgm_list = []
-sph2_b = 100.
-sph2_d = -100.
-sph3_b = 100.
-sph3_d = -100.
-
-for i in range(100):
-    sph2_pts = dsphere(n=100, d=2, r=1)
-    sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
-    if min(sph2_dgm[1],key=itemgetter(0))[0] < sph2_b:
-        sph2_b = min(sph2_dgm[1],key=itemgetter(0))[0]
-    if max(sph2_dgm[1],key=itemgetter(1))[1] > sph2_d:
-        sph2_d = max(sph2_dgm[1],key=itemgetter(1))[1]
-    sph2_dgm_list.append(sph2_dgm)
-    
-    sph3_pts = dsphere(n=100, d=3, r=1)
-    sph3_dgm = ripser(sph3_pts, maxdim=2)['dgms']
-    if min(sph3_dgm[1],key=itemgetter(0))[0] < sph3_b:
-        sph3_b = min(sph3_dgm[1],key=itemgetter(0))[0]
-    if max(sph3_dgm[1],key=itemgetter(1))[1] > sph3_d:
-        sph3_d = max(sph3_dgm[1],key=itemgetter(1))[1]
-    sph3_dgm_list.append(sph3_dgm)
-#%%
-_b = min(sph2_b,sph3_b)
-_d = max(sph2_d, sph3_d)
 sph2_pl1_list = []
 sph2_pl2_list = []
 sph3_pl1_list = []
 sph3_pl2_list = []
+#sph2_b = 100.
+#sph2_d = -100.
+#sph3_b = 100.
+#sph3_d = -100.
+
+#%%
+for i in range(100):
+    sph2_pts = dsphere(n=100, d=2, r=1)
+    sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
+    #if min(sph2_dgm[1],key=itemgetter(0))[0] < sph2_b:
+    #    sph2_b = min(sph2_dgm[1],key=itemgetter(0))[0]
+    #if max(sph2_dgm[1],key=itemgetter(1))[1] > sph2_d:
+    #    sph2_d = max(sph2_dgm[1],key=itemgetter(1))[1]
+    sph2_dgm_list.append(sph2_dgm)
+    
+    sph3_pts = dsphere(n=100, d=3, r=1)
+    sph3_dgm = ripser(sph3_pts, maxdim=2)['dgms']
+    #if min(sph3_dgm[1],key=itemgetter(0))[0] < sph3_b:
+    #    sph3_b = min(sph3_dgm[1],key=itemgetter(0))[0]
+    #if max(sph3_dgm[1],key=itemgetter(1))[1] > sph3_d:
+    #    sph3_d = max(sph3_dgm[1],key=itemgetter(1))[1]
+    sph3_dgm_list.append(sph3_dgm)
+#%%
 
 start_time = time.perf_counter()
 for i in range(100):
-    
-    sph2_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
-                                        diagrams=sph2_dgm_list[i], 
-                                        homological_degree=1)
-    sph2_pl1.compute_landscape()
+    sph2_pts = dsphere(n=100, d=2, r=1)
+    sph2_dgm = ripser(sph2_pts, maxdim=2)['dgms']
+    sph2_pl1 = PersistenceLandscapeGrid(num_dims=500,
+                                        dgms=sph2_dgm, 
+                                        hom_deg=1,compute=True)
     sph2_pl1_list.append(sph2_pl1)
-    #sph2_pl2 = PersistenceLandscapeGrid(diagrams=sph2_dgm, homological_degree=2)
-    #sph2_pl2.compute_landscape
-    #sph2_pl2_list.append(sph2_pl2)
-    #sph3_pl1 = PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=500,
-    #                                    diagrams=sph3_dgm_list[i], homological_degree=1)
+    
+    sph3_pts = dsphere(n=100, d=3, r=1)
+    sph3_dgm = ripser(sph3_pts, maxdim=2)['dgms']
+    sph3_pl1 = PersistenceLandscapeGrid(num_dims=500,
+                                        dgms=sph3_dgm, hom_deg=1, compute=True)
     #sph3_pl1.compute_landscape()
-    #sph3_pl1_list.append(sph3_pl1)
+    sph3_pl1_list.append(sph3_pl1)
     #sph3_pl2 = PersistenceLandscapeGrid(diagrams=sph3_dgm, homological_degree=2)
     #sph3_pl2.compute_landscape()
     #sph3_pl2_list.append(sph3_pl2)
     
 end_time = time.perf_counter()
 print(f'The time it took for non-parallelized landscapes is {end_time-start_time} s')
+#%% snap them
+
+sph2_pl1_list = snap_PL(sph2_pl1_list)
+sph3_pl1_list = snap_PL(sph3_pl1_list)
+
 #%% Construct the true average landscape
 avg_sph2_pl1 = sph2_pl1_list[0]
 avg_sph3_pl1 = sph3_pl1_list[0]
@@ -105,17 +109,17 @@ for i in range(1,100):
 avg_sph2_pl1=avg_sph2_pl1/100.
 avg_sph3_pl1=avg_sph3_pl1/100.
 
-true_diff_pl = avg_sph2_pl1 - avg_sph3_pl1
-true_diff = true_diff_pl.sup_norm()
+#true_diff_pl = avg_sph2_pl1 - avg_sph3_pl1
+#true_diff = true_diff_pl.sup_norm()
 
 #%% Plot them
 
-plot_landscape(avg_sph2_pl1, title='Average landscape in degree 1 for $S^2$')
+plot_landscape_grid(avg_sph2_pl1, title='Average landscape in degree 1 for $S^2$')
 
 #%% plot avg S^3
-plot_landscape(avg_sph3_pl1, title='Average landscape in degree 1 for $S^3$')
+plot_landscape_grid(avg_sph3_pl1, title='Average landscape in degree 1 for $S^3$')
 #%% plot diff
-plot_landscape(true_diff_pl, title='Difference of average landscapes in degree 1 for $S^2$ and $S^3$')
+plot_landscape_grid(true_diff_pl, title='Difference of average landscapes in degree 1 for $S^2$ and $S^3$')
 
 #%% Run the permutation test
 # We do stratified shuffling, so each new group will still have 1000 entries each. This

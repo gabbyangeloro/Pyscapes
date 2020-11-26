@@ -45,10 +45,8 @@ def _lc_grid(landscapes: list, coeffs: list) -> PersistenceLandscapeGrid:
     """ Compute the linear combination of a list of PersistenceLandscapeGrids
     """
     # First snap them to a common grid
-    start = min(landscapes, key=attrgetter('start')).start
-    stop = max(landscapes, key=attrgetter('stop')).stop
-    num_dims = max(landscapes, key=attrgetter('num_dims')).num_dims
-    snapped_list = [PersistenceLandscapeG]
+    landscapes = snap_PL(landscapes)
+    values = []
 
 
 def union_vals(A,B):

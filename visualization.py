@@ -19,20 +19,26 @@ mpl.rcParams['text.usetex'] = True
 
 def plot_landscape(landscape: PersistenceLandscape,
                    num_steps:int = 3000,
-                   color = cm.viridis):
+                   colormap = "default",
+                   title = None,
+                   labels = None,
+                   ):
     """
     plot landscape functions. 
     """
     if isinstance(landscape, PersistenceLandscapeGrid):
-        return plot_landscape_grid(landscape)
+        return plot_landscape_grid(landscape = landscape, num_steps = num_steps, 
+                                   colormap = colormap, title = title, labels = labels)
     if isinstance(landscape, PersistenceLandscapeExact):
-        return plot_landscape_exact(landscape)
+        return plot_landscape_exact(landscape = landscape, num_steps = num_steps, 
+                                    colormap = colormap, title = title, labels = labels)
     
 
 def plot_landscape_exact(landscape: PersistenceLandscapeExact,
                    num_steps: int = 3000,
-                   color = cm.viridis,
+                   colormap = "default",
                    alpha = 0.8,
+                   labels = None,
                    padding: float = 0.1,
                    depth_padding: float = 0.7,
                    title = None):
@@ -60,6 +66,7 @@ def plot_landscape_exact(landscape: PersistenceLandscapeExact,
         
     """
     fig = plt.figure()
+    plt.style.use(colormap)
     ax = fig.gca(projection='3d')
     landscape.compute_landscape()
     # itemgetter index selects which entry to take max/min wrt.
@@ -92,7 +99,7 @@ def plot_landscape_exact(landscape: PersistenceLandscapeExact,
                 ztuple,
                 linewidth=0.5,
                 alpha=alpha,
-                c=color(norm(z)))
+                c=colormap(norm(z)))
             ax.plot([x], [depth_padding*depth], [z], 'k.', markersize=0.1)
     
     #ax.set_xlabel('X')
@@ -116,7 +123,8 @@ def plot_landscape_exact(landscape: PersistenceLandscapeExact,
 
 def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
                    num_steps: int = 3000,
-                   color = cm.viridis,
+                   colormap = "default",
+                   labels = None,
                    alpha = 0.8,
                    padding: float = 0.1,
                    depth_padding: float = 0.7,
@@ -146,6 +154,7 @@ def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
     """
     fig = plt.figure()
     ax = fig.gca(projection='3d')
+    plt.style.use(colormap)
     landscape.compute_landscape()
     # TODO: RE the following line: is this better than np.concatenate?
     #       There is probably an even better way without creating an intermediary.
@@ -153,6 +162,7 @@ def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
     min_val = min(_vals) 
     max_val = max(_vals) 
     norm = mpl.colors.Normalize(vmin=min_val, vmax=max_val)
+    scalarMap = mpl.cm.ScalarMappable(norm=norm)
     # x-axis for grid
     domain = np.linspace(landscape.start-padding*0.1, landscape.stop+padding*0.1, num=num_steps)
     # for each landscape function
@@ -176,7 +186,8 @@ def plot_landscape_grid(landscape: PersistenceLandscapeGrid,
                 ztuple,
                 linewidth=0.5,
                 alpha=alpha,
-                c=color(norm(z)))
+                # c=colormap(norm(z)))
+                c=scalarMap.to_rgba(z))
             ax.plot([x], [depth_padding*depth], [z], 'k.', markersize=0.1)
     
     #ax.set_xlabel('X')
