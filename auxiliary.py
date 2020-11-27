@@ -41,12 +41,8 @@ def average_landscape(landscapes: list):
     pass
     
 
-def _lc_grid(landscapes: list, coeffs: list) -> PersistenceLandscapeGrid:
-    """ Compute the linear combination of a list of PersistenceLandscapeGrids
-    """
-    # First snap them to a common grid
-    landscapes = snap_PL(landscapes)
-    values = []
+
+    
 
 
 def union_vals(A,B):
