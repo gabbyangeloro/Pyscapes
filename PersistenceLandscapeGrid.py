@@ -265,9 +265,18 @@ def snap_PL(l: list, start: float = None, stop: float = None, num_dims : int =  
             k.append( PersistenceLandscapeGrid(start=start, stop=stop, num_dims=num_dims,
                                      values=np.array(snapped_landscape), 
                                      hom_deg = pl.hom_deg))
-        """
-        k = [ PersistenceLandscapeGrid(start=_b, stop=_d, num_dims=_dims,
-                                     values=values_snap(funct, grid), 
-                                     hom_deg = pl.hom_deg) for pl in l for funct in pl]
-        """
         return k
+    
+def lc_grid(landscapes: list, coeffs: list, start: float = None, stop: float = None,
+             num_dims: int = None) -> PersistenceLandscapeGrid:
+    """ Compute the linear combination of a list of PersistenceLandscapeGrid objects.
+    """
+    l = snap_PL(landscapes, start = start, stop = stop, num_dims = num_dims)
+    return np.sum(np.array(coeffs)*np.array(l))
+
+def lc_average(landscapes: list, start: float = None, stop: float = None, 
+               num_dims: int = None)-> PersistenceLandscapeGrid:
+    """ Compute the average of a list of PersistenceLandscapeGrid objects.
+    """
+    return lc_grid(landscapes=landscapes, coeffs = [1.0/len(landscapes) for _ in landscapes],
+                   start=start,stop=stop,num_dims=num_dims)
