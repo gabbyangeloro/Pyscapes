@@ -119,7 +119,7 @@ plot_landscape_grid(avg_sph2_pl1, title='Average landscape in degree 1 for $S^2$
 #%% plot avg S^3
 plot_landscape_grid(avg_sph3_pl1, title='Average landscape in degree 1 for $S^3$')
 #%% plot diff
-plot_landscape_grid(true_diff_pl, title='Difference of average landscapes in degree 1 for $S^2$ and $S^3$')
+#plot_landscape_grid(true_diff_pl, title='Difference of average landscapes in degree 1 for $S^2$ and $S^3$')
 
 #%% Run the permutation test
 # We do stratified shuffling, so each new group will still have 1000 entries each. This
