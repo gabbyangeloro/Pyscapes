@@ -35,16 +35,6 @@ def linear_combination(landscapes: list, coeffs: list):
         result += coeffs[c]*L
     return result
 
-def average_landscape(landscapes: list):
-    """ Compute the average of a list of landscapes
-    """
-    pass
-    
-
-
-    
-
-
 def union_vals(A,B):
     """
     Extends one list to the length of the other by padding with zero lists.

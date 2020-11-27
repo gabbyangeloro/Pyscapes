@@ -9,7 +9,7 @@ from visualization import plot_landscape_grid
 from ripser import ripser
 from persim import plot_diagrams
 from PersistenceLandscapeExact import PersistenceLandscapeExact
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid, snap_PL
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid, snap_PL, lc_grid, average_grid
 #%%
 
 wine_data, wine_target = load_wine(return_X_y=True)

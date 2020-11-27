@@ -4,7 +4,7 @@ Define Grid Persistence Landscape class.
 from __future__ import annotations
 import numpy as np
 import itertools
-from auxiliary import pairs_snap, union_vals, values_snap
+from auxiliary import pairs_snap, union_vals
 from operator import itemgetter, attrgetter
 from PersistenceLandscape import PersistenceLandscape
 
@@ -274,7 +274,7 @@ def lc_grid(landscapes: list, coeffs: list, start: float = None, stop: float = N
     l = snap_PL(landscapes, start = start, stop = stop, num_dims = num_dims)
     return np.sum(np.array(coeffs)*np.array(l))
 
-def lc_average(landscapes: list, start: float = None, stop: float = None, 
+def average_grid(landscapes: list, start: float = None, stop: float = None, 
                num_dims: int = None)-> PersistenceLandscapeGrid:
     """ Compute the average of a list of PersistenceLandscapeGrid objects.
     """
