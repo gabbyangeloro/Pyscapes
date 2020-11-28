@@ -50,6 +50,13 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         super().__init__(dgms=dgms, hom_deg=hom_deg)
         if dgms: # diagrams are passed
             self.dgms = dgms[self.hom_deg] 
+            # remove infity values    
+            # ~: indexes everything but values satisfying the condition
+            # axis = 1: checks the condition for each row
+            # np.any: if any element in the row satisfies the condition
+            # it gets indexed
+            self.dgms = self.dgms[~np.any( self.dgms == np.inf, axis=1)]
+            # calculate start and stop
             if start is None:
                 start = min(self.dgms, key=itemgetter(0))[0]
             if stop is None:
@@ -270,6 +277,33 @@ def snap_PL(l: list, start: float = None, stop: float = None, num_dims : int =  
 def lc_grid(landscapes: list, coeffs: list, start: float = None, stop: float = None,
              num_dims: int = None) -> PersistenceLandscapeGrid:
     """ Compute the linear combination of a list of PersistenceLandscapeGrid objects.
+    
+        Parameters
+        -------
+        landscapes: list
+            a list of PersistenceLandscapeGrid objects
+            
+        coeffs: list 
+            a list of the coefficients defining the linear combination
+        
+        start: float
+            starting value for the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+        
+        stop: float
+            last value in the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+        
+        num_dims: int
+            number of steps on the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+            
+        Returns
+        -------
+        PersistenceLandscapeGrid:
+            The specified linear combination of PersistenceLandscapeGrid objects 
+        in `landscapes`
+        
     """
     l = snap_PL(landscapes, start = start, stop = stop, num_dims = num_dims)
     return np.sum(np.array(coeffs)*np.array(l))
@@ -277,6 +311,27 @@ def lc_grid(landscapes: list, coeffs: list, start: float = None, stop: float = N
 def average_grid(landscapes: list, start: float = None, stop: float = None, 
                num_dims: int = None)-> PersistenceLandscapeGrid:
     """ Compute the average of a list of PersistenceLandscapeGrid objects.
+         Parameters
+        -------
+        landscapes: list
+            a list of PersistenceLandscapeGrid objects
+        
+        start: float
+            starting value for the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+        
+        stop: float
+            last value in the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+        
+        num_dims: int
+            number of steps on the common grid for PersistenceLandscapeGrid objects 
+        in `landscapes`
+            
+        Returns
+        -------
+        PersistenceLandscapeGrid:
+            The specified average of PersistenceLandscapeGrid objects in `landscapes`
     """
     return lc_grid(landscapes=landscapes, coeffs = [1.0/len(landscapes) for _ in landscapes],
                    start=start,stop=stop,num_dims=num_dims)

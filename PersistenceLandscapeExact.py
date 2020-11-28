@@ -219,6 +219,10 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         ----------
         verbose: bool
             if true, progress messages are printed during computation
+        
+        Returns
+        -------
+        None.
 
         """
 
