@@ -27,8 +27,9 @@ bc_dgms = ripser(bc_data_scl)['dgms']
 #%%
 # Good code:
 wine_plg2 = PersistenceLandscapeGrid(hom_deg=1,
-                                     dgms=wine_dgms)    
-wine_plg2.compute_landscape()
+                                     dgms=wine_dgms)
+#%%    
+wine_plg2.compute_landscape(verbose = True)
 #%%
 bc_pl = PersistenceLandscapeGrid(dgms=bc_dgms,hom_deg=1,compute=True)
 #%%
