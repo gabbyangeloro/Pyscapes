@@ -77,6 +77,7 @@ def plot_landscape_exact(landscape: PersistenceLandscapeExact,
     max_crit_val = max(crit_pairs,key=itemgetter(1))[1] # largest peak of landscape
     min_crit_val = min(crit_pairs, key=itemgetter(1))[1] # smallest peak of landscape
     norm = mpl.colors.Normalize(vmin=min_crit_val, vmax=max_crit_val)
+    scalarMap = mpl.cm.ScalarMappable(norm=norm)
     # x-axis for grid
     domain = np.linspace(min_crit_pt-padding*0.1, max_crit_pt+padding*0.1, num=num_steps)
     # for each landscape function
@@ -99,7 +100,8 @@ def plot_landscape_exact(landscape: PersistenceLandscapeExact,
                 ztuple,
                 linewidth=0.5,
                 alpha=alpha,
-                c=colormap(norm(z)))
+                #c=colormap(norm(z)))
+                c=scalarMap.to_rgba(z))
             ax.plot([x], [depth_padding*depth], [z], 'k.', markersize=0.1)
     
     #ax.set_xlabel('X')
