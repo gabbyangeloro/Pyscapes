@@ -63,9 +63,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
                 stop = max(self.dgms, key=itemgetter(1))[1]
         elif values.size > 0: # values passed, diagrams weren't 
             self.dgms = dgms
-            if not start:
+            if start is None:
                 raise ValueError('start parameter must be passed if values are passed.')
-            if not stop:
+            if stop is None:
                 raise ValueError('stop parameter must be passed if values are passed.')
                 # stop = np.amax(values)
         self.start = start
