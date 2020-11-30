@@ -1,11 +1,13 @@
 """
 Define Persistence Landscape Exact class.
 """
+from __future__ import annotations
 import itertools
 import numpy as np
 from operator import itemgetter
 from auxiliary import union_crit_pairs
 from PersistenceLandscape import PersistenceLandscape
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
 
 class PersistenceLandscapeExact(PersistenceLandscape):
@@ -412,6 +414,42 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         self.compute_landscape()
         cvals = list(itertools.chain.from_iterable(self.critical_pairs))
         return max(np.abs(cvals), key=itemgetter(1))[1]
+
+###############################
+# End PLE class definition
+###############################
+
+def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersistenceLandscapeGrid:
+    """
+
     
+    Parameters
+    ----------
+    start: float, default None
+        start value of grid
+    if start is not inputed, start is assigned to minimum birth value
+    
+    stop: float, default None
+        stop value of grid 
+    if stop is not inputed, stop is assigned to maximum death value
+    
+    num_dims: int, default 500
+        number of points starting from `start` and ending at `stop`
+    
+    """
+   
+    l.compute_landscape()
+    if start is None:
+        start = min(l.critical_pairs,key=itemgetter(0))[0]
+    if stop is None:
+        stop = max(l.critical_pairs, key=itemgetter(0))[0]
+    grid = np.linspace(start, stop, num_dims)
+    result = []
+    # creates sequential pairs of points for each lambda in critical_pairs
+    for depth in l.critical_pairs:
+        xs, ys = zip(*depth)
+        result.append(np.interp(grid, xs, ys))
+    return PersistenceLandscapeGrid(start = start, stop = stop, num_dims = num_dims,
+                                    hom_deg = l.hom_deg, values = np.array(result))
 
         
