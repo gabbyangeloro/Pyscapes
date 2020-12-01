@@ -8,14 +8,14 @@
 # In[1]:
 
 
-import numpy as np
-import random
+#import numpy as np
+#import random
 
 from tadasets import dsphere
 
 from ripser import ripser
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid, lc_grid
-from auxiliary import linear_combination
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid, lc_grid, average_grid
+#from auxiliary import linear_combination
 from visualization import plot_landscape
 
 from sklearn import preprocessing
@@ -55,137 +55,142 @@ sph3_dgm = [ripser(sphere, maxdim=2)['dgms']for sphere in sph3]
 # In[4]:
 
 
-sph2_PL1 = [PersistenceLandscapeGrid(start = 0, stop = 8, num_dims=500,dgms=diagram , hom_deg=0, compute=True) 
-            for diagram in sph2_dgm]
+sph2_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0) for diagram in sph2_dgm]
+
+for x in sph2_PL1:
+    x.compute_landscape(verbose=True)
+
+# In[5]: 
+z = average_grid(sph2_PL1)
 
 
-# In[11]:
+# In[11]: COMMENTED HERE
 
 
-#sph2_PL1, sph2_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
-sph2_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
-sph2_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
+# #sph2_PL1, sph2_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
+# sph2_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
+# sph2_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
 
-#sph3_PL1, sph3_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
-sph3_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
-sph3_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
-
-
-# Average the 100 landscapes for $S^2$ and $S^3$ in dimension 1 and 2
-
-# In[31]:
+# #sph3_PL1, sph3_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
+# sph3_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
+# sph3_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
 
 
-#avg2_hom1, avg2_hom2: average landscape for the 100 samples of S2 in degree 1 and 2 
-avg2_hom1 = linear_combination(sph2_PL1,100*[1/100])
-avg2_hom2 = linear_combination(sph2_PL2,100*[1/100])
+# # Average the 100 landscapes for $S^2$ and $S^3$ in dimension 1 and 2
 
-#avg3_hom1, avg3_hom2: average landscape for the 100 samples of S3 in degree 1 and 2 
-avg3_hom1 = linear_combination(sph3_PL1,100*[1/100])
-avg3_hom2 = linear_combination(sph3_PL2,100*[1/100])
+# # In[31]:
 
 
-# Compute the difference in sup norms between the average landscape of $S^2$ and $S^3$ in dimension 1 and 2
+# #avg2_hom1, avg2_hom2: average landscape for the 100 samples of S2 in degree 1 and 2 
+# avg2_hom1 = linear_combination(sph2_PL1,100*[1/100])
+# avg2_hom2 = linear_combination(sph2_PL2,100*[1/100])
 
-# In[32]:
-
-
-#diff_hom1, diff_hom2: difference between average landscapes in degree 1 and 2 of S2 and S3
-true_diff_hom1 = (avg2_hom1 - avg3_hom1).sup_norm()
-true_diff_hom2 = (avg2_hom2 - avg3_hom2).sup_norm()
-
-
-# Plot average landscape in degree 1 for S2 and S3 and difference between them 
-
-# In[33]:
+# #avg3_hom1, avg3_hom2: average landscape for the 100 samples of S3 in degree 1 and 2 
+# avg3_hom1 = linear_combination(sph3_PL1,100*[1/100])
+# avg3_hom2 = linear_combination(sph3_PL2,100*[1/100])
 
 
-# plot avg S^2
-plot_landscape(avg2_hom1) 
+# # Compute the difference in sup norms between the average landscape of $S^2$ and $S^3$ in dimension 1 and 2
+
+# # In[32]:
 
 
-# In[ ]:
+# #diff_hom1, diff_hom2: difference between average landscapes in degree 1 and 2 of S2 and S3
+# true_diff_hom1 = (avg2_hom1 - avg3_hom1).sup_norm()
+# true_diff_hom2 = (avg2_hom2 - avg3_hom2).sup_norm()
 
 
-# plot avg S^3
-plot_landscape(avg3_hom1) 
+# # Plot average landscape in degree 1 for S2 and S3 and difference between them 
+
+# # In[33]:
 
 
-# In[ ]:
+# # plot avg S^2
+# plot_landscape(avg2_hom1) 
 
 
-# plot diff
-plot_landscape(true_diff_hom_1)
+# # In[ ]:
 
 
-# ### Run permutation test for homological degree 1
-
-# In[ ]:
-
-
-#PL1: persistence landscapes in degree 1 from S2 and S3
-PL1 = []
-PL1.extend(sph2_PL1)
-PL1.extend(sph3_PL1)
-PL1 = np.array(PL1) #cast as array in order to index with a list
+# # plot avg S^3
+# plot_landscape(avg3_hom1) 
 
 
-for run in range(100):
-    # shuffle labels for 200 landscapes
-    A_indices = random.sample(range(100), 50)
-    B_indices = [_ for _ in range(100) if _ not in A_indices]
-    A_PL1 = PL1[A_indices]
-    B_PL1 = PL1[B_indices]
+# # In[ ]:
+
+
+# # plot diff
+# plot_landscape(true_diff_hom_1)
+
+
+# # ### Run permutation test for homological degree 1
+
+# # In[ ]:
+
+
+# #PL1: persistence landscapes in degree 1 from S2 and S3
+# PL1 = []
+# PL1.extend(sph2_PL1)
+# PL1.extend(sph3_PL1)
+# PL1 = np.array(PL1) #cast as array in order to index with a list
+
+
+# for run in range(100):
+#     # shuffle labels for 200 landscapes
+#     A_indices = random.sample(range(100), 50)
+#     B_indices = [_ for _ in range(100) if _ not in A_indices]
+#     A_PL1 = PL1[A_indices]
+#     B_PL1 = PL1[B_indices]
     
-    # take average of landscape with label A and label B resp.
-    avg_A_PL1 = linear_combination(A_PL1,100*[1/100])
-    avg_B_PL1 = linear_combination(B_PL1,100*[1/100])
+#     # take average of landscape with label A and label B resp.
+#     avg_A_PL1 = linear_combination(A_PL1,100*[1/100])
+#     avg_B_PL1 = linear_combination(B_PL1,100*[1/100])
     
-    shuffled_diff_hom1 = (avg_A_PL1 - avg_B_PL1).sup_norm() #compute shuffled diff
+#     shuffled_diff_hom1 = (avg_A_PL1 - avg_B_PL1).sup_norm() #compute shuffled diff
     
-    # count differences more extreme than true diff
-    more_extreme = 0
-    if np.abs(shuffled_diff_hom1) > np.abs(true_diff_hom1):
-        more_extreme += 1
+#     # count differences more extreme than true diff
+#     more_extreme = 0
+#     if np.abs(shuffled_diff_hom1) > np.abs(true_diff_hom1):
+#         more_extreme += 1
 
-print(f'{more_extreme} of the relabeled persistence landscapes'
-      'had difference more extreme than the true differnce')
-
-
-# ### Run permutation test for homological degree 2
-
-# In[ ]:
+# print(f'{more_extreme} of the relabeled persistence landscapes'
+#       'had difference more extreme than the true differnce')
 
 
-#PL2: persistence landscapes in degree 1 from S2 and S3
-PL2 = []
-PL2.extend(sph2_PL2)
-PL2.extend(sph3_PL2)
-PL2 = np.array(PL2) #cast as array in order to index with a list
+# # ### Run permutation test for homological degree 2
+
+# # In[ ]:
 
 
-for run in range(100):
-    # shuffle labels for 200 landscapes
-    A_indices = random.sample(range(100), 50)
-    B_indices = [_ for _ in range(100) if _ not in A_indices]
-    A_PL2 = PL2[A_indices]
-    B_PL2 = PL2[B_indices]
+# #PL2: persistence landscapes in degree 1 from S2 and S3
+# PL2 = []
+# PL2.extend(sph2_PL2)
+# PL2.extend(sph3_PL2)
+# PL2 = np.array(PL2) #cast as array in order to index with a list
+
+
+# for run in range(100):
+#     # shuffle labels for 200 landscapes
+#     A_indices = random.sample(range(100), 50)
+#     B_indices = [_ for _ in range(100) if _ not in A_indices]
+#     A_PL2 = PL2[A_indices]
+#     B_PL2 = PL2[B_indices]
     
-    # take average of landscape with label A and label B resp.
-    avg_A_PL2 = linear_combination(A_PL2,100*[1/100])
-    avg_B_PL2 = linear_combination(B_PL2,100*[1/100])
+#     # take average of landscape with label A and label B resp.
+#     avg_A_PL2 = linear_combination(A_PL2,100*[1/100])
+#     avg_B_PL2 = linear_combination(B_PL2,100*[1/100])
     
-    shuffled_diff_hom2 = (avg_A_PL2 - avg_B_PL2).sup_norm() #compute shuffled diff
+#     shuffled_diff_hom2 = (avg_A_PL2 - avg_B_PL2).sup_norm() #compute shuffled diff
     
-    # count differences more extreme than true diff
-    more_extreme = 0
-    if np.abs(shuffled_diff_hom2) > np.abs(true_diff_hom2):
-        more_extreme += 1
+#     # count differences more extreme than true diff
+#     more_extreme = 0
+#     if np.abs(shuffled_diff_hom2) > np.abs(true_diff_hom2):
+#         more_extreme += 1
 
-print(f'{more_extreme} of the relabeled persistence landscapes'
-      'had difference more extreme than the true differnce')
+# print(f'{more_extreme} of the relabeled persistence landscapes'
+#       'had difference more extreme than the true differnce')
 
 
-# ### For homological degree 1 and 2 there was no relabeling that resulted in persistence landscape difference that was more extreme than that of $S^2$ and $S^3$. So we conclude that the difference between $S^2$ and $S^3$ detected by persistence landscapes was significant.
+# # ### For homological degree 1 and 2 there was no relabeling that resulted in persistence landscape difference that was more extreme than that of $S^2$ and $S^3$. So we conclude that the difference between $S^2$ and $S^3$ detected by persistence landscapes was significant.
 
-# 
+# # 
