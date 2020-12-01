@@ -7,18 +7,27 @@
 
 # In[1]:
 
-
-#import numpy as np
-#import random
-
-from tadasets import dsphere
-
-from ripser import ripser
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid, lc_grid, average_grid
-#from auxiliary import linear_combination
-from visualization import plot_landscape
-
+# import miscellaneous tools
+import numpy as np
+import random
 from sklearn import preprocessing
+from sklearn.preprocessing import StandardScaler
+from timeit import default_timer as timer
+
+# import data sets
+from tadasets import dsphere
+from sklearn.datasets import load_wine
+from sklearn.datasets import load_breast_cancer
+
+# import Ripser
+from ripser import ripser
+from persim import plot_diagrams
+
+# import PyLandscapes and nessasary functions
+from PersistenceLandscapeGrid import PersistenceLandscapeGrid, snap_PL, average_grid
+from PersistenceLandscapeExact import PersistenceLandscapeExact
+from auxiliary import linear_combination
+from visualization import plot_landscape
 
 
 #  Sample 100 points from $S^2$ and $S^3$, 100 times and normalize
@@ -67,27 +76,29 @@ z = average_grid(sph2_PL1)
 # In[11]: COMMENTED HERE
 
 
-# #sph2_PL1, sph2_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
-# sph2_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
-# sph2_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph2_dgm]
+#sph2_PL1, sph2_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
+sph2_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=1, compute=True) for diagram in sph2_dgm]
+sph2_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=2, compute=True) for diagram in sph2_dgm]
+#%%
+#sph3_PL1, sph3_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
+sph3_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=1, compute=True) for diagram in sph3_dgm]
 
-# #sph3_PL1, sph3_PL2: list of 100 landscapes for 100 sampled points on S3 in degree 1 and 2 
-# sph3_PL1 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
-# sph3_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=0, compute=True) for diagram in sph3_dgm]
-
-
-# # Average the 100 landscapes for $S^2$ and $S^3$ in dimension 1 and 2
-
-# # In[31]:
+#%%
+sph3_PL2 = [PersistenceLandscapeGrid(dgms=diagram , hom_deg=2, compute=True) for diagram in sph3_dgm]
 
 
-# #avg2_hom1, avg2_hom2: average landscape for the 100 samples of S2 in degree 1 and 2 
-# avg2_hom1 = linear_combination(sph2_PL1,100*[1/100])
-# avg2_hom2 = linear_combination(sph2_PL2,100*[1/100])
+# Average the 100 landscapes for $S^2$ and $S^3$ in dimension 1 and 2
 
-# #avg3_hom1, avg3_hom2: average landscape for the 100 samples of S3 in degree 1 and 2 
-# avg3_hom1 = linear_combination(sph3_PL1,100*[1/100])
-# avg3_hom2 = linear_combination(sph3_PL2,100*[1/100])
+# In[31]:
+
+
+#avg2_hom1, avg2_hom2: average landscape for the 100 samples of S2 in degree 1 and 2 
+avg2_hom1 = linear_combination(sph2_PL1,100*[1/100])
+avg2_hom2 = linear_combination(sph2_PL2,100*[1/100])
+
+#avg3_hom1, avg3_hom2: average landscape for the 100 samples of S3 in degree 1 and 2 
+avg3_hom1 = linear_combination(sph3_PL1,100*[1/100])
+avg3_hom2 = linear_combination(sph3_PL2,100*[1/100])
 
 
 # # Compute the difference in sup norms between the average landscape of $S^2$ and $S^3$ in dimension 1 and 2

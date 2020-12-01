@@ -66,7 +66,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
 
     def __repr__(self):
         return (
-            "The persistence landscapes of diagrams in homological "
+            "The persistence landscape of diagrams in homological "
             f"degree {self.hom_deg}"
         )
 
@@ -352,6 +352,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         # update self.critical pairs. 
         self.max_depth = len(L)
         self.critical_pairs = [item[1:-1] for item in L]
+        
 
     def compute_landscape_by_depth(self, depth: int) -> list:
         """
