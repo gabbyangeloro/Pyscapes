@@ -183,13 +183,16 @@ def pairs_snap(pairs, grid):
     best = np.argmin(diffs, axis = 1)
     return  grid[best,:]
 
-def ndsnap_regular(points, *grid_axes):         
-     snapped = []                                         
-     for i, ax in enumerate(grid_axes):                                   
-         diff = ax[:, np.newaxis] - points[:, i]
-         best = np.argmin(np.abs(diff), axis=0)                                                                                                  
-         snapped.append(ax[best])                                                                                           
-     return np.array(snapped).T
+def ndsnap_regular(points, *grid_axes):   
+    """ Snap points to the 2d grid determined by grid_axes
+    """      
+    # https://stackoverflow.com/q/8457645/717525
+    snapped = []                                         
+    for i, ax in enumerate(grid_axes):                         
+        diff = ax[:, np.newaxis] - points[:, i]
+        best = np.argmin(np.abs(diff), axis=0)                                                                                                  
+        snapped.append(ax[best])                                                                                           
+    return np.array(snapped).T
 
 def values_snap(values, grid):
     # transpose values 
