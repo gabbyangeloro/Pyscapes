@@ -183,11 +183,13 @@ def pairs_snap(pairs, grid):
     best = np.argmin(diffs, axis = 1)
     return  grid[best,:]
 
-# def exact_to_grid(pl: PersistenceLandscapeExact) -> PersistenceLandscapeGrid:
-#     """
-#     Converts a PersistenceLandscapeExact class to a PersistenceLandscapeGrid class.
-#     """
-#     pass
+def ndsnap_regular(points, *grid_axes):         
+     snapped = []                                         
+     for i, ax in enumerate(grid_axes):                                   
+         diff = ax[:, np.newaxis] - points[:, i]
+         best = np.argmin(np.abs(diff), axis=0)                                                                                                  
+         snapped.append(ax[best])                                                                                           
+     return np.array(snapped).T
 
 def values_snap(values, grid):
     # transpose values 

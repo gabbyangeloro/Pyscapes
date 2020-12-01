@@ -4,7 +4,7 @@ Define Grid Persistence Landscape class.
 from __future__ import annotations
 import numpy as np
 import itertools
-from auxiliary import pairs_snap, union_vals
+from auxiliary import pairs_snap, union_vals, ndsnap_regular
 from operator import itemgetter, attrgetter
 from PersistenceLandscape import PersistenceLandscape
 
@@ -94,8 +94,8 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         # make grid
         grid_values, step = np.linspace(self.start, self.stop, self.num_dims, 
                                         retstep = True)
-        grid_values = list(grid_values)
-        grid = np.array([[x,y] for x in grid_values for y in grid_values])
+        #grid_values = list(grid_values)
+        # grid = np.array([[x,y] for x in grid_values for y in grid_values])
         bd_pairs = self.dgms       
        
         # create list of triangle top for each birth death pair
@@ -105,8 +105,10 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
         triangle_top = np.array(list(zip((birth + death)/2, (death - birth)/2)))
         
         # snap birth-death pairs and triangle tops to grid 
-        bd_pairs_grid = pairs_snap(bd_pairs, grid)
-        triangle_top_grid = pairs_snap(triangle_top, grid)
+        #bd_pairs_grid = pairs_snap(bd_pairs, grid)
+        bd_pairs_grid = ndsnap_regular(bd_pairs,*(grid_values,grid_values))
+        #triangle_top_grid = pairs_snap(triangle_top, grid)
+        triangle_top_grid = ndsnap_regular(triangle_top,*(grid_values,grid_values))
         
         # make grid dictionary 
         index = list(range(self.num_dims))
