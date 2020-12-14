@@ -1,4 +1,4 @@
-## pylandscapes: Persistence landscapes in python
+## pyscapes: Persistence landscapes in python
 
 This packages implements persistence landscapes in a user-friendly
 fashion in python. Persistence landscapes are a vectorization scheme for
