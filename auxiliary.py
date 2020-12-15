@@ -9,14 +9,28 @@ import itertools
 from operator import itemgetter, attrgetter
 import numpy as np
 
+__all__ = ["death_vector", "linear_combination"]
 
-def death_vector(diagram: list, hom_deg: int = 0):
+def death_vector(dgms: list, hom_deg: int = 0):
     """ Returns the death vector in degree 0 for the persistence diagram
+    
+    For Vietoris-Rips or Cech complexes, or any similar filtration, all bars in 
+    homological degree 0 start at filtration value 0. Therefore, the discerning 
+    information is the death values. The death vector is the vector of death times,
+    sorted from largest to smallest.
+    
+    Parameters
+    ----------
+    dgms : list of persistence diagrams
+        
+    hom_deg : int specifying the homological degree
+    
     """
     if hom_deg != 0:
         raise NotImplementedError("The death vector is not defined for "
                                   "homological degrees greater than zero.")
-    pass
+    return sorted(dgms[hom_deg][:,1], reverse=True)
+    
 
 def linear_combination(landscapes: list, coeffs: list):
     """ Compute a linear combination of landscapes

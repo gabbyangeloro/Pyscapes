@@ -23,19 +23,19 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     ----------
     dgms : list of numpy arrays, optional
         A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
-    Each entry in the list corresponds to a single homological degree.
-    Each array represents the birth death pairs for a homology degree.
-    Inside each homology degree array are arrays representing birth death pairs.
-    Expecting output from ripser: ripser(data_user)['dgms']. Only
-    one of diagrams or critical pairs should be specified.
+        Each entry in the list corresponds to a single homological degree.
+        Each array represents the birth death pairs for a homology degree.
+        Inside each homology degree array are arrays representing birth death pairs.
+        Expecting output from ripser: ripser(data_user)['dgms']. Only
+        one of diagrams or critical pairs should be specified.
 
     hom_deg : int
         Represents the homology degree of the persistence diagram.
 
-    critical_pairs: list, optional
-        A list of critical pairs (points, values) for specifying a persistence
-    landscape. These do not necessarily have to arise from a persistence
-    diagram. Only one of diagrams or critical pairs should be specified.
+    critical_pairs : list, optional
+        A list of critical pairs (points, values) for specifying a persistence landscape. 
+        These do not necessarily have to arise from a persistence
+        diagram. Only one of diagrams or critical pairs should be specified.
 
 
     Methods
@@ -43,11 +43,11 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     compute_landscape : stores persistence landscape associated to persistence diagram
         for given homology degree in attribute `critical_paris`
 
-    p_norm: returns p-norm of a landscape
+    p_norm : returns p-norm of a landscape
         
-    sup_norm: returns sup norm of a landscape
+    sup_norm : returns sup norm of a landscape
         
-    vectorize: returns interpolated y-values of `critical_pairs` on user specified grid
+    vectorize : returns interpolated y-values of `critical_pairs` on user specified grid
 
     """
     
@@ -415,13 +415,14 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         self.compute_landscape()
         cvals = list(itertools.chain.from_iterable(self.critical_pairs))
         return max(np.abs(cvals), key=itemgetter(1))[1]
+    
 
 ###############################
 # End PLE class definition
 ###############################
 
 def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersistenceLandscapeGrid:
-    """
+    """ Converts a `PersistenceLandscapeExact` type to a `PersistenceLandscapeGrid` type.
 
     
     Parameters
@@ -452,5 +453,3 @@ def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = N
         result.append(np.interp(grid, xs, ys))
     return PersistenceLandscapeGrid(start = start, stop = stop, num_dims = num_dims,
                                     hom_deg = l.hom_deg, values = np.array(result))
-
-        

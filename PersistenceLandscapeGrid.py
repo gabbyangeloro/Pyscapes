@@ -28,13 +28,11 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     dgms : list[list]
         A list of birth death pairs for each homological degree
     
-     hom_deg : int
+    hom_deg : int
         represents the homology degree of the persistence diagram.
     
     Methods
     -------
-    transform : computes persistence landscape using the grid method 
-        for the given homological degree
     
     
     Examples
@@ -279,6 +277,8 @@ def snap_PL(l: list, start: float = None, stop: float = None, num_dims : int =  
 def lc_grid(landscapes: list, coeffs: list, start: float = None, stop: float = None,
              num_dims: int = None) -> PersistenceLandscapeGrid:
     """ Compute the linear combination of a list of PersistenceLandscapeGrid objects.
+    
+    
     
         Parameters
         -------
