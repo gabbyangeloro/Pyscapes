@@ -14,9 +14,9 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
     Persistence Landscape Grid class.
 
     This class implements an approximate version of Persistence Landscape,
-    given by sampling the landscape functions on a user-defined grid. 
-    This version is only an approximation to the true landscape, but given
-    a fine enough grid, this should suffice for most applications. If an exact
+    given by sampling the landscape functions on a grid. This version is only an 
+    approximation to the true landscape, but given a fine enough grid, this should
+    suffice for most applications. If an exact
     calculation with no approximation is desired, consider `PersistenceLandscapeExact`.
     
     The default parameters for start and stop favor dgms over values. That
@@ -25,11 +25,23 @@ class PersistenceLandscapeGrid(PersistenceLandscape):
 
     Parameters
     ----------
+    start : float, optional
+        The start parameter of the approximating grid.
+        
+    stop : float, optional
+        The stop parameter of the approximating grid.
+        
+    num_dims : int, optional
+        The number of dimensions of the approximation, equivalently the
+        number of steps in the grid.
+        
     dgms : list[list]
-        A list of birth death pairs for each homological degree
+        A list lists of birth-death pairs for each homological degree.
     
     hom_deg : int
         represents the homology degree of the persistence diagram.
+        
+    vales 
     
     Methods
     -------

@@ -13,9 +13,10 @@ from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 class PersistenceLandscapeExact(PersistenceLandscape):
     """Persistence Landscape Exact class.
 
-    This class implements an exact version of Persistence Landscapes. All
-    computations done with these classes is exact (modulo floating point
-    rounding, which we have no real control over anyways). For much faster,
+    This class implements an exact version of Persistence Landscapes. The landscape
+    functions are stored as a list of critical pairs, and the actual function is the
+    linear interpolation of these critical pairs. All
+    computations done with these classes are exact. For much faster but
     approximate methods that should suffice for most applications, consider
     `PersistenceLandscapeGrid`.
 
@@ -24,30 +25,33 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     dgms : list of numpy arrays, optional
         A nested list of numpy arrays, e.g., [array( array([:]), array([:]) ),..., array()]
         Each entry in the list corresponds to a single homological degree.
-        Each array represents the birth death pairs for a homology degree.
-        Inside each homology degree array are arrays representing birth death pairs.
-        Expecting output from ripser: ripser(data_user)['dgms']. Only
+        Each array represents the birth-death pairs in that homological degree. This is 
+        the output format from ripser.py: ripser(data_user)['dgms']. Only
         one of diagrams or critical pairs should be specified.
 
     hom_deg : int
         Represents the homology degree of the persistence diagram.
 
     critical_pairs : list, optional
-        A list of critical pairs (points, values) for specifying a persistence landscape. 
+        A list of lists of critical pairs (points, values) for specifying a persistence landscape. 
         These do not necessarily have to arise from a persistence
         diagram. Only one of diagrams or critical pairs should be specified.
+        
+    compute : bool, optional
+        A flag determining whether landscape functions are computed upon instantiation.
 
 
     Methods
     -------
-    compute_landscape : stores persistence landscape associated to persistence diagram
-        for given homology degree in attribute `critical_paris`
+    compute_landscape : computes the set of critical pairs and stores them in
+        the attribute `critical_pairs`
+        
+    compute_landscape_by_depth : compute the set of critical pairs in a certain
+        range.
 
     p_norm : returns p-norm of a landscape
         
     sup_norm : returns sup norm of a landscape
-        
-    vectorize : returns interpolated y-values of `critical_pairs` on user specified grid
 
     """
     
