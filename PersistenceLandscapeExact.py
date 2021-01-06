@@ -10,7 +10,7 @@ from PersistenceLandscape import PersistenceLandscape
 from PersistenceLandscapeGrid import PersistenceLandscapeGrid
 
 
-class PersistenceLandscapeExact(PersistenceLandscape):
+class PersLandscapeExact(PersistenceLandscape):
     """Persistence Landscape Exact class.
 
     This class implements an exact version of Persistence Landscapes. The landscape
@@ -57,7 +57,7 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     
     def __init__(
         self, dgms: list = [], hom_deg: int = 0,
-        critical_pairs: list = [], compute: bool = False) -> None:
+        critical_pairs: list = [], compute: bool = True) -> None:
         super().__init__(dgms=dgms, hom_deg=hom_deg)
         self.critical_pairs = critical_pairs
         if dgms:
@@ -75,10 +75,6 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         )
 
     def __neg__(self):
-        self.compute_landscape()
-        return PersistenceLandscapeExact(hom_deg=self.hom_deg,
-                                    critical_pairs=[ [[a,-b] for a, b in depth_list]
-                                                    for depth_list in self.critical_pairs])
         """
         Computes the negation of a persistence landscape object
 
@@ -89,22 +85,19 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         Usage
         -----
         (-P).critical_pairs returns the sum
-        """
+        """        
+        self.compute_landscape()
+        return PersLandscapeExact(hom_deg=self.hom_deg,
+                                    critical_pairs=[ [[a,-b] for a, b in depth_list]
+                                                    for depth_list in self.critical_pairs])
 
     def __add__(self, other):
-        # This requires a list implementation as written.
-        if self.hom_deg != other.hom_deg:
-            raise ValueError("homological degrees must match")
-        return PersistenceLandscapeExact(
-            critical_pairs=union_crit_pairs(self, other),
-            hom_deg=self.hom_deg
-            )
         """
         Computes the sum of two persistence landscape objects
         
         Parameters
         -------
-        other: PersistenceLandscapeExact
+        other: PersLandscapeExact
             
         Returns
         -------
@@ -114,9 +107,15 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         -----
         (P+Q).critical_pairs returns the sum
         """
-    def __sub__(self, other):
-        return self + -other
+        
+        if self.hom_deg != other.hom_deg:
+            raise ValueError("homological degrees must match")
+        return PersLandscapeExact(
+            critical_pairs=union_crit_pairs(self, other),
+            hom_deg=self.hom_deg
+            )
     
+    def __sub__(self, other):    
         """
         Computes the difference of two persistence landscape objects
         
@@ -132,13 +131,9 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         -----
         (P-Q).critical_pairs returns the difference
         """
+        return self + -other
 
-    def __mul__(self, other: float):      
-        self.compute_landscape()
-        return PersistenceLandscapeExact(
-            hom_deg=self.hom_deg,
-            critical_pairs=[[(a, other*b) for a, b in depth_list] 
-                            for depth_list in self.critical_pairs])
+    def __mul__(self, other: float):
         """
         Computes the product of a persistence landscape object and a float 
         
@@ -155,9 +150,13 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         -----
         (3*P).critical_pairs returns the product
         """
-    
+        self.compute_landscape()
+        return PersLandscapeExact(
+            hom_deg=self.hom_deg,
+            critical_pairs=[[(a, other*b) for a, b in depth_list] 
+                            for depth_list in self.critical_pairs])
+
     def __rmul__(self,other: float):
-        return self.__mul__(other)
         """
         Computes the product of a persistence landscape object and a float 
         
@@ -175,11 +174,9 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         (P*3).critical_pairs returns the product
     
         """
+        return self.__mul__(other)
 
     def __truediv__(self, other: float):
-        if other == 0.:
-            raise ValueError("Cannot divide by zero")
-        return self*(1.0/other)
         """
         Computes the quotient of a persistence landscape object and a float 
         
@@ -198,7 +195,10 @@ class PersistenceLandscapeExact(PersistenceLandscape):
     
         """
 
-    # Indexing, slicing
+        if other == 0.:
+            raise ValueError("Cannot divide by zero")
+        return self*(1.0/other)
+
     def __getitem__(self, key: slice) -> list:
         """
         Returns a list of critical pairs corresponding in range specified by 
@@ -351,12 +351,8 @@ class PersistenceLandscapeExact(PersistenceLandscape):
             landscape_idx += 1
             
         verboseprint('self.critical_pairs was empty and algorthim was executed')
-        # gets rid of infinity terms 
-        # As written, this function shouldn't return anything, but rather 
-        # update self.critical pairs. 
         self.max_depth = len(L)
         self.critical_pairs = [item[1:-1] for item in L]
-        
 
     def compute_landscape_by_depth(self, depth: int) -> list:
         """
@@ -421,14 +417,13 @@ class PersistenceLandscapeExact(PersistenceLandscape):
         return max(np.abs(cvals), key=itemgetter(1))[1]
     
 
-###############################
-# End PLE class definition
-###############################
+###########################################
+# End PersLandscapeExact class definition #
+###########################################
 
-def vectorize(l: PersistenceLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersistenceLandscapeGrid:
-    """ Converts a `PersistenceLandscapeExact` type to a `PersistenceLandscapeGrid` type.
+def vectorize(l: PersLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersistenceLandscapeGrid:
+    """ Converts a `PersLandscapeExact` type to a `PersistenceLandscapeGrid` type.
 
-    
     Parameters
     ----------
     start: float, default None
