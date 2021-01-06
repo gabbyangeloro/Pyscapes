@@ -7,16 +7,19 @@ import numpy as np
 
 class PersistenceLandscape(ABC):
     """
-    The base Persistence Landscape class
+    The base Persistence Landscape class.
 
-    This is the base persistence landscape class and should not be
-    called directly. The subclasses `PersistenceLandscapeGrid` or
-    `PersistenceLandscapeExact` should instead be called.
+    This is the base persistence landscape class. This class should not be
+    called directly; the subclasses `PersLandscapeApprox` or
+    `PersLandscapeExact` should instead be called.
 
     Parameters
     ----------
     dgms: list[list]
-        A list of birth-death pairs in `hom_deg`
+        A list of birth-death pairs.
+        
+    hom_deg: int
+        The homological degree.
     """
 
     def __init__(self, dgms: list = [], hom_deg: int = 0) -> None:
