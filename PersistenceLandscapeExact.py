@@ -9,6 +9,8 @@ from auxiliary import union_crit_pairs
 from PersistenceLandscape import PersistenceLandscape
 from PersLandscapeApprox import PersLandscapeApprox
 
+__all__ = ['PersLandscapeExact', 'vectorize']
+
 
 class PersLandscapeExact(PersistenceLandscape):
     """Persistence Landscape Exact class.

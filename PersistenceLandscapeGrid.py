@@ -7,6 +7,8 @@ from auxiliary import union_vals, ndsnap_regular
 from operator import itemgetter, attrgetter
 from PersistenceLandscape import PersistenceLandscape
 
+__all__ = ['PersLandscapeApprox', 'snap_PL', 'lc_approx', 'average_approx']
+
 
 class PersLandscapeApprox(PersistenceLandscape):
     """
@@ -312,7 +314,7 @@ def lc_approx(landscapes: list, coeffs: list, start: float = None, stop: float =
     l = snap_PL(landscapes, start = start, stop = stop, num_steps = num_steps)
     return np.sum(np.array(coeffs)*np.array(l))
 
-def average_grid(landscapes: list, start: float = None, stop: float = None, 
+def average_approx(landscapes: list, start: float = None, stop: float = None, 
                num_steps: int = None)-> PersLandscapeApprox:
     """ Compute the average of a list of PersLandscapeApprox objects.
     
