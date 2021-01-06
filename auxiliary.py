@@ -1,12 +1,9 @@
 """
 Auxilary functions for working with persistence diagrams.
-
-Most of these functions should not be called directly.
 """
 
 from __future__ import annotations
 import itertools
-from operator import itemgetter, attrgetter
 import numpy as np
 
 __all__ = ["death_vector", "linear_combination"]
@@ -50,10 +47,9 @@ def linear_combination(landscapes: list, coeffs: list):
     return result
 
 def union_vals(A,B):
-    """
+    """ Helper function for summing grid landscapes.
+    
     Extends one list to the length of the other by padding with zero lists.
-    A Helper function for summing grid landscapes.
-
     """
     diff = A.shape[0] - B.shape[0]
     if diff < 0:
@@ -68,8 +64,9 @@ def union_vals(A,B):
         return A, B    
 
 def union_crit_pairs(A, B):
-    """ Helper function for summing landscapes. 
-    This should handle all the edge cases, like an empty list.
+    """ Helper function for summing landscapes.
+    
+    Computes the union of two sets of critical pairs.
     """
     result_pairs = []
     A.compute_landscape()
@@ -96,14 +93,15 @@ def union_crit_pairs(A, B):
 
 
 def pos_to_slope_interp(l: list) -> list:
-    """
-    Convert positions of critical pairs to (x-value, slope) pairs. Intended
+    """ Convert positions of critical pairs to (x-value, slope) pairs. 
+    
+    Intended
     for internal use. Inverse function of `slope_to_pos_interp`.
     
     Result
     ------
     list
-        [(xi,mi)]_i for i in len(function in landscape)
+        [(xi,mi)] for i in len(function in landscape)
     """
 
     output = []
@@ -116,8 +114,9 @@ def pos_to_slope_interp(l: list) -> list:
 
 
 def slope_to_pos_interp(l: list) -> list:
-    """
-    Convert positions of (x-value, slope) pairs to critical pairs. Intended
+    """ Convert positions of (x-value, slope) pairs to critical pairs. 
+    
+    Intended
     for internal use. Inverse function of `pos_to_slope_interp`.
     
     Result
@@ -214,15 +213,4 @@ def values_snap(values, grid):
     diffs = np.abs(values_transpose - grid)
     best = np.argmin(diffs, axis = 1)
     return grid[best]
-
-def values_interp(values, grid):
-    """ Interpolate
-    """
-    pass
-
-def num_skip(n: int):
-    """This should make it easy to throw out the first `n` landscape functions,
-    regardless of grid or exact pl passed.
-    """
-    pass
 
