@@ -7,7 +7,7 @@ import numpy as np
 from operator import itemgetter
 from auxiliary import union_crit_pairs
 from PersistenceLandscape import PersistenceLandscape
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid
+from PersLandscapeApprox import PersLandscapeApprox
 
 
 class PersLandscapeExact(PersistenceLandscape):
@@ -18,7 +18,7 @@ class PersLandscapeExact(PersistenceLandscape):
     linear interpolation of these critical pairs. All
     computations done with these classes are exact. For much faster but
     approximate methods that should suffice for most applications, consider
-    `PersistenceLandscapeGrid`.
+    `PersLandscapeApprox`.
 
     Parameters
     ----------
@@ -421,8 +421,8 @@ class PersLandscapeExact(PersistenceLandscape):
 # End PersLandscapeExact class definition #
 ###########################################
 
-def vectorize(l: PersLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersistenceLandscapeGrid:
-    """ Converts a `PersLandscapeExact` type to a `PersistenceLandscapeGrid` type.
+def vectorize(l: PersLandscapeExact, start: float = None, stop: float = None, num_dims: int = 500) -> PersLandscapeApprox:
+    """ Converts a `PersLandscapeExact` type to a `PersLandscapeApprox` type.
 
     Parameters
     ----------
@@ -450,5 +450,5 @@ def vectorize(l: PersLandscapeExact, start: float = None, stop: float = None, nu
     for depth in l.critical_pairs:
         xs, ys = zip(*depth)
         result.append(np.interp(grid, xs, ys))
-    return PersistenceLandscapeGrid(start = start, stop = stop, num_dims = num_dims,
+    return PersLandscapeApprox(start = start, stop = stop, num_dims = num_dims,
                                     hom_deg = l.hom_deg, values = np.array(result))

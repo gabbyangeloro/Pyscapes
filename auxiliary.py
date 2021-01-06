@@ -169,32 +169,32 @@ def sum_slopes(a: list, b: list) -> list:
             result.append([ax, am + bm])
     return result
 
-def pairs_snap(pairs, grid):
-    """
-    Snap an 2D-array of points to values along an 2D-array grid.
-    Each point will be snapped to the grid value with the smallest
-    city-block distance.
+# def pairs_snap(pairs, grid):
+#     """
+#     Snap an 2D-array of points to values along an 2D-array grid.
+#     Each point will be snapped to the grid value with the smallest
+#     city-block distance.
 
-    Parameters
-    ---------
-    points: 2D-array. Must have same number of columns as grid
-    grid: 2D-array. Must have same number of columns as points
+#     Parameters
+#     ---------
+#     points: 2D-array. Must have same number of columns as grid
+#     grid: 2D-array. Must have same number of columns as points
 
-    Returns
-    -------
-    A 2D-array with one row per row of points. Each i-th row will
-    correspond to row of grid to which the i-th row of points is closest.
-    In case of ties, it will be snapped to the row of grid with the
-    smaller index.
-    """
+#     Returns
+#     -------
+#     A 2D-array with one row per row of points. Each i-th row will
+#     correspond to row of grid to which the i-th row of points is closest.
+#     In case of ties, it will be snapped to the row of grid with the
+#     smaller index.
+#     """
 
-    # transpose grid 
-    grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
-    # axis 1 is x-values of points
-    diffs = np.sum(np.abs(grid_3d - pairs[:,:,np.newaxis]), axis=1)
-    # argmin returns the indices of the minimum values along an axis
-    best = np.argmin(diffs, axis = 1)
-    return  grid[best,:]
+#     # transpose grid 
+#     grid_3d = np.transpose(grid[:,:,np.newaxis], [2,1,0])
+#     # axis 1 is x-values of points
+#     diffs = np.sum(np.abs(grid_3d - pairs[:,:,np.newaxis]), axis=1)
+#     # argmin returns the indices of the minimum values along an axis
+#     best = np.argmin(diffs, axis = 1)
+#     return  grid[best,:]
 
 def ndsnap_regular(points, *grid_axes):   
     """ Snap points to the 2d grid determined by grid_axes
@@ -207,10 +207,10 @@ def ndsnap_regular(points, *grid_axes):
         snapped.append(ax[best])                                                                                           
     return np.array(snapped).T
 
-def values_snap(values, grid):
-    # transpose values 
-    values_transpose = values[:, np.newaxis]
-    diffs = np.abs(values_transpose - grid)
-    best = np.argmin(diffs, axis = 1)
-    return grid[best]
+# def values_snap(values, grid):
+#     # transpose values 
+#     values_transpose = values[:, np.newaxis]
+#     diffs = np.abs(values_transpose - grid)
+#     best = np.argmin(diffs, axis = 1)
+#     return grid[best]
 
