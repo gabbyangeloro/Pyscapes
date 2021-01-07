@@ -10,7 +10,7 @@ from operator import itemgetter
 from visualization import plot_landscape
 from ripser import ripser
 from persim import plot_diagrams
-from PersistenceLandscapeGrid import PersistenceLandscapeGrid
+from PersistenceLandscapeGrid import PersLandscapeApprox
 #%% Load data
 
 wine_data, wine_target = load_wine(return_X_y=True)
@@ -34,7 +34,7 @@ max_d_bc = max(bc_dgms[1], key=itemgetter(1))[1]
 
 padding = 0.1
 
-wine_pl = PersistenceLandscapeGrid(start=min_b_wine - padding,
+wine_pl = PersLandscapeApprox(start=min_b_wine - padding,
                                    stop=max_d_wine+padding,
                                    num_dims=500,
                                    diagrams=wine_dgms, 
@@ -42,7 +42,7 @@ wine_pl = PersistenceLandscapeGrid(start=min_b_wine - padding,
                                    )
 
 
-bc_pl = PersistenceLandscapeGrid(start=min_b_bc-padding,
+bc_pl = PersLandscapeApprox(start=min_b_bc-padding,
                                    stop=max_d_bc+padding,
                                    num_dims=500,
                                    diagrams=bc_dgms, 
@@ -63,7 +63,7 @@ diagrams = ripser(data)['dgms']
 # pl = PL(homological_degree=1][]
 # landscape = pl.fit_transform(diagrams)
 
-L = PersistenceLandscapeExact(diagrams,homological_degree=1)
+L = PersLandscapeExact(diagrams,homological_degree=1)
 L.compute_landscape(verbose=True)
 L.p_norm(p=2)
 #%%
@@ -71,5 +71,5 @@ random_data = np.random.random((100, 2))
 diagrams = ripser(data)['dgms']
 #plot_diagrams(diagrams, show=True)
 
-M = PersistenceLandscapeExact(diagrams, homological_degree=1)
+M = PersLandscapeExact(diagrams, homological_degree=1)
 M.compute_landscape()

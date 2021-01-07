@@ -4,7 +4,7 @@
 """
 
 from sklearn.base import BaseEstimator, TransformerMixin
-from PersistenceLandscapeExact import PersistenceLandscapeExact
+from PersistenceLandscapeExact import PersLandscapeExact
 
 
 # To get the following functionality to work, I think we need 
@@ -25,7 +25,7 @@ class PL_exact(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         # Add check that X is the output of a PH calculation.
         # return X[self.homological_degree].compute_landscape()
-        result = PersistenceLandscapeExact(diagrams=X, homological_degree=self.homological_degree)
+        result = PersLandscapeExact(diagrams=X, homological_degree=self.homological_degree)
         result.compute_landscape()
         return result.critical_pairs
     

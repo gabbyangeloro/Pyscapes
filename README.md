@@ -41,7 +41,7 @@ brief overview of how it can be used.
 #### Exact vs Grid
 We provide two different implementations of Persistence Landscapes:
 
-- `PersistenceLandscapeExact` provides an exact implementation. All methods 
+- `PersLandscapeExact` provides an exact implementation. All methods 
 and computations done in this class are as accurate as the floating point
 arithmetic of Python. In particular, there are __no approximations__ in
 our calculations. Landscape functions are internally stored as a list
@@ -67,7 +67,7 @@ Examples of both are provided below.
 ```python
 import numpy as np
 from ripser import ripser
-from PersistenceLandscapeExact import PersistenceLandscapeExact  # to be updated
+from PersistenceLandscapeExact import PersLandscapeExact  # to be updated
 
 data = np.random.random_sample((200,2)) # generate random points
 diagrams = ripser(data)['dgms'] # compute persistent homology
