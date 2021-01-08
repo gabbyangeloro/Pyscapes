@@ -253,12 +253,16 @@ class PersLandscapeApprox(PersistenceLandscape):
 ############################################
 
 def snap_PL(l: list, start: float = None, stop: float = None, num_steps : int =  None) -> list:
-        """
+        """ Snap a list of PersLandscapeApprox tpes to a common grid
+        
         Given a list `l` of PersLandscapeApprox types, convert them to a list
         where each entry has the same start, stop, and num_steps. This puts each
         entry of `l` on the same grid, so they can be added, averaged, etc.
+        This assumes they're all of the same homological degree. 
         
-        This assumes they're all of the same homological degree.
+        If the user
+        does not specify the grid parameters, they are computed as tightly as 
+        possible from the input list `l`.
         """
         if start is None:
             start = min(l,key=attrgetter('start')).start
@@ -283,6 +287,9 @@ def snap_PL(l: list, start: float = None, stop: float = None, num_steps : int = 
 def lc_approx(landscapes: list, coeffs: list, start: float = None, stop: float = None,
              num_steps: int = None) -> PersLandscapeApprox:
     """ Compute the linear combination of a list of PersLandscapeApprox objects.
+    
+        This uses vectorized arithmetic from numpy, so it should be faster and
+        more memory efficient than a naive for-loop.
     
         Parameters
         -------
@@ -323,11 +330,11 @@ def average_approx(landscapes: list, start: float = None, stop: float = None,
         landscapes: list
             a list of PersLandscapeApprox objects
         
-        start: float
+        start: float, optional
             starting value for the common grid for PersLandscapeApprox objects 
             in `landscapes`
         
-        stop: float
+        stop: float, optional
             last value in the common grid for PersLandscapeApprox objects 
             in `landscapes`
         
