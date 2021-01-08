@@ -7,7 +7,7 @@ import numpy as np
 from operator import itemgetter
 from auxiliary import union_crit_pairs
 from PersistenceLandscape import PersistenceLandscape
-from PersLandscapeApprox import PersLandscapeApprox
+from PersistenceLandscapeGrid import PersLandscapeApprox
 
 __all__ = ['PersLandscapeExact', 'vectorize']
 

@@ -172,7 +172,7 @@ def plot_landscape_grid(landscape: PersLandscapeApprox,
         # sequential pairs in landscape
         # xs, zs = zip(*l)
         image = np.interp(domain, np.linspace(start=landscape.start, stop=landscape.stop,
-                                              num=landscape.num_dims), l) 
+                                              num=landscape.num_steps), l) 
         for x, z in zip(domain,image):
             if z == 0.:
                 # plot a single point here?

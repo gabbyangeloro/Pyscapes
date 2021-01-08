@@ -27,26 +27,20 @@ bc_dgms = ripser(bc_data_scl)['dgms']
 # plot_diagrams(bc_dgms, show=True)
 #%% Compute landscape grid and landscapes
 
-min_b_wine = min(wine_dgms[1],key=itemgetter(0))[0]
-max_d_wine = max(wine_dgms[1], key=itemgetter(1))[1]
-min_b_bc = min(bc_dgms[1],key=itemgetter(0))[0]
-max_d_bc = max(bc_dgms[1], key=itemgetter(1))[1]
+# min_b_wine = min(wine_dgms[1],key=itemgetter(0))[0]
+# max_d_wine = max(wine_dgms[1], key=itemgetter(1))[1]
+# min_b_bc = min(bc_dgms[1],key=itemgetter(0))[0]
+# max_d_bc = max(bc_dgms[1], key=itemgetter(1))[1]
 
 padding = 0.1
 
-wine_pl = PersLandscapeApprox(start=min_b_wine - padding,
-                                   stop=max_d_wine+padding,
-                                   num_dims=500,
-                                   diagrams=wine_dgms, 
-                                   homological_degree=1,
+wine_pl = PersLandscapeApprox(dgms=wine_dgms, 
+                                   hom_deg=1
                                    )
 
 
-bc_pl = PersLandscapeApprox(start=min_b_bc-padding,
-                                   stop=max_d_bc+padding,
-                                   num_dims=500,
-                                   diagrams=bc_dgms, 
-                                   homological_degree=1,
+bc_pl = PersLandscapeApprox(dgms=bc_dgms, 
+                                   hom_deg=1
                                    )
 
 wine_pl.compute_landscape()
@@ -54,6 +48,7 @@ bc_pl.compute_landscape()
 
 #%% 
 plot_landscape(wine_pl, title='Wine persistence landscape')
+#%%
 plot_landscape(bc_pl, title='Breast cancer landscape')
 #%%
 data = np.random.random_sample((200,2))
