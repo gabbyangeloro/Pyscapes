@@ -139,13 +139,13 @@ class PersLandscapeApprox(PersistenceLandscape):
             for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
                 j += 1
                 # j*step: adding points from a line with slope 1
-                W[ind_in_Wb +j].append(j* step) 
+                W[ind_in_Wb +j].append(j*step) 
           
             j = 0
             # j in (b+d/2, d)
             for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
+                W[ind_in_Wd  - j].append(j*step)
                 j += 1
-                W[ind_in_Wd  - j].append(j* step)
         
         # sort each list in W
         for i in range(len(W)):
@@ -157,7 +157,7 @@ class PersLandscapeApprox(PersistenceLandscape):
         # initialize L to be a zeros matrix of size K x (2m+1)
         L = np.array([ np.zeros(self.num_steps) for _ in range(K)])
         
-        #input Values from W to L
+        # input values from W to L
         for i in range(self.num_steps):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
