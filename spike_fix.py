@@ -9,12 +9,15 @@ Created on Fri Jan  8 11:17:01 2021
 from tadasets import torus
 from ripser import ripser
 from PersistenceLandscapeGrid import PersLandscapeApprox
+from PersistenceLandscapeExact import PersLandscapeExact
 from visualization import plot_landscape_simple
 
 t = torus()
 
 tph = ripser(t)['dgms']
 
-tpl = PersLandscapeApprox(dgms=tph,hom_deg=1,num_steps=5000)
+tpla = PersLandscapeApprox(dgms=tph,hom_deg=1,num_steps=5000)
+tple = PersLandscapeExact(dgms=tph,hom_deg=1)
 #%%
-plot_landscape_simple(tpl)
+plot_landscape_simple(tple)
+plot_landscape_simple(tpla)

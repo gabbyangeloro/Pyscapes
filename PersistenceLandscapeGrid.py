@@ -132,20 +132,24 @@ class PersLandscapeApprox(PersistenceLandscape):
             [b, d] = bd
             ind_in_Wb = dict_grid[b] # index in W
             ind_in_Wd = dict_grid[d] # index in W
+            mid_pt = ind_in_Wb + (ind_in_Wd - ind_in_Wb)//2 # index half way between, rounded down
             
             # step through by x value
             j = 0
             # j in (b, b+d/2] 
-            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
+            # for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
+            for _ in range(ind_in_Wb,mid_pt+1):
                 j += 1
                 # j*step: adding points from a line with slope 1
                 W[ind_in_Wb +j].append(j*step) 
           
             j = 0
             # j in (b+d/2, d)
-            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
-                W[ind_in_Wd  - j].append(j*step)
+            for _ in range(mid_pt+2,ind_in_Wd):
+            # for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
                 j += 1
+                W[ind_in_Wd  - j].append(j*step)
+                
         
         # sort each list in W
         for i in range(len(W)):
