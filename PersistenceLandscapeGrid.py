@@ -118,7 +118,7 @@ class PersLandscapeApprox(PersistenceLandscape):
         #bd_pairs_grid = pairs_snap(bd_pairs, grid)
         bd_pairs_grid = ndsnap_regular(bd_pairs,*(grid_values,grid_values))
         #triangle_top_grid = pairs_snap(triangle_top, grid)
-        triangle_top_grid = ndsnap_regular(triangle_top,*(grid_values,grid_values))
+        #triangle_top_grid = ndsnap_regular(triangle_top,*(grid_values,grid_values))
 
         # make grid dictionary 
         index = list(range(self.num_steps))
@@ -132,20 +132,22 @@ class PersLandscapeApprox(PersistenceLandscape):
             [b, d] = bd
             ind_in_Wb = dict_grid[b] # index in W
             ind_in_Wd = dict_grid[d] # index in W
+            mid_pt = ind_in_Wb + (ind_in_Wd - ind_in_Wb)//2 # index half way between, rounded down
             
             # step through by x value
             j = 0
             # j in (b, b+d/2] 
-            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0], b, -step):
+            for _ in range(ind_in_Wb,mid_pt):
                 j += 1
                 # j*step: adding points from a line with slope 1
-                W[ind_in_Wb +j].append(j* step) 
+                W[ind_in_Wb +j].append(j*step) 
           
             j = 0
             # j in (b+d/2, d)
-            for _ in np.arange(triangle_top_grid[ind_in_bd_pairs, 0] + step, d, step):
+            for _ in range(mid_pt+1,ind_in_Wd):
                 j += 1
-                W[ind_in_Wd  - j].append(j* step)
+                W[ind_in_Wd  - j].append(j*step)
+                
         
         # sort each list in W
         for i in range(len(W)):
@@ -157,7 +159,7 @@ class PersLandscapeApprox(PersistenceLandscape):
         # initialize L to be a zeros matrix of size K x (2m+1)
         L = np.array([ np.zeros(self.num_steps) for _ in range(K)])
         
-        #input Values from W to L
+        # input values from W to L
         for i in range(self.num_steps):
             for k in range(len(W[i])):
                 L[k][i] = W[i][k]
